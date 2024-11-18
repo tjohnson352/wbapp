@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Raw Data Overview{% endblock %}
+
+{% block header %}
+<h1 style="color: #2980b9;">Raw Data (df1)</h1>
+{% endblock %}
+
+{% block content %}
+<div>
+    <table>
+        <thead>
+            <tr>
+                {% for column in df1.columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% if df1 is not none and not df1.empty %}
+            {% for index, row in df1.iterrows() %}
+            <tr>
+                {% for column in df1.columns %}
+                <td>{{ row[column] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="{{ df1.shape[1] }}">No data available</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

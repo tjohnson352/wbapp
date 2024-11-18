@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher and School Information{% endblock %}
+
+{% block header %}
+<h1 style="color: #2980b9;">School & Teacher (df5)</h1>
+{% endblock %}
+
+{% block content %}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>School</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if df5 is not none and not df5.empty %}
+            {% for index, row in df5.iterrows() %}
+            <tr>
+                <td>{{ row['school'] }}</td>
+                <td>{{ row['first_name'] }}</td>
+                <td>{{ row['last_name'] }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3">No data available</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

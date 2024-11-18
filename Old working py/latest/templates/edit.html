@@ -1,0 +1,37 @@
+<form method="post" action="{{ url_for('edit.save_edits') }}">
+    <table class="table table-striped" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr class="table-header">
+                <th class="table-cell" style="width: 5%;">Delete</th>
+                <th class="table-cell" style="width: 15%;">Classification</th>
+                <th class="table-cell" style="width: 25%;">Activity</th>
+                <th class="table-cell" style="width: 15%;">Start Time</th>
+                <th class="table-cell" style="width: 15%;">End Time</th>
+                <th class="table-cell" style="width: 10%;">Minutes</th>
+                <th class="table-cell" style="width: 10%;">Edited Minutes</th>  <!-- New Column for Edited Minutes -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in df_filtered.iterrows() %}
+            <tr>
+                <td class="table-cell"><input type="checkbox" name="delete_{{ index }}"></td>
+                <td class="table-cell">
+                    <select name="classification_{{ index }}" style="padding: 5px;">
+                        <option value="Lesson" {% if row['classification'] == 'Lesson' %}selected{% endif %}>Lesson</option>
+                        <option value="Break" {% if row['classification'] == 'Break' %}selected{% endif %}>Break</option>
+                        <option value="Other" {% if row['classification'] == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </td>
+                <td class="table-cell"><input type="text" name="activities_{{ index }}" value="{{ row['activities'] }}" style="width: 90%; padding: 5px;"></td>
+                <td class="table-cell"><input type="text" name="start_time_{{ index }}" value="{{ row['start_time'] }}" style="width: 80%; padding: 5px;"></td>
+                <td class="table-cell"><input type="text" name="end_time_{{ index }}" value="{{ row['end_time'] }}" style="width: 80%; padding: 5px;"></td>
+                <td class="table-cell">{{ row['minutes'] }}</td>
+                <td class="table-cell">{{ row['Edited_min'] }}</td> <!-- Render Edited Minutes -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="margin-top: 20px; text-align: center;">
+        <input type="submit" value="SUBMIT" style="padding: 10px 20px; font-size: 16px;">
+    </div>
+</form>

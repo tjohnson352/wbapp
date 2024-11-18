@@ -1,0 +1,31 @@
+Scheduling App/
+│
+├── app.py                         # Main Flask application file
+├── routes.py                      # Routes or blueprint for the Flask app (formerly upload_routes.py)
+│
+├── services/                      # Directory for helper modules and services
+│   ├── pdf_service.py             # Service to extract data from PDF files
+│   ├── data_service.py            # Service for cleaning and processing the data
+│   └── frametime_service.py       # Service for managing frametime sessions and related functions
+│
+├── templates/                     # Directory for HTML template files
+│   ├── base.html                  # Base HTML template for shared layout
+│   ├── upload_schedule.html       # Page for uploading the schedule
+│   ├── frametime.html             # Page for viewing and editing frametime
+│   └── tables/                    # Directory for different data table HTML files
+│       ├── df1.html               # HTML template to display df1 table
+│       ├── df2.html               # HTML template to display df2 table
+│       ├── df3.html               # HTML template to display df3 table
+│       ├── df4.html               # HTML template to display df4 table (frametime data)
+│       └── df5.html               # HTML template to display df5 table
+│
+├── static/                        # Directory for static files (CSS, JS, images)
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+├── db/                            # Directory for SQLite database files
+│   └── sessions.sqlite            # SQLite database to store session data
+│
+└── tmp/                           # Temporary files directory (for uploaded PDFs)
+    └── uploads/                   # Temporary uploads folder

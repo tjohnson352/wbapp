@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Overview - {{ day }}{% endblock %}
+
+{% block content %}
+    <h2>Schedule Overview for {{ day }}</h2>
+    {% if df.empty %}
+        <p>No data available for {{ day }}</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Activity</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>GAP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in df.iterrows() %}
+                <tr>
+                    <td>{{ row['Type'] }}</td>
+                    <td>{{ row['Activity'] }}</td>
+                    <td>{{ row['Start'] }}</td>
+                    <td>{{ row['End'] }}</td>
+                    <td>{{ row['GAP'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

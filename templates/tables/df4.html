@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}DF4 Data{% endblock %}
+
+{% block content %}
+    <h2>Frametime Data</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in df4.iterrows() %}
+            <tr>
+                <td>{{ row['day'] }}</td>
+                <td>{{ row['ft_start'] }}</td>
+                <td>{{ row['ft_end'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #2980b9;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+{% endblock %}

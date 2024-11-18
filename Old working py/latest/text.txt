@@ -1,0 +1,5 @@
+fine the teacher name, which is the most common line date in the dataframe. Replace the information in line 1 with the teacher name and delete all of the other lines that contain the teacher name
+
+dont use flair, simply check line by line until you find the line data that is most repeated
+
+save the name in variable teacher_name

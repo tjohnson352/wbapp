@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Your Schedule{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="upload-container">
+        <h2>Upload Your Schedule</h2>
+        <p class="description">
+            This web app provides a comprehensive overview of your schedule by extracting and analyzing your data. 
+            It will summarize key time allocations and assess how well they align with the collective agreement.
+        </p>
+        <h3 class="instructions-header">How to Retrieve Your Schedule from Schoolsoft:</h3>
+        <ol class="instructions-list">
+            <li>Log in to SchoolSoft.</li>
+            <li>Go to <strong>"My Schedule"</strong> in the left menu.</li>
+            <li>Click the PDF icon to download your schedule to your device.</li>
+            <li>Use the form below to upload the PDF file.</li>
+        </ol>
+        {% if message %}
+            <div class="alert">{{ message }}</div>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+            <input type="file" name="file" class="file-input">
+            <button type="submit" class="upload-button">Upload</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .page-header {
+        color: #2980b9;
+        font-weight: 700;
+    }
+    .upload-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .description {
+        font-size: 1.1em;
+        margin-bottom: 20px;
+    }
+    .instructions-header {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-top: 20px;
+    }
+    .instructions-list {
+        list-style-type: decimal;
+        padding-left: 20px;
+        margin-bottom: 20px;
+    }
+    .alert {
+        color: #e74c3c;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .upload-form {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .file-input {
+        border: 1px solid #ccc;
+        padding: 8px;
+        border-radius: 4px;
+    }
+    .upload-button {
+        padding: 10px 20px;
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .upload-button:hover {
+        background-color: #1abc9c;
+    }
+</style>
+{% endblock %}

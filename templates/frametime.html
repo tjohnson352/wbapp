@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Set Your Frametime{% endblock %}
+
+{% block header %}
+<h1 style="color: #2980b9;">Set Your Frametime</h1>
+{% endblock %}
+
+{% block content %}
+    <h2>Define Your Frametime for the Week</h2>
+    <p>Please specify your frametime for each day of the week. You can adjust the start and end times as needed, and the default time is from 8:00 to 16:00.</p>
+    <form method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in df4.iterrows() %}
+                <tr>
+                    <td>{{ row['day'] }}</td>
+                    <td><input type="text" name="start_{{ row['day'] }}" value="{{ row['ft_start'] }}"></td>
+                    <td><input type="text" name="end_{{ row['day'] }}" value="{{ row['ft_end'] }}"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" name="action" value="save_back">Go Back</button>
+        <button type="submit" name="action" value="save_forward">Save and Move Forward</button>
+    </form>
+    
+
+    
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #1abc9c;
+    }
+    input[type="text"] {
+        width: 80px;
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #2980b9;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+{% endblock %}
