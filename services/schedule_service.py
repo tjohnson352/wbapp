@@ -29,7 +29,6 @@ def create_df6(df3):
     df6["duration_minutes"] = df6.apply(
         lambda row: calculate_duration(row["start_time"], row["end_time"]), axis=1
     )
-
     # Set default values for dropdown columns
     df6["day"] = "REMOVE"  # Default value for dropdown, can be changed by user
     df6['activity_type'] = df3['type']  # Dynamically set the default value from df3['type']

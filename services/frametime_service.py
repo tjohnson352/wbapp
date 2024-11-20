@@ -75,7 +75,7 @@ def handle_frametime_action(request_form):
     action = request_form.get("action", "")
     update_frametime(request_form)  # Save changes to the session
 
-    if action == "save_back":
+    if action == "back":
         # Redirect to the upload page
         return "back"
     elif action == "save_forward":

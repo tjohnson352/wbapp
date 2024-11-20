@@ -10,6 +10,8 @@ from utils import format_time
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
+app.config.from_object('config.Config')
+
 
 # Set up SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sessions.sqlite'
@@ -28,7 +30,7 @@ app.config['SESSION_SQLALCHEMY_TABLE'] = 'flask_sessions'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 Session(app)
 
-# Create the sessions table
+# Create the sessions table 
 with app.app_context():
     db.create_all()
 
