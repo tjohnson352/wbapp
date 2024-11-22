@@ -6,32 +6,33 @@ import numpy as np
  
 def clean_data(df1):
     
-    # STEP 1: Form df5 with the extracted teacher and school name
+    # STEP 1: Form df2b (teacher & school names) with the extracted teacher and school name
     metadata = extract_name_metadata(df1)
 
-    df5 = pd.DataFrame({
+    df2b = pd.DataFrame({
         'school': [metadata['school_name']],
         'first_name': [metadata['teacher_first_name']],
         'last_name': [metadata['teacher_last_name']]
     })
 
-    # Step 2: Form df2 as the place to process the data from df1
-    df2 = df1.rename(columns={'Content': 'data'}).copy()
+    # Step 2: Form df2a (structured data) as the place to process the data from df1
+    df2a = df1.rename(columns={'Content': 'data'}).copy()
 
-    # Step 3: Process df2 to add time, lone_dash, end_dash, start_end, joined_activities, and activities columns
-    df2 = process_df2(df2)
+    # Step 3: Process df2a to add time, lone_dash, end_dash, start_end, joined_activities, and activities columns
+    df2a = process_df2a(df2a)
 
-    # Step 4: Add year_group column to df2
-    df2 = add_year_group_column(df2)
+    # Step 4: Add year_group column to df2a
+    df2a = add_year_group_column(df2a)
 
-    # Step 5: Create df3 which contains structured data from the 'activities' column of df2 (excluding empty rows)
-    df3 = df2[['activities']].copy()
-    df3 = df3[df3['activities'] != ""]  # Exclude empty rows in 'activities'
+    # Step 5: Create df3 which contains structured data from the 'activities' column of df2a (excluding empty rows)
+    df3 = df2a[['activities']].copy()
+    df3 = df3[df3['activities'] != ""]
+      # Exclude empty rows in 'activities'
 
 
     # Split the 'activities' column into activity name and time span
     activity_names = []
-    year_group_codes = []  # Initialize as a list
+    year_group_codes = []
     start_times = []
     end_times = []
     minutes = []
@@ -46,7 +47,7 @@ def clean_data(df1):
             start_time = match.group(1)
             end_time = match.group(2)
             activity_name = activity[:match.start()].strip()
-            year_group = df2.loc[idx, 'year_group'] if 'year_group' in df2.columns else ""  # Extract the year_group
+            year_group = df2a.loc[idx, 'year_group'] if 'year_group' in df2a.columns else ""  # Extract the year_group
 
             # Calculate the time span in minutes
             if start_time and end_time:
@@ -99,7 +100,7 @@ def clean_data(df1):
         'type',  # Name of the new column
         df3.apply(
             lambda row: (
-                "BREAK" if row['activities'].strip().lower() == "break"
+                "BREAK" if row['activities'].lower() == "break"
                 else "TEACHING" if isinstance(row['year_group'], str) and row['year_group'].strip()
                 and not any(keyword in row['activities'].strip().lower() for keyword in ["mentor", "lunch"])
                 else "OTHER"
@@ -113,22 +114,27 @@ def clean_data(df1):
     df3.loc[df3['type'] == "BREAK", 'year_group'] = ""
     df3.loc[df3['activities'].str.contains(r'cover|subbing', case=False, na=False), 'type'] = "SUBBING"
 
-    return df2, df5, df3
+    df3.insert(0, 'day', 'MONDAY')
+    df3['year_group'] = df3['year_group'].replace("", "- - -")
+    df3['end'] = df3['end'].apply(lambda x: x.zfill(5) if ":" in x else x)
 
 
-def process_df2(df2):
+    return df2a, df2b, df3
+
+
+def process_df2a(df2a):
     # Step 5: Iterate through "data" and populate the new columns based on conditions
-    df2.rename(columns={'Content': 'data'}, inplace=True)
-    df2['time'] = ""
-    df2['lone_dash'] = ""
-    df2['end_dash'] = ""
-    df2['activities'] = ""
-    df2['year_group'] = ""
+    df2a.rename(columns={'Content': 'data'}, inplace=True)
+    df2a['time'] = ""
+    df2a['lone_dash'] = ""
+    df2a['end_dash'] = ""
+    df2a['activities'] = ""
+    df2a['year_group'] = ""
 
     # Populate time, lone_dash, and end_dash columns
     temp_data = []
     result = []
-    for idx, row in df2.iterrows():
+    for idx, row in df2a.iterrows():
         data_value = row['data'].strip()  # Ignore white space
 
         # Initialize variables to define the relative row position
@@ -138,24 +144,24 @@ def process_df2(df2):
 
         # Check if the value is in a time span format (e.g., "08:30 - 13:00", "8:00-9:00")
         if re.match(r'^\d{1,2}:\d{2}\s*-\s*\d{1,2}:\d{2}$', data_value):
-            df2.at[idx, 'time'] = data_value  # Assign the matched value to 'time'
-            above = df2.at[idx - 1, 'data'] # Get the value of the row above                
+            df2a.at[idx, 'time'] = data_value  # Assign the matched value to 'time'
+            above = df2a.at[idx - 1, 'data'] # Get the value of the row above                
             concatenated_value = f"{above} {data_value}".strip() # Concatenate above and current row
 
             # Replace the row above with the concatenated value
-            df2.at[idx - 1, 'data'] = concatenated_value
+            df2a.at[idx - 1, 'data'] = concatenated_value
                 
-    for idx, row in df2.iterrows():
+    for idx, row in df2a.iterrows():
         data_value = row['data'].strip()  # Ignore white space                
                 
         # Check if the value is a lone dash "-"
         if data_value == '-':
-            df2.at[idx, 'lone_dash'] = 'lone_dash'
+            df2a.at[idx, 'lone_dash'] = 'lone_dash'
 
             # Get the row above and below, and second row below
-            above = df2.at[idx - 1, 'data'] if idx > 0 else ""  # Get the row above if exists
-            below = df2.at[idx + 1, 'data'] if idx + 1 < len(df2) else ""  # Get the row below if exists
-            second_below = df2.at[idx + 2, 'data'] if idx + 2 < len(df2) else ""  # Get the second row below if exists
+            above = df2a.at[idx - 1, 'data'] if idx > 0 else ""  # Get the row above if exists
+            below = df2a.at[idx + 1, 'data'] if idx + 1 < len(df2a) else ""  # Get the row below if exists
+            second_below = df2a.at[idx + 2, 'data'] if idx + 2 < len(df2a) else ""  # Get the second row below if exists
 
             # Check if the row below matches the time format and is at least 11 characters long
             if len(data_value) >= 11 and re.search(r'\d{1,2}:\d{2}$', data_value.strip()):  # Time format at the end
@@ -164,53 +170,53 @@ def process_df2(df2):
                 jointed_text = f"{above} {below}{second_below}".strip()  # Concatenate above, below, and second below
 
             # Record the joined text in "jointed-activities"
-            df2.at[idx, 'activities'] = jointed_text
-            df2.at[idx + 2, 'data'] = ""
+            df2a.at[idx, 'activities'] = jointed_text
+            df2a.at[idx + 2, 'data'] = ""
         else:
             # Leave blank if no row above or below
-            df2.at[idx, 'activities'] = ""
+            df2a.at[idx, 'activities'] = ""
 
-    for idx, row in df2.iterrows():
+    for idx, row in df2a.iterrows():
         data_value = row['data'].strip()  # Ignore white space 
         
         # Check if the value ends with a dash and is more than one character
-        if len(data_value) > 1 and data_value.endswith('-') and idx + 1 < len(df2):
+        if len(data_value) > 1 and data_value.endswith('-') and idx + 1 < len(df2a):
             # Mark the current row with 'end_dash'
-            df2.at[idx, 'end_dash'] = 'end_dash'
+            df2a.at[idx, 'end_dash'] = 'end_dash'
 
             # Concatenate current row's 'data' with the next row's 'data'
-            next_data = df2.at[idx + 1, 'data'].strip() if pd.notna(df2.at[idx + 1, 'data']) else ""
+            next_data = df2a.at[idx + 1, 'data'].strip() if pd.notna(df2a.at[idx + 1, 'data']) else ""
             joined_text = f"{data_value} {next_data}"
 
             # Record the joined text in the 'activities' column of the current row
-            df2.at[idx, 'activities'] = joined_text
+            df2a.at[idx, 'activities'] = joined_text
 
         # Check if the value ends with a time format and length is greater than 11
         if len(data_value) > 11 and re.search(r'\d{1,2}:\d{2}$', data_value):
-            df2.at[idx, 'activities'] = data_value
+            df2a.at[idx, 'activities'] = data_value
     
-    for idx, row in df2.iterrows():
+    for idx, row in df2a.iterrows():
         data_value = row['data'].strip()  # Ignore white space
         activities_value = row['activities'].strip() if 'activities' in row and pd.notna(row['activities']) else ""
 
         # Check if the first two characters of the activities column are digits or a digit and a colon
         if activities_value[:2].isdigit() or (len(activities_value) >= 2 and activities_value[0].isdigit() and activities_value[1] == ':'):
             if idx > 0:  # Ensure there is a previous row to reference
-                df2.at[idx, 'activities'] = f"{df2.at[idx - 1, 'data']} {activities_value}"
+                df2a.at[idx, 'activities'] = f"{df2a.at[idx - 1, 'data']} {activities_value}"
 
-    return df2
+    return df2a
 
-def add_year_group_column(df2):
+def add_year_group_column(df2a):
 
     # Use iloc for position-based indexing
-    for idx in range(len(df2) - 2):  # Stop iteration 2 rows before the end
+    for idx in range(len(df2a) - 2):  # Stop iteration 2 rows before the end
         # Check if the 'activities' column has a valid string for the current row
-        activities_value = df2.iloc[idx]['activities'] if 'activities' in df2.columns else None
+        activities_value = df2a.iloc[idx]['activities'] if 'activities' in df2a.columns else None
         if not isinstance(activities_value, str) or not activities_value.strip():
             continue  # Skip rows without a valid string in 'activities'
 
         # Get the value from the second row below
-        data_value = df2.iloc[idx + 2]['data'] if 'data' in df2.columns else None
+        data_value = df2a.iloc[idx + 2]['data'] if 'data' in df2a.columns else None
 
         # Ensure the value exists, is a string, and is 5 characters or less
         if isinstance(data_value, str) and pd.notna(data_value) and len(data_value) <= 5:
@@ -218,17 +224,17 @@ def add_year_group_column(df2):
 
             # Check if it matches the year_group_code pattern (digit 4-9 followed by a-g)
             if re.match(r'^[4-9][a-gA-G]', data_value):
-                df2.iloc[idx, df2.columns.get_loc('year_group')] = data_value[:2].upper()  # Record the year_group_code
+                df2a.iloc[idx, df2a.columns.get_loc('year_group')] = data_value[:2].upper()  # Record the year_group_code
         
     # Iterate through rows, excluding the last row to avoid index out-of-range errors
-    for idx in range(len(df2) - 1):
+    for idx in range(len(df2a) - 1):
         # Check if the current row has a valid activities string
-        activities_value = df2.iloc[idx]['activities'].strip() if 'activities' in df2.columns and pd.notna(df2.iloc[idx]['activities']) else ""
+        activities_value = df2a.iloc[idx]['activities'].strip() if 'activities' in df2a.columns and pd.notna(df2a.iloc[idx]['activities']) else ""
         if not activities_value:  # Skip rows without valid activities
             continue
 
         # Get the data value from the row below
-        data_value = df2.iloc[idx + 1]['data'].strip() if 'data' in df2.columns and pd.notna(df2.iloc[idx + 1]['data']) else ""
+        data_value = df2a.iloc[idx + 1]['data'].strip() if 'data' in df2a.columns and pd.notna(df2a.iloc[idx + 1]['data']) else ""
 
         # Check if the data_value contains a semicolon and split it
         if ";" in data_value:
@@ -238,9 +244,9 @@ def add_year_group_column(df2):
 
                 # Validate if the second part matches the year_group pattern (digit 4-9 followed by a-g)
                 if re.match(r'^[4-9][a-gA-G]', second_part):
-                    df2.iloc[idx, df2.columns.get_loc('year_group')] = second_part.upper()  # Record as year_group
+                    df2a.iloc[idx, df2a.columns.get_loc('year_group')] = second_part.upper()  # Record as year_group
     
-    return df2
+    return df2a
 
 
 def extract_name_metadata(df1):
@@ -270,3 +276,4 @@ def extract_name_metadata(df1):
         "teacher_last_name": teacher_last_name,
         "school_name": school_name
     }
+

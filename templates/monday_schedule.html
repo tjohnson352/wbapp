@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Monday Schedule{% endblock %}
+
+{% block header %}
+<h1 style="color: #2980b9;">Monday Schedule</h1>
+{% endblock %}
+
+{% block content %}
+<p>Edit the Monday schedule below. After editing, click Save Changes.</p>
+<form method="POST">
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Activities</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in df4a.iterrows() %}
+            <tr>
+                <td>
+                    <select name="type_{{ index }}">
+                        <option value="COVER" {% if row.type == 'COVER' %}selected{% endif %}>COVER</option>
+                        <option value="TEACHING" {% if row.type == 'TEACHING' %}selected{% endif %}>TEACHING</option>
+                        <option value="BREAK" {% if row.type == 'BREAK' %}selected{% endif %}>BREAK</option>
+                        <option value="OTHER" {% if row.type == 'OTHER' %}selected{% endif %}>OTHER</option>
+                    </select>
+                </td>
+                <td>
+                    {{ row.activities }} <!-- Display activities as plain text -->
+                </td>
+                <td>
+                    <input type="text" name="start_{{ index }}" value="{{ row.start }}">
+                </td>
+                <td>
+                    <input type="text" name="end_{{ index }}" value="{{ row.end }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <button type="submit" style="margin-top: 20px;">Save Changes</button>
+</form>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid #2980b9;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    input[type="text"] {
+        width: 100px;
+        padding: 5px;
+    }
+</style>
+{% endblock %}

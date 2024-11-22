@@ -2,7 +2,7 @@ from flask import Flask, session
 from flask_session import Session
 import os
 from datetime import timedelta
-from routes import upload_blueprint
+from routes import structured_data
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from utils import format_time
@@ -47,7 +47,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 logging.basicConfig(level=logging.INFO)
 
 # Register blueprint
-app.register_blueprint(upload_blueprint, url_prefix='/')
+app.register_blueprint(structured_data, url_prefix='/')
 
 # Error Handling
 @app.errorhandler(404)

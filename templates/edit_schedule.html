@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Set Your Frametime{% endblock %}
+
+{% block header %}
+<h1 style="color: #2980b9;">Assign Days to Activities</h1>
+{% endblock %}
+
+{% block content %}
+    <p>Use your schedule to assign each activity to the appropriate day of the week." </p>
+    <form method="POST">
+        <table border="0">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Activity</th>
+                    <th>Type</th>
+                    <th>Year Group</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Minutes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in df3.iterrows() %}
+                <tr>
+                    <td>
+                        <select name="day_{{ index }}">
+                            <option value="MONDAY" {% if row.day == 'MONDAY' %}selected{% endif %}>MONDAY</option>
+                            <option value="TUESDAY" {% if row.day == 'TUESDAY' %}selected{% endif %}>TUESDAY</option>
+                            <option value="WEDNESDAY" {% if row.day == 'WEDNESDAY' %}selected{% endif %}>WEDNESDAY</option>
+                            <option value="THURSDAY" {% if row.day == 'THURSDAY' %}selected{% endif %}>THURSDAY</option>
+                            <option value="FRIDAY" {% if row.day == 'FRIDAY' %}selected{% endif %}>FRIDAY</option>
+                            <option value="REMOVE" style="color: red; font-weight: bold;" {% if row.day == 'REMOVE' %}selected{% endif %}>- - REMOVE - -</option>
+                        </select>
+                    </td>
+                    <td>{{ row.activities }}</td>
+                    <td>{{ row.type }}</td>
+                    <td>{{ row.year_group }}</td>
+                    <td>{{ row.start }}</td>
+                    <td>{{ row.end }}</td>
+                    <td>{{ row.minutes }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" name="action" value="back">Go Back</button>
+        <button type="submit" name="action" value="save_forward">Save and Move Forward</button>
+    </form>
+    
+    
+
+    
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #1abc9c;
+    }
+    input[type="text"] {
+        width: 80px;
+        padding: 5px;
+        border: 1px solid #ccc;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #2980b9;
+        padding: 10px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+{% endblock %}
