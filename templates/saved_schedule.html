@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Edit Your Schedule{% endblock %}
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>DAYS saved</h2>
+    <p>Your schedule information was saved. If you need to make changes, 
+        click <strong>Go Back</strong>.</p>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Activities</th>
+                <th>Type</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in table.iterrows() %}
+            <tr 
+            {% if row['day'] == 'DELETE' %}
+                style="background-color: rgb(255, 0, 0); color: white;"
+            {% elif row['day'] == 'Monday' %}
+                style="background-color: rgba(173, 216, 230, 0.6); color: black;"
+            {% elif row['day'] == 'Tuesday' %}
+                style="background-color: rgba(144, 238, 144, 0.6); color: black;"
+            {% elif row['day'] == 'Wednesday' %}
+                style="background-color: rgba(255, 255, 224, 0.6); color: black;"
+            {% elif row['day'] == 'Thursday' %}
+                style="background-color: rgba(255, 218, 185, 0.6); color: black;"
+            {% elif row['day'] == 'Friday' %}
+                style="background-color: rgba(216, 191, 216, 0.6); color: black;"
+            {% endif %}
+        >
+            <td>{{ row['day'] }}</td>
+            <td>{{ row['activities'] }}</td>
+            <td>{{ row['type'] }}</td>
+            <td>{{ row['start_time'] }}</td>
+            <td>{{ row['end_time'] }}</td>
+        </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="button-container">
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='/day';">Go Back</button>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='/frametime';">Continue</button>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+table td {
+    padding: 5 px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+</style>

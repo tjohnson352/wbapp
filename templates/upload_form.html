@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Your Schedule{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Upload Your Schedule</h2>
+    <p class="description">
+        Use the Web App to analyze and evaluate your schedule effortlessly. 
+        Simply upload your schedule to get an overview of time allocations 
+        and how well they align with the <strong>Collective Agreement</strong>.
+    </p>
+    <h3 class="instructions-header">How to Retrieve Your Schedule from SchoolSoft:</h3>
+    <ol class="instructions-list">
+        <li>Log in to <strong><a href="https://sms.schoolsoft.se/engelska/jsp/Login.jsp?eventMessage=ERR_Not_Logged_In" target="_blank">SchoolSoft</a></strong>.</li>
+        <li>Navigate to <strong>"My Schedule"</strong> from the left menu.</li>
+        <li>
+            Click on
+                <img src="/static/images/pdf.gif" alt="PDF Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
+                to download your schedule; 
+                <span style="color: #e74c3c;">
+                <strong>do not click on</strong>
+                <img src="/static/images/printer.png" alt="Printer Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"> 
+                </span>
+        </li>
+        <li>Upload the downloaded PDF using the form below.</li>
+    </ol>
+
+    {% if message %}
+    <div class="alert">{{ message|safe }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="input-container">
+            <input type="file" name="file" accept="application/pdf" class="file-input">
+        </div>
+        <div class="input-container">
+            <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block extra_styles %}
+<style>
+    /* Style for Upload Schedule button */
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%; /* Match width to parent container */
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    /* Style for the Choose File button */
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Align buttons and inputs consistently */
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+</style>
+{% endblock %}

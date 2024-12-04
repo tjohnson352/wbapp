@@ -1,63 +1,29 @@
-from flask import Flask, session
-from flask_session import Session
-import os
-from datetime import timedelta
-from routes import structured_data
-from flask_sqlalchemy import SQLAlchemy
-import logging
-from utils import format_time
+# app.py
+from flask import Flask
+from services.time_handling import format_time
 
-# Initialize Flask app
+# Create a Flask application instance
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config.from_object('config.Config')
 
+# Set the secret key for session management
+app.secret_key = 'your_secret_key_here'  # Replace 'your_secret_key_here' with a secure key
 
-# Set up SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sessions.sqlite'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# Custom filter to format time
+@app.template_filter('format_time')
+def format_time_filter(value):
+    return format_time(value)
 
-# Register the custom filter
-app.jinja_env.filters['format_time'] = format_time
+# Register Blueprints
+from blueprints.upload_schedule import upload_schedule_bp
+#from blueprints.set_frametime import set_frametime_bp
+#from blueprints.structure_data import structure_data_bp
+#from blueprints.clean_data import clean_data_bp
 
-# Session Configuration
-app.config['SESSION_TYPE'] = 'sqlalchemy'
-app.config['SESSION_PERMANENT'] = True
-app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_SQLALCHEMY'] = db
-app.config['SESSION_SQLALCHEMY_TABLE'] = 'flask_sessions'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
-Session(app)
+app.register_blueprint(upload_schedule_bp, url_prefix='/')
+#app.register_blueprint(set_frametime_bp, url_prefix='/set_frametime')
+#app.register_blueprint(structure_data_bp, url_prefix='/structure_data')
+#app.register_blueprint(clean_data_bp, url_prefix='/clean_data')
 
-# Create the sessions table 
-with app.app_context():
-    db.create_all()
-
-# Configuration for file uploads
-UPLOAD_FOLDER = '/tmp/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit file size to 16 MB
-
-# Ensure the upload directory exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-# Logging
-logging.basicConfig(level=logging.INFO)
-
-# Register blueprint
-app.register_blueprint(structured_data, url_prefix='/')
-
-# Error Handling
-@app.errorhandler(404)
-def page_not_found(e):
-    return "Page not found. Please check the URL.", 404
-
-@app.errorhandler(500)
-def internal_error(e):
-    return "An unexpected error occurred. Please try again later.", 500
-
-# Run the app
-if __name__ == '__main__':
+# Run the application
+if __name__ == '__main__': 
     app.run(debug=True)

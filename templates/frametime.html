@@ -1,15 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Set Your Frametime{% endblock %}
+{% block title %}Edit Your Schedule{% endblock %}
 
 {% block header %}
-<h1 style="color: #2980b9;">Set Your Weekly Frametime</h1>
+<h1 class="page-header">The Schedulizer Web App</h1>
 {% endblock %}
 
 {% block content %}
-    <p>Please specify your frametime for each day of the week. You can adjust the start and end times as needed, and the default time is from 8:00 to 16:00.</p>
+<div class="upload-container">
     <form method="POST" action="/frametime">
-        <table>
+        <h2 class="mb-3">Register Frametime</h2>
+        
+        <p>Set your frametime by entering the start and end times for each workday.</p>
+
+        <h4>How to Set Your Frametime:</h4>
+        <ul>
+            <li>Check <strong>Off Day</strong> if you do not work on that day.</li>
+            <li>Enter the <strong>Start Time</strong> and <strong>End Time</strong> for each workday (between 7:00 AM and 6:00 PM).</li>
+            <li>Click <strong>Save Frametime and Continue</strong>.</li>
+            <li>Click <strong>Go Back</strong> to return to the previous page.</li>
+        </ul>
+
+        <table class="table">
             <thead>
                 <tr>
                     <th>Off Day</th>
@@ -19,94 +31,37 @@
                 </tr>
             </thead>
             <tbody>
-                {% for _, row in df1b.iterrows() %}
+                {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
                 <tr>
                     <td>
-                        <input 
-                            type="checkbox" 
-                            name="off_day_{{ row.day }}" 
-                            {% if row.ft_start == "OFF DAY" and row.ft_end == "OFF DAY" %}checked{% endif %}
-                            onchange="toggleOffDay(this, '{{ row.day }}')"
-                        >
+                        <input type="checkbox" name="{{ day }}_off_day" id="{{ day }}_off_day" onchange="toggleRow('{{ day }}')">
                     </td>
-                    <td>{{ row.day }}</td>
+                    <td>{{ day }}</td>
                     <td>
-                        <input 
-                            type="text" 
-                            name="start_{{ row.day }}" 
-                            value="{{ row.ft_start }}" 
-                            id="start_{{ row.day }}" 
-                            {% if row.ft_start == "OFF DAY" %}disabled{% endif %}
-                        >
+                        <input type="time" name="{{ day }}_start" id="{{ day }}_start" min="07:00" max="18:00" value="08:00" required>
                     </td>
                     <td>
-                        <input 
-                            type="text" 
-                            name="end_{{ row.day }}" 
-                            value="{{ row.ft_end }}" 
-                            id="end_{{ row.day }}" 
-                            {% if row.ft_end == "OFF DAY" %}disabled{% endif %}
-                        >
+                        <input type="time" name="{{ day }}_end" id="{{ day }}_end" min="07:00" max="18:00" value="16:00" required>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    
-        <button type="submit" name="action" value="Go Back">Go Back</button>
-        <button type="submit" name="action" value="Save and Move Forward">Save and Move Forward</button>
+        
+        <div class="button-container mt-3">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='/view_schedule'">Go Back</button>
+            <button type="submit" class="btn btn-primary">Save & Continue</button>
+        </div>
     </form>
-{% endblock %}
+</div>
 
-{% block extra_scripts %}
 <script>
-    function toggleOffDay(checkbox, day) {
-        const startInput = document.getElementById(`start_${day}`);
-        const endInput = document.getElementById(`end_${day}`);
-        if (checkbox.checked) {
-            startInput.value = "OFF DAY";
-            endInput.value = "OFF DAY";
-            startInput.disabled = true;
-            endInput.disabled = true;
-        } else {
-            startInput.value = "08:00"; // Default start time
-            endInput.value = "16:00"; // Default end time
-            startInput.disabled = false;
-            endInput.disabled = false;
-        }
+    function toggleRow(day) {
+        const isOffDay = document.getElementById(`${day}_off_day`).checked;
+        document.getElementById(`${day}_start`).disabled = isOffDay;
+        document.getElementById(`${day}_end`).disabled = isOffDay;
+        document.getElementById(`${day}_start`).required = !isOffDay;
+        document.getElementById(`${day}_end`).required = !isOffDay;
     }
 </script>
-{% endblock %}
-
-{% block extra_styles %}
-<style>
-    button {
-        margin-top: 15px;
-        padding: 10px 15px;
-        background-color: #2980b9;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #1abc9c;
-    }
-    input[type="text"], input[type="checkbox"] {
-        padding: 5px;
-        border: 1px solid #ccc;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-    th, td {
-        border: 1px solid #2980b9;
-        padding: 10px;
-        text-align: center;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-</style>
 {% endblock %}

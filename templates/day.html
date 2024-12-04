@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Your Schedule{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+<h2>Update DAYS</h2>
+<p class="description">
+    The app cannot assign days. Please assign each activity to the correct day.
+<h3 class="instructions-header">How to Update Your Schedule:</h3>
+<ol class="instructions-list">
+    <li>Compare the table with your PDF schedule for accuracy.</li>
+    <li>Use the dropdown to assign the correct <strong>DAY</strong> or choose <strong style="color: red;">DELETE</strong>
+        for unwanted activities.</li>
+    <li>Click <strong>Save and continue</strong> to save changes or <strong>Go back</strong> to return to the previous page.</li>
+</ol>
+
+    {% if table is not none %}
+    <form id="scheduleForm" class="schedule-form">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Activities</th>
+                    <th>Type</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table.iterrows() %}
+                    <tr>
+                        {% for col in row[1].keys() %}
+                            {% if col == "day" %}
+                                <td>
+                                    <select class="day-dropdown">
+                                        <option value="Monday" {% if row[1][col] == "Monday" %}selected{% endif %}>Monday</option>
+                                        <option value="Tuesday" {% if row[1][col] == "Tuesday" %}selected{% endif %}>Tuesday</option>
+                                        <option value="Wednesday" {% if row[1][col] == "Wednesday" %}selected{% endif %}>Wednesday</option>
+                                        <option value="Thursday" {% if row[1][col] == "Thursday" %}selected{% endif %}>Thursday</option>
+                                        <option value="Friday" {% if row[1][col] == "Friday" %}selected{% endif %}>Friday</option>
+                                        <option value="DELETE" {% if row[1][col] == "DELETE" %}selected{% endif %} style="color: red; font-weight: bold;">DELETE</option>
+                                    </select>
+                                </td>
+                            {% else %}
+                                <td>{{ row[1][col] }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">Go Back</button>
+            <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
+        </div>
+    </form>
+    {% else %}
+    <p>No data to display. Please upload a schedule first.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById('saveBtn').addEventListener('click', function () {
+        const rows = [];
+        const tableRows = document.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            const rowData = {
+                day: row.querySelector('select').value,  // Capture selected dropdown value for the day
+                activities: row.cells[1].textContent.trim(),
+                type: row.cells[2].textContent.trim(),
+                start_time: row.cells[3].textContent.trim(),
+                end_time: row.cells[4].textContent.trim()
+            };
+            rows.push(rowData);
+        });
+
+        // Send updated schedule data to the server
+        fetch('/save_schedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updated_data: rows })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Redirect to view_schedule after successful save
+                window.location.href = '/view_day';
+            } else if (data.error) {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block header %}
+<h1 class="page-header">Schedule Update</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Uploaded Data</h1>
+    {% if table %}
+        <form method="POST" action="/update_schedule">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {% for column in table.columns %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table.iterrows() %}
+                        <tr>
+                            {% for col, value in row[1].items() %}
+                                {% if col == 'day' %}
+                                    <td>
+                                        <select name="day_{{ loop.index }}" class="form-control">
+                                            <option value="Monday" {% if value == "Monday" %}selected{% endif %}>Monday</option>
+                                            <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %}>Tuesday</option>
+                                            <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %}>Wednesday</option>
+                                            <option value="Thursday" {% if value == "Thursday" %}selected{% endif %}>Thursday</option>
+                                            <option value="Friday" {% if value == "Friday" %}selected{% endif %}>Friday</option>
+                                            <option value="DELETE" {% if value == "DELETE" %}selected{% endif %}>DELETE</option>
+                                        </select>
+                                    </td>
+                                {% else %}
+                                    <td>{{ value }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+        </form>
+    {% else %}
+        <p>No data to display. Please upload a file.</p>
+    {% endif %}
+</div>
+{% endblock %}
