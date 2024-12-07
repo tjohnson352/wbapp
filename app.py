@@ -1,29 +1,33 @@
-# app.py
-from flask import Flask
-from services.time_handling import format_time
+from flask import Flask, render_template, redirect, flash
+import os
+from blueprints.home import home_blueprint
+from blueprints.edit_schedule import edit_schedule_blueprint
+from blueprints.dataframe_view import dataframe_view_bp
+#from blueprints.finalize_schedule import finalize_schedule_blueprint
+#from blueprints.report_generation import report_generation_blueprint
+#from helpers.submit_feedback import submit_feedback
 
-# Create a Flask application instance
+# Initialize the Flask app
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Secret key for managing sessions
 
-# Set the secret key for session management
-app.secret_key = 'your_secret_key_here'  # Replace 'your_secret_key_here' with a secure key
+# Register blueprints
+app.register_blueprint(home_blueprint)
+app.register_blueprint(edit_schedule_blueprint)
+app.register_blueprint(dataframe_view_bp)
 
-# Custom filter to format time
-@app.template_filter('format_time')
-def format_time_filter(value):
-    return format_time(value)
+#app.register_blueprint(finalize_schedule_blueprint)
+#app.register_blueprint(report_generation_blueprint)
 
-# Register Blueprints
-from blueprints.upload_schedule import upload_schedule_bp
-#from blueprints.set_frametime import set_frametime_bp
-#from blueprints.structure_data import structure_data_bp
-#from blueprints.clean_data import clean_data_bp
+# Set the upload folder for temporary PDFs
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.register_blueprint(upload_schedule_bp, url_prefix='/')
-#app.register_blueprint(set_frametime_bp, url_prefix='/set_frametime')
-#app.register_blueprint(structure_data_bp, url_prefix='/structure_data')
-#app.register_blueprint(clean_data_bp, url_prefix='/clean_data')
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-# Run the application
-if __name__ == '__main__': 
+# Register submit feedback route
+#app.add_url_rule('/submit-feedback', view_func=submit_feedback, methods=['POST'])
+
+if __name__ == '__main__':
     app.run(debug=True)

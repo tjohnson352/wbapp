@@ -29,6 +29,9 @@
 
 import re
 import pandas as pd
+import traceback
+import inspect
+
 
 def time1(time_str):
     """
@@ -53,17 +56,35 @@ def time3(time_str):
 
 def time4(timespan_str):
     """
-    Takes a timespan string (formatted as ##:## - ##:##) and calculates the number of minutes for the time span.
+    Takes a timespan string in the format 'hh:mm - hh:mm', splits it, extracts hours and minutes for start and end times,
+    and calculates the total duration in minutes.
+
+    Parameters:
+        timespan_str (str): The time span in the format 'hh:mm - hh:mm'.
+
+    Returns:
+        int: The total duration in minutes.
     """
-    timespan_str = time2(timespan_str)  # Apply time2 to ensure times are properly formatted
-    start_time, end_time = timespan_str.split(' - ')
-    start_hours, start_minutes = time3(start_time)
-    end_hours, end_minutes = time3(end_time)
-    
-    start_total_minutes = start_hours * 60 + start_minutes
-    end_total_minutes = end_hours * 60 + end_minutes
-    
-    return end_total_minutes - start_total_minutes
+    try:
+        if not timespan_str or timespan_str.strip() == "":
+            # Return None if the timespan is blank
+            return None
+
+        # Split the time span into start and end parts
+        time_span_start, time_span_end = timespan_str.split(' - ')
+
+        # Extract hours and minutes for the start time
+        start_hr, start_min = map(int, time_span_start.split(':'))
+
+        # Extract hours and minutes for the end time
+        end_hr, end_min = map(int, time_span_end.split(':'))
+
+        # Calculate the total duration in minutes
+        duration_minutes = (end_hr - start_hr) * 60 + (end_min - start_min)
+
+        return duration_minutes
+    except Exception as e:
+        raise ValueError(f"Invalid timespan format: {timespan_str}. Error: {e}")
 
 def time5(text):
     """

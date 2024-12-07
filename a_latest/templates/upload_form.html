@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Your Schedule{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Upload Your Schedule and Work Percentage</h2>
+    <p class="description">
+        Use the Web App to analyze and evaluate your schedule effortlessly. 
+        Simply upload your schedule and enter your work percentage to get an overview of time allocations 
+        and how well they align with the <strong>Collective Agreement</strong>.
+    </p>
+    <h3 class="instructions-header">Steps to Upload Your Schedule:</h3>
+    <ol class="instructions-list">
+        <li>Log in to <strong><a href="https://sms.schoolsoft.se/engelska/jsp/Login.jsp?eventMessage=ERR_Not_Logged_In" target="_blank">SchoolSoft</a></strong>.</li>
+        <li>Navigate to <strong>"My Schedule"</strong> from the left menu.</li>
+        <li>
+            Click on
+                <img src="/static/images/pdf.gif" alt="PDF Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
+                to download your schedule; 
+                <span style="color: #e74c3c;">
+                <strong>do not click on</strong>
+                <img src="/static/images/printer.png" alt="Printer Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"> 
+                </span>
+        </li>
+        <li>Enter your work percentage and upload the downloaded PDF using the form below.</li>
+    </ol>
+
+    {% if message %}
+    <div class="alert">{{ message|safe }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        <!-- Input for work percentage and file upload side by side -->
+        <div class="input-container row">
+            <!-- Work percentage input -->
+            <div class="column">
+                <label for="workPercent" style="font-weight: bold;">Work Percentage (%):</label>
+                <input 
+                    type="number" 
+                    name="work_percent" 
+                    id="workPercent" 
+                    min="0" 
+                    max="100" 
+                    step="1" 
+                    placeholder="Enter a value between 0 and 100"
+                    required 
+                    class="percent-input">
+            </div>
+            
+            <!-- File upload input -->
+            <div class="column">
+                <label for="fileUpload" style="font-weight: bold;">Upload Schedule (PDF):</label>
+                <input 
+                    type="file" 
+                    name="file" 
+                    id="fileUpload" 
+                    accept="application/pdf" 
+                    class="file-input" 
+                    required>
+            </div>
+        </div>
+
+        <!-- Submit button -->
+        <div class="input-container">
+            <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Style for Upload Schedule button */
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%; /* Match width to parent container */
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    /* Style for the Choose File button */
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Style for the percentage input */
+    .percent-input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Align buttons and inputs consistently */
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Row container for inputs */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    /* Column container for each input */
+    .column {
+        flex: 1;
+    }
+</style>
+{% endblock %}

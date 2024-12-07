@@ -1,20 +1,25 @@
 # Function to assign 'type' based on substring
-def assign_activity_type(df1a):
+def assign_activity_type(df2a_activities):
+    # Ensure df2_activities is a string
+    if not isinstance(df2a_activities, str):
+        return ''  # or an appropriate default value
+    
     # Define substrings and their corresponding types
     type_mapping = [
-        ("meeting", "GENERAL"),
-        ("tutorial", "GENERAL"),
-        ("break", "BREAK"),
-        ("cover", "TEACHING"),
-        ("hall", "GENERAL"),
-        ("sub", "TEACHING")
+        ('meet', 'GENERAL/DUTY'),
+        ('tutorial', 'GENERAL/DUTY'),
+        ('break', 'BREAK'),
+        ('Mentor', 'GENERAL/DUTY'),
+        ('cover', 'TEACHING'),
+        ('sub', 'TEACHING'),
+        ('hall', 'GENERAL/DUTY'),
+        ('lunch', 'GENERAL/DUTY')
     ]
     
-    # Create a new column 'type' initialized with None
-    df1a["type"] = None
-    
-    # Assign values to 'type' based on the presence of substrings in 'activities' (case insensitive)
+    # Iterate through type mapping and return corresponding activity type
     for substring, activity_type in type_mapping:
-        df1a.loc[df1a["activities"].str.contains(substring, case=False, na=False), "type"] = activity_type
-    
-    return df1a
+        if substring.lower() in df2a_activities.lower():
+            return activity_type
+            
+    # Default return value if no match is found
+    return 'TEACHING'  # or 'UNKNOWN', depending on what you need

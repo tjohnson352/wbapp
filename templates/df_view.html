@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug DataFrame Viewer</title>
+</head>
+<body>
+    <h1>Debug DataFrame Viewer</h1>
+
+    <!-- Display session variables -->
+    <h2>Session Variables</h2>
+    {% if session_vars %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Variable Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for var_name, value in session_vars.items() %}
+                    <tr>
+                        <td>{{ var_name }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No session variables found.</p>
+    {% endif %}
+
+    <!-- Form to select DataFrame -->
+    <h2>Select DataFrame for Viewing</h2>
+    <form method="POST" action="/df_view">
+        <select id="df_name" name="df_name" required>
+            <option value="df1a">df1a</option>
+            <option value="df1b">df1b</option>
+            <option value="df2a">df2a</option>
+            <option value="df2b">df2b</option>
+            <option value="df2c">df2c</option>
+        </select>
+        <button type="submit">View</button>
+    </form>
+
+    <!-- Display selected DataFrame -->
+    {% if df_name %}
+        <h2>Viewing DataFrame: {{ df_name }}</h2>
+        {% if df_html %}
+            <div>
+                {{ df_html|safe }}
+            </div>
+        {% else %}
+            <p>No data available for this DataFrame.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
