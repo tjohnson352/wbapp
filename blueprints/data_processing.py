@@ -7,11 +7,11 @@ from helpers.id_coding import generate_unique_id, decode_unique_id
 from helpers.extract_names import get_names
 from helpers.clean_raw_data import clean_data
 import traceback
-import inspect
- #  print(f" {inspect.currentframe().f_lineno}")
+import inspect #  print(f" {inspect.currentframe().f_lineno}")
 
+def structure_data():
+    df1a = pd.read_json(session['df1a'])
 
-def structure_data(df1a):
     ### Create DataFrame df2a from Extracted Data in df1
     df2a_data = []  # New df2a DataFrame
     # Step 1: Extract rows that include teacher activities and create a new DataFrame (df2a)
@@ -62,31 +62,22 @@ def structure_data(df1a):
     df2a['activities'] = df2a.apply(lambda row: row['activities_&_time'].replace(row['timespan'], "").strip(), axis=1)
     df2a['timespan'] = df2a['timespan'].apply(time1)
 
-    print("Data types:")
-    print(df2a.dtypes)
-
-
-    # Ensure start_time and end_time remain as strings in HH:MM format
-    print("GGG")
-    session['df2a'] = df2a.to_json(orient='records')
-    print(df2a.to_json(orient='records'))
-    print("GGG")
-
-    print("XXXXXXXXXX")
-    print("XXXXXXXXXX")
-    print("XXXXXXXXXX")
-    print("XXXXXXXXXX")
-    print(df2a)
-
-############### PROBLEM IS FROM HERE
-
     # Calculate minutes if necessary
     df2a['minutes'] = df2a['timespan'].apply(time4)
 
-    # Step 4: assign activity types of rows specifying activities
-    
     # Apply helper function assign_activity_type that to assign TYPES to activities
     df2a['type'] = df2a['activities'].apply(assign_activity_type)
+
+    # correct false BREAKS that are actually Junior School duties
+    if 'type' in df2a.columns and 'minutes' in df2a.columns:
+        for index, row in df2a.iterrows():
+            if row['type'] == "BREAK" and row['minutes'] == 30:
+                # Do not change the value
+                continue
+            else:
+                # Change the value to GENERAL/DUTY
+                df2a.at[index, 'type'] = "GENERAL/DUTY"
+
 
     # Modify activities for TEACHING rows
     df2a.loc[df2a['type'] == 'TEACHING', 'activities'] = (
@@ -115,11 +106,5 @@ def structure_data(df1a):
     # Step 6: create df2b as a selected cleaned extract of df2a
     df2b = df2a[['activities', 'type', 'timespan', 'minutes']].copy()
     df2b.insert(0, 'day', 'Select DAY') # adds a dummy for the dropdown menu
-    session['df2b'] = df2b.to_json()
-    print("XXXXXXXXXX")
-    print("2b")
-    print("XXXXXXXXXX")
-    print("XXXXXXXXXX")
-    print(df2b)
     
     return df2a, df2b, df2c

@@ -8,16 +8,17 @@
 
 {% block content %}
 <div class="upload-container">
-<h2>Update DAYS</h2>
-<p class="description">
-    The app cannot assign days. Please assign each activity to the correct day.
-<h3 class="instructions-header">How to Update Your Schedule:</h3>
-<ol class="instructions-list">
-    <li>Compare the table with your PDF schedule for accuracy.</li>
-    <li>Use the dropdown to assign the correct <strong>DAY</strong> or choose <strong style="color: red;">DELETE</strong>
-        for unwanted activities.</li>
-    <li>Click <strong>Save and continue</strong> to save changes or <strong>Go back</strong> to return to the previous page.</li>
-</ol>
+    <h2>Update DAYS</h2>
+    <p class="description">
+        The app cannot assign days. Please assign each activity to the correct day.
+    </p>
+    <h3 class="instructions-header">How to Update Your Schedule:</h3>
+    <ol class="instructions-list">
+        <li>Compare the table with your PDF schedule for accuracy.</li>
+        <li>Use the dropdown to assign the correct <strong>DAY</strong> or choose <strong style="color: red;">DELETE</strong>
+            for unwanted activities.</li>
+        <li>Click <strong>Save and continue</strong> to save changes or <strong>Go back</strong> to return to the previous page.</li>
+    </ol>
 
     {% if table is not none %}
     <form id="scheduleForm" class="schedule-form">
@@ -32,37 +33,31 @@
                 </tr>
             </thead>
             <tbody>
-                {% if table is not none %}
-                    {% for _, row in table.iterrows() %}
-                        <tr>
-                            {% for col, value in row.items() %}
-                                {% if col == "day" %}
-                                    <td>
-                                        <select class="day-dropdown">
-                                            <option value="Monday" {% if value == "Monday" %}selected{% endif %}>Monday</option>
-                                            <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %}>Tuesday</option>
-                                            <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %}>Wednesday</option>
-                                            <option value="Thursday" {% if value == "Thursday" %}selected{% endif %}>Thursday</option>
-                                            <option value="Friday" {% if value == "Friday" %}selected{% endif %}>Friday</option>
-                                            <option value="DELETE" {% if value == "DELETE" %}selected{% endif %} style="color: red; font-weight: bold;">DELETE</option>
-                                        </select>
-                                    </td>
-                                {% else %}
-                                    <td>{{ value }}</td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                {% else %}
+                {% for _, row in table.iterrows() %}
                     <tr>
-                        <td colspan="5">No data available. Please upload your schedule first.</td>
+                        {% for col, value in row.items() %}
+                            {% if col == "day" %}
+                                <td>
+                                    <select class="day-dropdown">
+                                        <option value="Assign or Delete" {% if value == "Assign or Delete" %}selected{% endif %}>Assign or Delete</option>
+                                        <option value="Monday" {% if value == "Monday" %}selected{% endif %}>Monday</option>
+                                        <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %}>Tuesday</option>
+                                        <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %}>Wednesday</option>
+                                        <option value="Thursday" {% if value == "Thursday" %}selected{% endif %}>Thursday</option>
+                                        <option value="Friday" {% if value == "Friday" %}selected{% endif %}>Friday</option>
+                                        <option value="DELETE" {% if value == "DELETE" %}selected{% endif %} style="color: red; font-weight: bold;">DELETE</option>
+                                    </select>
+                                </td>
+                            {% else %}
+                                <td>{{ value }}</td>
+                            {% endif %}
+                        {% endfor %}
                     </tr>
-                {% endif %}
+                {% endfor %}
             </tbody>
-            
         </table>
         <div class="button-container">
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='/home'">Go Back</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">Go Back</button>
             <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
         </div>
     </form>
@@ -72,38 +67,103 @@
 </div>
 
 <script>
-    document.getElementById('saveBtn').addEventListener('click', function () {
-        const rows = [];
-        const tableRows = document.querySelectorAll('tbody tr');
+document.getElementById('saveBtn').addEventListener('click', function () {
+    const rows = [];
+    const tableRows = document.querySelectorAll('tbody tr');
 
-        tableRows.forEach(row => {
-            const rowData = {
-                day: row.querySelector('select').value,  // Capture selected dropdown value for the day
-                activities: row.cells[1].textContent.trim(),
-                type: row.cells[2].textContent.trim(),
-                start_time: row.cells[3].textContent.trim(),
-                end_time: row.cells[4].textContent.trim()
-            };
-            rows.push(rowData);
-        });
+    let allDaysAssigned = true; // Flag to check if all days are assigned
 
-        // Send updated schedule data to the server
-        fetch('/save_schedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ updated_data: rows })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                // Redirect to view_schedule after successful save
-                window.location.href = '/view_day';
-            } else if (data.error) {
-                alert('Error: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
+    tableRows.forEach((row, index) => {
+        const selectedDay = row.querySelector('select').value.trim();
+        console.log(`Row ${index + 1} selected day: ${selectedDay}`); // Debugging
+        if (selectedDay === "Assign or Delete") {
+            allDaysAssigned = false;
+        }
+
+        const rowData = {
+            day: selectedDay,  // Capture selected dropdown value for the day
+            activities: row.cells[1].textContent.trim(),
+            type: row.cells[2].textContent.trim(),
+            start_time: row.cells[3].textContent.trim(),
+            end_time: row.cells[4].textContent.trim()
+        };
+        rows.push(rowData);
     });
-</script>
-{% endblock %}
 
+    console.log("Data being sent to the server:", rows); // Debugging
+
+    if (!allDaysAssigned) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Notice',
+            text: 'Please assign a valid day to all activities before continuing. If you wish to remove an activity, select DELETE.',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'smaller-popup',
+                title: 'subtle-title',
+                icon: 'subtle-icon'
+            }
+        });
+        return; // Stop further execution if validation fails
+    }
+
+    // Send updated schedule data to the server
+    fetch('/save_schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updated_data: rows })
+    })
+    .then(response => {
+        console.log("Server response status:", response.status); // Debugging
+        return response.json();
+    })
+    .then(data => {
+        console.log("Server response data:", data); // Debugging
+        if (data.message) {
+            // Redirect to view_schedule after successful save
+            window.location.href = '/view_day';
+        } else if (data.error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error,
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error during fetch:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An unexpected error occurred. Please try again.',
+            confirmButtonText: 'OK'
+        });
+    });
+});
+</script>
+  
+
+<style>
+/* Smaller popup size */
+.swal2-popup.smaller-popup {
+    width: 400px; /* Adjust width */
+    font-size: 14px; /* Smaller font size */
+    background-color: #f9f9f9; /* Softer background color */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Subtle title style */
+.swal2-title.subtle-title {
+    font-size: 18px; /* Smaller title font */
+    color: #444; /* Neutral color */
+}
+
+/* Subtle icon style */
+.swal2-icon.subtle-icon {
+    width: 50px; /* Reduce icon size */
+    height: 50px;
+    color: #3498db; /* Softer blue icon color */
+}
+</style>
+{% endblock %}

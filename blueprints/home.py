@@ -41,13 +41,38 @@ def home():
 
     if request.method == 'POST':
         try:
+            uploaded_file = request.files['schedule_pdf']
+            if not uploaded_file.filename.lower().endswith('.pdf'):
+                flash('Invalid file type. Please upload a PDF file.', 'error')
+                return render_template('home.html', message=message)
+            
+            # Save uploaded file
+            upload_folder = 'uploads'
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+            filename = secure_filename(uploaded_file.filename)
+            filepath = os.path.join(upload_folder, filename)
+            uploaded_file.save(filepath)
+
+            # Extract text from the PDF and create df1a
+            data = []
+            with fitz.open(filepath) as pdf:
+                for page_num in range(pdf.page_count):
+                    page = pdf.load_page(page_num)
+                    text = page.get_text()
+                    lines = text.splitlines()
+                    cleaned_lines = [line.strip() for line in lines if line.strip()]
+                    data.extend(cleaned_lines)
+            df1a = pd.DataFrame(data, columns=['Content'])
+
+            df1a = clean_data(df1a)
+            session['df1a'] = df1a.to_json() #must be stored before 
+
             # Collect and validate frametime input from the form
             frametime_data = collect_frametime_input(request)
 
             # Create a DataFrame for frametime input
             df1b = pd.DataFrame(frametime_data)
-            session['df1b'] = df1b.to_json()
-
 
             # Get the work percentage from the form
             work_percent = request.form.get('work_percent', None)
@@ -67,47 +92,17 @@ def home():
             if 'schedule_pdf' not in request.files or request.files['schedule_pdf'].filename == '':
                 flash('Please upload a PDF file.', 'error')
                 return render_template('home.html', message=message)
-
-            uploaded_file = request.files['schedule_pdf']
-            if not uploaded_file.filename.lower().endswith('.pdf'):
-                flash('Invalid file type. Please upload a PDF file.', 'error')
-                return render_template('home.html', message=message)
-
-            # Save uploaded file
-            upload_folder = 'uploads'
-            if not os.path.exists(upload_folder):
-                os.makedirs(upload_folder)
-            filename = secure_filename(uploaded_file.filename)
-            filepath = os.path.join(upload_folder, filename)
-            uploaded_file.save(filepath)
-
-            # Extract text from the PDF and create df1a
-            data = []
-            with fitz.open(filepath) as pdf:
-                for page_num in range(pdf.page_count):
-                    page = pdf.load_page(page_num)
-                    text = page.get_text()
-                    lines = text.splitlines()
-                    cleaned_lines = [line.strip() for line in lines if line.strip()]
-                    data.extend(cleaned_lines)
-            df1a = pd.DataFrame(data, columns=['Content'])
-            # Store df1a in session
-            df1a = clean_data(df1a)
-            print("CCCC",df1a)
-            session['df1a'] = df1a.to_json() #good
-
-            print(f" {inspect.currentframe().f_lineno}")
+            
             # Process df1a to generate df2a, df2b, and df2c
-            df2a, df2b, df2c = structure_data(df1a)
+            df2a, df2b, df2c = structure_data()
 
+            session['df1a'] = df1a.to_json() #good
+            session['df1b'] = df1b.to_json()
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
             session['df2c'] = df2c.to_json()
             session['uploaded_pdf'] = filename
-
-            print("!!!!!!!!!!!!")
-            print(df1a,df1b,df2a,df2b,df2c)
-
+            session['work_percent'] = work_percent
 
             flash('Schedule and frametime uploaded successfully!', 'success')
             return redirect('/days')
