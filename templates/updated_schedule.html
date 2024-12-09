@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Updated Schedule</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.4/fullcalendar.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.4/fullcalendar.min.js"></script>
+</head>
+<body>
+    <h1>Updated Schedule</h1>
+
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <div id="calendar"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek',
+                    allDaySlot: false,
+                    events: {{ events|tojson }},
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'timeGridWeek,timeGridDay'
+                    },
+                    slotMinTime: "07:30:00",
+                    slotMaxTime: "17:30:00"
+                });
+                calendar.render();
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

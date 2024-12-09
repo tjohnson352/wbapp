@@ -59,13 +59,14 @@ def display_schedule():
     except Exception as e:
         current_app.logger.error(f"Error loading schedule for editing: {str(e)}", exc_info=True)
         return render_template('edit_schedule.html', table=None)
+    
 
 from flask import Blueprint, request, session, jsonify, current_app
 import pandas as pd
 
 
-@edit_schedule_blueprint.route('/save_schedule', methods=['POST'])
-def save_schedule():
+@edit_schedule_blueprint.route('/updated_schedule', methods=['POST'])
+def updated_schedule():
     try:
         # Parse JSON from the request
         updated_data = request.get_json().get('updated_data', [])
@@ -86,10 +87,72 @@ def save_schedule():
 
         # Save the updated DataFrame back to the session
         session['df2b'] = df2b.to_json()
+        
+        # Extract all rows of df2b to df2d except those with column day == DELETE
+        df2d = df2b[df2b['day'] != "DELETE"].copy() 
+
+        # Sort df2d by columns = day, timespan
+        day_order = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}
+        df2d['day_order'] = df2d['day'].map(day_order)
+        df2d['day'] = pd.Categorical(df2d['day'], categories=day_order.keys(), ordered=True)
+        df2d.sort_values(by=['day', 'timespan'], inplace=True)
+        df2d.drop(columns=['day_order'], inplace=True, errors='ignore')
+        df2d.reset_index(drop=True, inplace=True)
+
         current_app.logger.info(f"Updated df2b: {df2b}")
+
+        # Create separate DataFrames for each day
+        df3a = df2d[df2d['day'] == 'Monday'].reset_index(drop=True)
+        df3b = df2d[df2d['day'] == 'Tuesday'].reset_index(drop=True)
+        df3c = df2d[df2d['day'] == 'Wednesday'].reset_index(drop=True)
+        df3d = df2d[df2d['day'] == 'Thursday'].reset_index(drop=True)
+        df3e = df2d[df2d['day'] == 'Friday'].reset_index(drop=True)
+
+        # Add frametime data from df1b to each day's DataFrame
+        if 'df1b' in session:
+            df1b = pd.read_json(session['df1b'])
+
+            for day, df in [('Monday', df3a), ('Tuesday', df3b), ('Wednesday', df3c), ('Thursday', df3d), ('Friday', df3e)]:
+                frametime_row = df1b[df1b['day'] == day]
+                if not frametime_row.empty:
+                    # start_time = frametime_row['start_time'].values[0]
+                    start_time = pd.to_datetime(frametime_row['start_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['start_time'].values[0]) else 'N/A'
+                    # end_time = frametime_row['end_time'].values[0]
+                    end_time = pd.to_datetime(frametime_row['end_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['end_time'].values[0]) else 'N/A'
+
+
+                    # Add Start Work as the first activity
+                    start_row = {
+                        'day': day,
+                        'activities': 'Start Work',
+                        'type': 'FRAMETIME',
+                        'timespan': start_time,
+                        'minutes': 'N/A'
+                    }
+                    df.loc[-1] = start_row  # Add row at the beginning
+                    df.index = df.index + 1  # Shift index
+                    df.sort_index(inplace=True)
+
+                    # Add End Work as the last activity
+                    end_row = {
+                        'day': day,
+                        'activities': 'End Work',
+                        'type': 'FRAMETIME',
+                        'timespan': end_time,
+                        'minutes': 'N/A'
+                    }
+                    df.loc[len(df)] = end_row  # Add row at the end
+
+        # Save the DataFrames to the session
+        session['df2d'] = df2d.to_json()
+        session['df3a'] = df3a.to_json()
+        session['df3b'] = df3b.to_json()
+        session['df3c'] = df3c.to_json()
+        session['df3d'] = df3d.to_json()
+        session['df3e'] = df3e.to_json()
 
         return jsonify({'message': 'Schedule updated successfully!'}), 200
 
     except Exception as e:
-        current_app.logger.error(f"Error in save_schedule: {e}")
+        current_app.logger.error(f"Error in updated_schedule: {e}")
         return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500

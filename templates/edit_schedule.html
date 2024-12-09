@@ -108,7 +108,7 @@ document.getElementById('saveBtn').addEventListener('click', function () {
     }
 
     // Send updated schedule data to the server
-    fetch('/save_schedule', {
+    fetch('/updated_schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updated_data: rows })
@@ -121,7 +121,7 @@ document.getElementById('saveBtn').addEventListener('click', function () {
         console.log("Server response data:", data); // Debugging
         if (data.message) {
             // Redirect to view_schedule after successful save
-            window.location.href = '/view_day';
+            window.location.href = '/updated_schedule';
         } else if (data.error) {
             Swal.fire({
                 icon: 'error',

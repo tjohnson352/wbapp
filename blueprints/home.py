@@ -104,8 +104,7 @@ def home():
             session['uploaded_pdf'] = filename
             session['work_percent'] = work_percent
 
-            flash('Schedule and frametime uploaded successfully!', 'success')
-            return redirect('/days')
+            return redirect('/days') #route stored in edit_schedule.py
 
         except ValueError as ve:
             flash(str(ve), 'error')
