@@ -74,7 +74,7 @@ def structure_data():
             if row['type'] == "BREAK" and row['minutes'] == 30:
                 # Do not change the value
                 continue
-            else:
+            elif row['type'] == "BREAK" and row['minutes'] != 30:
                 # Change the value to GENERAL/DUTY
                 df2a.at[index, 'type'] = "GENERAL/DUTY"
 
