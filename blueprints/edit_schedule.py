@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, request, jsonify, current_app
 import pandas as pd
-from helpers.add_teaching_gaps import post_gaps, pre_gaps
+from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations
 from helpers.total_minutes import total_minutes
 
 
@@ -160,6 +160,20 @@ def updated_schedule():
         df3d = post_gaps(df3d)
         df3e = post_gaps(df3e)
         
+        # merge adjacent pre- and post lesson 5-min teaching gaps into between gap
+        df3a = between_gaps(df3a)
+        df3b = between_gaps(df3b)
+        df3c = between_gaps(df3c)
+        df3d = between_gaps(df3d)
+        df3e = between_gaps(df3e)
+
+        # catches gap violations
+        df3a = gap_violations(df3a)
+        df3b = gap_violations(df3b)
+        df3c = gap_violations(df3c)
+        df3d = gap_violations(df3d)
+        df3e = gap_violations(df3e)
+
         # Save the DataFrames to the session
         session['df2d'] = df2d.to_json()
         session['df3a'] = df3a.to_json()

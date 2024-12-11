@@ -76,6 +76,7 @@ def home():
 
             # Get the work percentage from the form
             work_percent = request.form.get('work_percent', None)
+            middle_manager = request.form.get('middle_management')
             session['work_percent'] = work_percent
 
             if not work_percent:
@@ -102,6 +103,7 @@ def home():
             session['df2b'] = df2b.to_json()
             session['uploaded_pdf'] = filename
             session['work_percent'] = work_percent
+            session['middle_manager'] = middle_manager
 
             return redirect('/days') #route stored in edit_schedule.py
 

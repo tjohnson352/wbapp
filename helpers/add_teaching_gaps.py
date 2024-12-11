@@ -81,7 +81,83 @@ def post_gaps(df):
     # Convert the list of dictionaries to a DataFrame
     return pd.DataFrame(rows_with_gaps, columns=df.columns)
 
+def between_gaps(df):
+    """
+    Merges consecutive 'Post Gap' and 'Pre Gap' rows with the same timespan into a single 'Between Gap' row.
 
+    Parameters:
+    df (pd.DataFrame): The DataFrame to process.
 
+    Returns:
+    pd.DataFrame: The modified DataFrame with merged 'Between Gap' rows.
+    """
+    # Convert rows to a list of dictionaries for easier iteration
+    updated_rows = []
+    skip_next = False  # Flag to skip the next row when merging
 
+    for i in range(len(df) - 1):  # Iterate through the DataFrame except the last row
+        if skip_next:
+            skip_next = False
+            continue
 
+        current_row = df.iloc[i]
+        next_row = df.iloc[i + 1]
+
+        # Check if current is "Post Gap" and next is "Pre Gap" with the same timespan
+        if (
+            current_row['activities'] == 'Post Gap' and
+            next_row['activities'] == 'Pre Gap' and
+            current_row['timespan'] == next_row['timespan']
+        ):
+            # Replace "Pre Gap" with "Between Gap"
+            merged_row = next_row.copy()
+            merged_row['activities'] = 'Between Gap'
+
+            # Append the merged row and skip the next row
+            updated_rows.append(merged_row.to_dict())
+            skip_next = True
+        else:
+            # Append the current row if no merging is needed
+            updated_rows.append(current_row.to_dict())
+
+    # Add the last row if it wasn't skipped
+    if not skip_next:
+        updated_rows.append(df.iloc[-1].to_dict())
+
+    # Convert the updated rows back to a DataFrame
+    return pd.DataFrame(updated_rows, columns=df.columns)
+
+def gap_violations(df):
+    """
+    Check for overlaps in 'LESSON GAP' timespans with adjacent activities.
+    If an overlap is detected, mark the 'day' column as 'Gap issue'.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame to check.
+
+    Returns:
+    pd.DataFrame: The modified DataFrame with 'day' updated for gap issues.
+    """
+    # Iterate through the DataFrame rows using index
+    for i in range(len(df) - 1):
+        current_row = df.iloc[i]
+        next_row = df.iloc[i + 1]
+
+        # Only check rows where type is 'LESSON GAP'
+        if current_row['type'] == 'LESSON GAP':
+            # Parse timespans into start and end times for both rows
+            try:
+                current_start, current_end = current_row['timespan'].split(' - ')
+                next_start, next_end = next_row['timespan'].split(' - ')
+
+                current_end = pd.to_datetime(current_end.strip(), format="%H:%M")
+                next_start = pd.to_datetime(next_start.strip(), format="%H:%M")
+
+                # Check for overlap: current_end > next_start
+                if current_end > next_start:
+                    df.at[i, 'day'] = 'Gap issue'
+            except Exception as e:
+                # Log or print error if timespan parsing fails
+                print(f"Error processing row {i}: {e}")
+
+    return df
