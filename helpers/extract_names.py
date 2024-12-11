@@ -33,37 +33,14 @@ def get_names():
         school_name_row = filtered_content[filtered_content.str.contains(r'^IES\s\w+', na=False)]
         school_name = school_name_row.iloc[0] if not school_name_row.empty else "Unknown School"
 
+        session['first_name'] = first_name
+        session['last_name'] = last_name
+        session['full_name'] = full_name
+        session['school_name'] = school_name
+        session['most_common_string'] = most_common_string
+
         return full_name, first_name, last_name, school_name
 
     except Exception as e:
         print(f"Error in get_names: {e}")
         return "", "", "", ""
-
-
-    # Step 4: Split rows containing fewer than 4 semicolons into multiple rows to address formatting issues
-    i = 0
-    while i < len(df1a):
-        row_content = df1a.iloc[i]['Content']
-        
-        # Check if there are fewer than 4 semicolons in the row
-        if row_content.count(';') < 4 and row_content.count(';') > 0:
-            parts = row_content.split(';')
-            
-            # Keep the first part in the current row
-            df1a.iloc[i, df1a.columns.get_loc('Content')] = parts[0].strip()
-            
-            # Insert the remaining parts as new rows below the current row
-            for j, part in enumerate(parts[1:], start=1):
-                new_row = pd.DataFrame({'Content': [part.strip()]})
-                df1a = pd.concat([df1a.iloc[:i + j], new_row, df1a.iloc[i + j:]]).reset_index(drop=True)
-        
-        i += 1
-
-    # Step 5: Extract the school name from rows containing 'IES'
-    school_row = df1a[df1a['Content'].str.contains("IES", na=False)]
-    if not school_row.empty:
-        school_name = school_row.iloc[0]['Content'].strip()  # Get the first match and strip any leading/trailing whitespace
-    else:
-        school_name = ""
-
-    return full_name, first_name, last_name, school_name

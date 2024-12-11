@@ -1,6 +1,10 @@
 # these functions are used to code the school and teacher names
 
 import base64
+from flask import session
+import pandas as pd
+
+
 
 def generate_unique_id(last_name, first_name, school_name):
     """
@@ -16,6 +20,8 @@ def generate_unique_id(last_name, first_name, school_name):
     """
     combined_name = school_name + ": " + last_name + ", " + first_name
     unique_id = base64.urlsafe_b64encode(combined_name.encode()).decode('utf-8')
+    session['id'] = unique_id
+
     return unique_id
 
 def decode_unique_id(unique_id):
@@ -29,4 +35,6 @@ def decode_unique_id(unique_id):
         str: Original combined string.
     """
     decoded_string = base64.urlsafe_b64decode(unique_id.encode()).decode('utf-8')
+    session['decode'] = decoded_string
+
     return decoded_string

@@ -94,13 +94,12 @@ def home():
                 return render_template('home.html', message=message)
             
             # Process df1a to generate df2a, df2b, and df2c
-            df2a, df2b, df2c = structure_data()
+            df2a, df2b = structure_data()
 
             session['df1a'] = df1a.to_json() #good
             session['df1b'] = df1b.to_json()
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
-            session['df2c'] = df2c.to_json()
             session['uploaded_pdf'] = filename
             session['work_percent'] = work_percent
 

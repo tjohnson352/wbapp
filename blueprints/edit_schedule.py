@@ -1,5 +1,8 @@
 from flask import Blueprint, render_template, session, request, jsonify, current_app
 import pandas as pd
+from helpers.add_teaching_gaps import post_gaps, pre_gaps
+from helpers.total_minutes import total_minutes
+
 
 edit_schedule_blueprint = Blueprint('edit_schedule', __name__)
 
@@ -142,7 +145,21 @@ def updated_schedule():
                         'minutes': 'N/A'
                     }
                     df.loc[len(df)] = end_row  # Add row at the end
+            
+        # add pre lesson 5-min teaching gaps
+        df3a = pre_gaps(df3a)
+        df3b = pre_gaps(df3b)
+        df3c = pre_gaps(df3c)
+        df3d = pre_gaps(df3d)
+        df3e = pre_gaps(df3e)
 
+        # add post lesson 5-min teaching gaps
+        df3a = post_gaps(df3a)
+        df3b = post_gaps(df3b)
+        df3c = post_gaps(df3c)
+        df3d = post_gaps(df3d)
+        df3e = post_gaps(df3e)
+        
         # Save the DataFrames to the session
         session['df2d'] = df2d.to_json()
         session['df3a'] = df3a.to_json()
@@ -150,6 +167,9 @@ def updated_schedule():
         session['df3c'] = df3c.to_json()
         session['df3d'] = df3d.to_json()
         session['df3e'] = df3e.to_json()
+
+        total_minutes()
+
 
         return jsonify({'message': 'Schedule updated successfully!'}), 200
 

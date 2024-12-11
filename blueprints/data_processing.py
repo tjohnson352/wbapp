@@ -93,18 +93,8 @@ def structure_data():
     # Get work_percent from session
     work_percent = session.get('work_percent', 100)  # Default to 100 if not set
 
-    df2c = pd.DataFrame({
-        'id': [unique_id],
-        'decode': [decode_id],
-        'school_name': [school_name],
-        'full_name': [full_name],
-        'first_name': [first_name],
-        'last_name': [last_name],
-        'work_percent': [work_percent]
-    })
-
     # Step 6: create df2b as a selected cleaned extract of df2a
     df2b = df2a[['activities', 'type', 'timespan', 'minutes']].copy()
     df2b.insert(0, 'day', 'Select DAY') # adds a dummy for the dropdown menu
 
-    return df2a, df2b, df2c
+    return df2a, df2b
