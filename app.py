@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, flash
+from flask import Flask, render_template, redirect, flash, session
 import os
 from blueprints.home import home_blueprint
 from blueprints.edit_schedule import edit_schedule_blueprint
@@ -32,6 +32,14 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 # Register submit feedback route
 #app.add_url_rule('/submit-feedback', view_func=submit_feedback, methods=['POST'])
+
+# Clear session at the end of each request
+@app.teardown_request
+def clear_session(exception=None):
+    """
+    Clear session data at the end of each request.
+    """
+    session.clear()
 
 if __name__ == '__main__':
     app.run(debug=True)

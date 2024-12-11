@@ -39,13 +39,13 @@
                             {% if col == "day" %}
                                 <td>
                                     <select class="day-dropdown">
-                                        <option value="Assign or Delete" {% if value == "Assign or Delete" %}selected{% endif %}>Assign or Delete</option>
-                                        <option value="Monday" {% if value == "Monday" %}selected{% endif %}>Monday</option>
-                                        <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %}>Tuesday</option>
-                                        <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %}>Wednesday</option>
-                                        <option value="Thursday" {% if value == "Thursday" %}selected{% endif %}>Thursday</option>
-                                        <option value="Friday" {% if value == "Friday" %}selected{% endif %}>Friday</option>
-                                        <option value="DELETE" {% if value == "DELETE" %}selected{% endif %} style="color: red; font-weight: bold;">DELETE</option>
+                                        <option value="Assign or Delete" {% if value == "Assign or Delete" %}selected{% endif %} style="background-color: rgba(17, 16, 16, 1); color: white; font-weight: bold;">Assign or Delete</option>
+                                        <option value="Monday" {% if value == "Monday" %}selected{% endif %} style="background-color: orange;  color: black; font-weight: bold;">Monday</option>
+                                        <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %} style="background-color: yellow;  color: black; font-weight: bold;">Tuesday</option>
+                                        <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %} style="background-color: green; font-weight: bold;">Wednesday</option>
+                                        <option value="Thursday" {% if value == "Thursday" %}selected{% endif %} style="background-color: blue; font-weight: bold;">Thursday</option>
+                                        <option value="Friday" {% if value == "Friday" %}selected{% endif %} style="background-color: blueviolet; font-weight: bold;">Friday</option>
+                                        <option value="DELETE" {% if value == "DELETE" %}selected{% endif %} style="background-color: red; color: white;">DELETE</option>
                                     </select>
                                 </td>
                             {% else %}
@@ -74,8 +74,22 @@ document.getElementById('saveBtn').addEventListener('click', function () {
     let allDaysAssigned = true; // Flag to check if all days are assigned
 
     tableRows.forEach((row, index) => {
-        const selectedDay = row.querySelector('select').value.trim();
+        const selectElement = row.querySelector('select');
+        const selectedDay = selectElement.value.trim();
         console.log(`Row ${index + 1} selected day: ${selectedDay}`); // Debugging
+
+        // Dynamic styling for "DELETE" option
+        if (selectedDay === "DELETE") {
+            selectElement.style.backgroundColor = "red";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else {
+            // Reset styles for other options
+            selectElement.style.backgroundColor = "";
+            selectElement.style.color = "";
+            selectElement.style.fontWeight = "normal";
+        }
+
         if (selectedDay === "Assign or Delete") {
             allDaysAssigned = false;
         }
@@ -141,7 +155,66 @@ document.getElementById('saveBtn').addEventListener('click', function () {
         });
     });
 });
+
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const selects = document.querySelectorAll('tbody tr select');
+
+    // Function to update the styles of a select element based on its value
+    function updateSelectStyle(selectElement) {
+        const selectedValue = selectElement.value.trim();
+
+        // Reset all styles
+        selectElement.style.backgroundColor = "";
+        selectElement.style.color = "";
+        selectElement.style.fontWeight = "normal";
+
+        // Apply styles based on the selected value
+        if (selectedValue === "DELETE") {
+            selectElement.style.backgroundColor = "red";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Assign or Delete") {
+            selectElement.style.backgroundColor = "gray";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Monday") {
+            selectElement.style.backgroundColor = "orange";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Tuesday") {
+            selectElement.style.backgroundColor = "yellow";
+            selectElement.style.color = "black";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Wednesday") {
+            selectElement.style.backgroundColor = "green";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Thursday") {
+            selectElement.style.backgroundColor = "blue";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        } else if (selectedValue == "Friday") {
+            selectElement.style.backgroundColor = "blueviolet";
+            selectElement.style.color = "white";
+            selectElement.style.fontWeight = "bold";
+        }
+    }
+
+    // Initialize styles for all select elements on page load
+    selects.forEach(select => updateSelectStyle(select));
+
+    // Add an event listener to update styles when the value changes
+    selects.forEach(select => {
+        select.addEventListener("change", function () {
+            updateSelectStyle(select);
+        });
+    });
+});
+</script>
+    
+
   
 
 <style>
