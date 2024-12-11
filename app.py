@@ -1,5 +1,8 @@
 from flask import Flask, render_template, redirect, flash, session
+<<<<<<< HEAD
 from flask_session import Session
+=======
+>>>>>>> origin/main
 import os
 from blueprints.home import home_blueprint
 from blueprints.edit_schedule import edit_schedule_blueprint
@@ -51,6 +54,14 @@ def clear_session(exception=None):
     for key in list(session.keys()):
         if key not in essential_keys:
             session.pop(key, None)
+
+# Clear session at the end of each request
+@app.teardown_request
+def clear_session(exception=None):
+    """
+    Clear session data at the end of each request.
+    """
+    session.clear()
 
 if __name__ == '__main__':
     app.run(debug=True)
