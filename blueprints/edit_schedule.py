@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, request, jsonify, current
 import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations
 from helpers.total_minutes import total_minutes
+from helpers.time_checker import time_checker
 
 
 edit_schedule_blueprint = Blueprint('edit_schedule', __name__)
@@ -183,6 +184,7 @@ def updated_schedule():
         session['df3e'] = df3e.to_json()
 
         total_minutes()
+        time_checker()
 
 
         return jsonify({'message': 'Schedule updated successfully!'}), 200

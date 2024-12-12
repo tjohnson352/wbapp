@@ -21,7 +21,7 @@ def total_minutes():
 
         # Store totals in session variables
         for activity_type, total_minutes in totals.items():
-            variable_name = f"min_{activity_type.lower().replace(' ', '_')}"  # Format variable names
+            variable_name = f"{activity_type.lower().replace('/', '_')}"  # Format variable names
             session[variable_name] = total_minutes
 
         # Log the saved variables
