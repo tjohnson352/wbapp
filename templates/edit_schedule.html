@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Your Schedule{% endblock %}
+{% block title %}Assign Activities to {{ current_day }}{% endblock %}
 
 {% block header %}
 <h1 class="page-header">The Schedulizer Web App</h1>
@@ -8,59 +8,63 @@
 
 {% block content %}
 <div class="upload-container">
-    <h2>Update DAYS</h2>
+    <h2>Assign Activities to {{ current_day }}</h2>
     <p class="description">
-        The app cannot assign days. Please assign each activity to the correct day.
+        Assign activities to <strong>{{ current_day }}</strong>. Use the checkboxes to select the activities you want to assign to this day, then click <strong>Save and Continue</strong>.
     </p>
-    <h3 class="instructions-header">How to Update Your Schedule:</h3>
-    <ol class="instructions-list">
-        <li>Compare the table with your PDF schedule for accuracy.</li>
-        <li>Use the dropdown to assign the correct <strong>DAY</strong> or choose <strong style="color: red;">DELETE</strong>
-            for unwanted activities.</li>
-        <li>Click <strong>Save and continue</strong> to save changes or <strong>Go back</strong> to return to the previous page.</li>
-    </ol>
-
+    <h3>Add Frametime for {{ current_day }}</h3>
+    <div class="frametime-input-container">
+        <div class="frametime-group">
+            <label for="isOff" class="frametime-label">OFF work day?</label>
+            <select id="isOff" class="frametime-input">
+                <option value="No" selected>No</option>
+                <option value="Yes" style="background-color: red; color: white; font-weight: bold;">Yes</option>
+            </select>
+        </div>
+        <div class="frametime-group">
+            <label for="startTime" class="frametime-label">Start Time:</label>
+            <input type="time" id="startTime" name="start_time" value="08:00" class="frametime-input">
+        </div>
+        <div class="frametime-group">
+            <label for="endTime" class="frametime-label">End Time:</label>
+            <input type="time" id="endTime" name="end_time" value="16:00" class="frametime-input">
+        </div>
+    </div>
     {% if table is not none %}
     <form id="scheduleForm" class="schedule-form">
         <table class="table">
             <thead>
                 <tr>
+                    <th>Select</th>
                     <th>Day</th>
                     <th>Activities</th>
                     <th>Type</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
+                    <th>Timespan</th> <!-- Corrected label -->
+                    <th>Minutes</th> <!-- Corrected label -->
                 </tr>
             </thead>
             <tbody>
                 {% for _, row in table.iterrows() %}
-                    <tr>
+                    <tr 
+                        class="{% if row['day'] == 'Monday' %}day-monday
+                               {% elif row['day'] == 'Tuesday' %}day-tuesday
+                               {% elif row['day'] == 'Wednesday' %}day-wednesday
+                               {% elif row['day'] == 'Thursday' %}day-thursday
+                               {% elif row['day'] == 'Friday' %}day-friday
+                               {% elif row['day'] == 'Unassigned' %}day-unassigned{% endif %}">
+                        <td><input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}"></td>
                         {% for col, value in row.items() %}
-                            {% if col == "day" %}
-                                <td>
-                                    <select class="day-dropdown">
-                                        <option value="Assign or Delete" {% if value == "Assign or Delete" %}selected{% endif %} style="background-color: black; color: white; font-weight: bold;">Assign or Delete</option>
-                                        <option value="Monday" {% if value == "Monday" %}selected{% endif %} style="background-color: orange;  color: black; font-weight: bold;">Monday</option>
-                                        <option value="Tuesday" {% if value == "Tuesday" %}selected{% endif %} style="background-color: yellow;  color: black; font-weight: bold;">Tuesday</option>
-                                        <option value="Wednesday" {% if value == "Wednesday" %}selected{% endif %} style="background-color: green; font-weight: bold;">Wednesday</option>
-                                        <option value="Thursday" {% if value == "Thursday" %}selected{% endif %} style="background-color: blue; font-weight: bold;">Thursday</option>
-                                        <option value="Friday" {% if value == "Friday" %}selected{% endif %} style="background-color: blueviolet; font-weight: bold;">Friday</option>
-                                        <option value="DELETE" {% if value == "DELETE" %}selected{% endif %} style="background-color: red; color: white;">DELETE</option>
-                                    </select>
-                                </td>
-                            {% else %}
-                                <td>{{ value }}</td>
-                            {% endif %}
+                            <td class="{% if value == 'undefined' %}undefined-value{% endif %}">{{ value }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div class="button-container">
-            <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">Go Back</button>
             <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
         </div>
     </form>
+    
     {% else %}
     <p>No data to display. Please upload a schedule first.</p>
     {% endif %}
@@ -68,175 +72,169 @@
 
 <script>
 document.getElementById('saveBtn').addEventListener('click', function () {
-    const rows = [];
-    const tableRows = document.querySelectorAll('tbody tr');
+    const selectedActivities = Array.from(document.querySelectorAll('.activity-checkbox:checked')).map(cb => parseInt(cb.value));
+    const isOff = document.getElementById('isOff').value.trim();
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
 
-    let allDaysAssigned = true; // Flag to check if all days are assigned
+    let startTime = startTimeInput.value.trim();
+    let endTime = endTimeInput.value.trim();
 
-    tableRows.forEach((row, index) => {
-        const selectElement = row.querySelector('select');
-        const selectedDay = selectElement.value.trim();
-        console.log(`Row ${index + 1} selected day: ${selectedDay}`); // Debugging
-
-        // Dynamic styling for "DELETE" option
-        if (selectedDay === "DELETE") {
-            selectElement.style.backgroundColor = "red";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        } else {
-            // Reset styles for other options
-            selectElement.style.backgroundColor = "";
-            selectElement.style.color = "";
-            selectElement.style.fontWeight = "normal";
-        }
-
-        if (selectedDay === "Assign or Delete") {
-            allDaysAssigned = false;
-        }
-
-        const rowData = {
-            day: selectedDay,  // Capture selected dropdown value for the day
-            activities: row.cells[1].textContent.trim(),
-            type: row.cells[2].textContent.trim(),
-            start_time: row.cells[3].textContent.trim(),
-            end_time: row.cells[4].textContent.trim()
-        };
-        rows.push(rowData);
-    });
-
-    console.log("Data being sent to the server:", rows); // Debugging
-
-    if (!allDaysAssigned) {
-        Swal.fire({
-            icon: 'info',
-            title: 'Notice',
-            text: 'Please assign a valid day to all activities before continuing. If you wish to remove an activity, select DELETE.',
-            confirmButtonText: 'OK',
-            customClass: {
-                popup: 'smaller-popup',
-                title: 'subtle-title',
-                icon: 'subtle-icon'
-            }
-        });
-        return; // Stop further execution if validation fails
+    // Handle "Off" day logic
+    if (isOff === 'Yes') {
+        startTime = null; // Set to NaN for backend
+        endTime = null;   // Set to NaN for backend
     }
 
-    // Send updated schedule data to the server
-    fetch('/updated_schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ updated_data: rows })
-    })
-    .then(response => {
-        console.log("Server response status:", response.status); // Debugging
-        return response.json();
-    })
-    .then(data => {
-        console.log("Server response data:", data); // Debugging
-        if (data.message) {
-            // Redirect to view_schedule after successful save
-            window.location.href = '/updated_schedule';
-        } else if (data.error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.error,
-                confirmButtonText: 'OK'
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error during fetch:', error);
+    // Validation
+    if (isOff === 'No' && (!startTime || !endTime)) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An unexpected error occurred. Please try again.',
+            text: 'Please specify both Start Time and End Time, or select "Yes" for being off.',
             confirmButtonText: 'OK'
         });
-    });
-});
-
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const selects = document.querySelectorAll('tbody tr select');
-
-    // Function to update the styles of a select element based on its value
-    function updateSelectStyle(selectElement) {
-        const selectedValue = selectElement.value.trim();
-
-        // Reset all styles
-        selectElement.style.backgroundColor = "";
-        selectElement.style.color = "";
-        selectElement.style.fontWeight = "normal";
-
-        // Apply styles based on the selected value
-        if (selectedValue === "DELETE") {
-            selectElement.style.backgroundColor = "red";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Assign or Delete") {
-            selectElement.style.backgroundColor = "#606060 ";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Monday") {
-            selectElement.style.backgroundColor = "orange";
-            selectElement.style.color = "black";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Tuesday") {
-            selectElement.style.backgroundColor = "yellow";
-            selectElement.style.color = "black";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Wednesday") {
-            selectElement.style.backgroundColor = "green";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Thursday") {
-            selectElement.style.backgroundColor = "blue";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        } else if (selectedValue == "Friday") {
-            selectElement.style.backgroundColor = "blueviolet";
-            selectElement.style.color = "white";
-            selectElement.style.fontWeight = "bold";
-        }
+        return;
     }
 
-    // Initialize styles for all select elements on page load
-    selects.forEach(select => updateSelectStyle(select));
-
-    // Add an event listener to update styles when the value changes
-    selects.forEach(select => {
-        select.addEventListener("change", function () {
-            updateSelectStyle(select);
+    if (isOff === 'No' && selectedActivities.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Notice',
+            text: 'Please select at least one activity to assign to this day.',
+            confirmButtonText: 'OK'
         });
-    });
+        return;
+    }
+
+    // Prepare payload
+    const payload = {
+        frametime: { start_time: startTime, end_time: endTime },
+        selected_activities: isOff === 'Yes' ? [] : selectedActivities,
+        is_off: isOff === 'Yes'
+    };
+
+    console.log("Data being sent to the server:", payload); // Debugging
+
+    // Send payload to the backend
+    fetch('/days', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.complete) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'All days have been updated successfully!',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '/schedule_summary'; // Redirect to summary
+                });
+            } else if (data.message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.reload(); // Reload the page for the next day
+                });
+            } else if (data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error,
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error during fetch:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonText: 'OK'
+            });
+        });
+});
+
+// Automatically disable Start and End Time inputs when "Off" is selected
+document.getElementById('isOff').addEventListener('change', function () {
+    const isOff = this.value === 'Yes';
+    document.getElementById('startTime').disabled = isOff;
+    document.getElementById('endTime').disabled = isOff;
 });
 </script>
-    
-
-  
-
 <style>
-/* Smaller popup size */
-.swal2-popup.smaller-popup {
-    width: 400px; /* Adjust width */
-    font-size: 14px; /* Smaller font size */
-    background-color: #f9f9f9; /* Softer background color */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
+    .frametime-input-container {
+        display: flex;
+        gap: 40px;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+    }
 
-/* Subtle title style */
-.swal2-title.subtle-title {
-    font-size: 18px; /* Smaller title font */
-    color: #444; /* Neutral color */
-}
+    .frametime-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-/* Subtle icon style */
-.swal2-icon.subtle-icon {
-    width: 50px; /* Reduce icon size */
-    height: 50px;
-    color: #3498db; /* Softer blue icon color */
-}
+    .frametime-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .frametime-input {
+        width: 140px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .frametime-input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Dropdown menu styling */
+    select option[value="Yes"] {
+        background-color: red;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Table row colors for each day */
+    .day-monday {
+        background-color: #FFF8DC; /* Light yellow */
+    }
+    .day-tuesday {
+        background-color: #E6F7FF; /* Light blue */
+    }
+    .day-wednesday {
+        background-color: #F5F5F5; /* Light gray */
+    }
+    .day-thursday {
+        background-color: #FFEBEE; /* Light pink */
+    }
+    .day-friday {
+        background-color: #E8F5E9; /* Light green */
+    }
+
+    /* Default unassigned row color */
+    .day-unassigned {
+        background-color: #FFFFFF; /* Default white */
+    }
+
+    /* Highlight "undefined" values */
+    .undefined-value {
+        color: red;
+        font-weight: bold;
+    }
 </style>
 {% endblock %}

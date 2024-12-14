@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Set Work Parameters{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Set Your Work Percentage and Role</h2>
+    <p class="description">
+        Provide your <strong>work percentage</strong> and indicate if you hold a <strong>middle management </strong>role. 
+        These details will ensure an accurate analysis of your schedule based on your specific work situation.
+    </p>
+
+    <form method="post" class="upload-form">
+        <div class="input-container row">
+            <!-- Work Percentage Input -->
+            <div class="column">
+                <label for="workPercent" style="font-weight: bold;">Work Percentage (%):</label>
+                <input 
+                    type="number" 
+                    name="work_percent" 
+                    id="workPercent" 
+                    value="{{ work_percent }}" 
+                    min="0" 
+                    max="100" 
+                    step="1" 
+                    placeholder="Enter 0 to 100"
+                    required 
+                    class="percent-input">
+            </div>
+
+            <!-- Middle Management Dropdown -->
+            <div class="column">
+                <label for="middleManagement" style="font-weight: bold;">Middle Manager?</label>
+                <select 
+                    name="middle_manager" 
+                    id="middleManagement" 
+                    class="dropdown-input" 
+                    required>
+                    <option value="no" {% if middle_manager == 'no' %}selected{% endif %}>No</option>
+                    <option value="yes" {% if middle_manager == 'yes' %}selected{% endif %}>Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="input-container">
+            <button type="submit" class="btn-primary upload-button">Save and Continue</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Style for Save and Continue button */
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%; /* Match width to parent container */
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    /* Style for the inputs */
+    .percent-input, .dropdown-input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        box-sizing: border-box;
+    }
+
+    /* Align form elements consistently */
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Row container for inputs */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    /* Column container for each input */
+    .column {
+        flex: 1;
+    }
+
+
+    /* Styling for description text */
+    .description {
+        font-size: 1.1em;
+        line-height: 1.6;
+        color: #333;
+        text-align: justify;
+    }
+
+    .description em {
+        font-style: italic;
+        color: #555;
+    }
+
+    .description strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    /* Alert messages styling */
+    .alert {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}

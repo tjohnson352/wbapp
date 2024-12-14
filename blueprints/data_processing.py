@@ -95,6 +95,6 @@ def structure_data():
 
     # Step 6: create df2b as a selected cleaned extract of df2a
     df2b = df2a[['activities', 'type', 'timespan', 'minutes']].copy()
-    df2b.insert(0, 'day', 'Select DAY') # adds a dummy for the dropdown menu
+    df2b.insert(0, 'day', 'Unassigned') # adds a dummy for the dropdown menu
 
     return df2a, df2b

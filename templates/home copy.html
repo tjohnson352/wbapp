@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Your Schedule{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Upload Your Schedule and Work Percentage</h2>
+    <p class="description">
+        Manage your <em>daily frametime</em>, upload your <em>schedule</em>, and set your <em>work percentage</em> using this Web App. 
+        It reviews your schedule to ensure it aligns with the <strong>Collective Agreement</strong>, providing detailed insights into 
+        <strong>time allocation</strong> and <strong>compliance</strong> with working hour standards.
+    </p>
+ 
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        <!-- Frametime table -->
+        <div class="frametime-table-container">
+            <h3>Update Daily Frametime</h3>
+            <p>
+                <ol class="instructions-list">
+                    <li>Use the table below to update your <strong>Frametime</strong> for each day.</li>
+                    <li>If <strong>OFF Work</strong> on any of the days, check the <strong>DAY OFF</strong> box.</li>
+                </ol>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DAY OFF</th>
+                        <th>DAY</th>
+                        <th>Frametime START</th>
+                        <th>Frametime END</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                    <tr id="{{ day }}_row">
+                        <td>
+                            <input 
+                                type="checkbox" 
+                                id="{{ day }}_off" 
+                                name="{{ day }}_off" 
+                                onchange="toggleTimeInputs('{{ day }}')">
+                        </td>
+                        <td>{{ day }}</td>
+                        <td>
+                            <input 
+                                type="time" 
+                                id="{{ day }}_start" 
+                                name="{{ day }}_start" 
+                                value="08:00" 
+                                min="08:00" 
+                                max="18:00" 
+                                required>
+                        </td>
+                        <td>
+                            <input 
+                                type="time" 
+                                id="{{ day }}_end" 
+                                name="{{ day }}_end" 
+                                value="16:00" 
+                                min="08:00" 
+                                max="18:00" 
+                                required>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h3 class="instructions-header">Steps to Upload Your Schedule:</h3>
+            <ol class="instructions-list">
+                <li><strong>Work Percentage:</strong> Enter a number between 0 and 100.</li>
+                <li><strong>Middle Manager:</strong> Select <strong>Yes</strong> if you hold a role like HoD or HoY; otherwise, select <strong>No</strong>.</li>
+                <li><strong>Upload Schedule:</strong>
+                    <ol type="a">
+                        <li>Log in to <strong><a href="https://sms.schoolsoft.se/engelska/jsp/Login.jsp?eventMessage=ERR_Not_Logged_In" target="_blank">SchoolSoft</a></strong>.</li>
+                        <li>Go to <strong>"My Schedule"</strong> in the left menu.</li>
+                        <li>
+                            Click the 
+                            <img src="/static/images/pdf.gif" alt="PDF Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
+                            icon to download your schedule 
+                            <span style="color: #e74c3c;"><strong>(do not click the</strong> 
+                            <img src="/static/images/printer.png" alt="Printer Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"> 
+                            <strong>icon)</strong></span>.
+                        </li>
+                        <li>Return here and click <strong>Choose File</strong> below.</li>
+                        <li>Locate the downloaded PDF (usually in your <strong>Downloads folder</strong>), click <strong>Open</strong>, and then click <strong>Upload Schedule</strong>.</li>
+                    </ol>
+                </li>
+            </ol>
+            
+        
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+        <!-- Input for work percentage and file upload side by side -->
+        <div class="input-container row">
+            <!-- Work percentage input -->
+            <div class="column">
+                <label for="workPercent" style="font-weight: bold;">Work Percentage (%):</label>
+                <input 
+                    type="number" 
+                    name="work_percent" 
+                    id="workPercent" 
+                    min="0" 
+                    max="100" 
+                    step="1" 
+                    placeholder="Enter 0 to 100"
+                    required 
+                    class="percent-input">
+            </div>
+            
+            <!-- Middle management dropdown -->
+            <div class="column">
+                <label for="middleManagement" style="font-weight: bold;">Middle Manager?</label>
+                <select 
+                    name="middle_management" 
+                    id="middleManagement" 
+                    class="dropdown-input" 
+                    required>
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            
+            <!-- File upload input -->
+            <div class="column">
+                <label for="schedule_pdf" style="font-weight: bold;">Upload Schedule (PDF):</label>
+                <input 
+                    type="file" 
+                    name="schedule_pdf" 
+                    id="schedule_pdf" 
+                    accept="application/pdf" 
+                    class="file-input" 
+                    required>
+            </div>
+        </div>
+    
+        <!-- Submit button -->
+        <div class="input-container">
+            <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Style for Upload Schedule button */
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%; /* Match width to parent container */
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    /* Style for the Choose File button */
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Style for the percentage input */
+    .percent-input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Style for dropdown input */
+    .dropdown-input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box; /* Ensure padding doesn't alter width */
+    }
+
+    /* Align buttons and inputs consistently */
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Row container for inputs */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    /* Column container for each input */
+    .column {
+        flex: 1;
+    }
+
+    /* Alert messages styling */
+    .alert {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .description {
+        font-size: 1.1em;
+        line-height: 1.6; /* Increases spacing between lines for better readability */
+        color: #333; /* Makes the text easier on the eyes */
+        text-align: justify; /* Aligns text for a cleaner look */
+    }
+
+    .description em {
+        font-style: italic;
+        color: #555; /* Slightly lighter color to differentiate */
+    }
+
+    .description strong {
+        font-weight: bold;
+        color: #000; /* Emphasizes the key points */
+    }
+    </style>
+</style>
+{% endblock %}
+
+<script>
+function toggleTimeInputs(day) {
+    const isOff = document.getElementById(`${day}_off`).checked;
+    const startInput = document.getElementById(`${day}_start`);
+    const endInput = document.getElementById(`${day}_end`);
+    const row = document.getElementById(`${day}_row`);
+
+    if (!startInput || !endInput || !row) {
+        console.error(`Missing element(s) for day: ${day}`);
+        return;
+    }
+
+    // Update row style and disable inputs based on checkbox state
+    if (isOff) {
+        startInput.value = "00:00";
+        endInput.value = "00:00";
+        startInput.disabled = true;
+        endInput.disabled = true;
+        row.style.opacity = 0.5; // Dim the row
+    } else {
+        startInput.value = "08:00";
+        endInput.value = "16:00";
+        startInput.disabled = false;
+        endInput.disabled = false;
+        row.style.opacity = 1; // Restore normal brightness
+    }
+}
+</script>
+
+

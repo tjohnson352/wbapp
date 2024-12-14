@@ -3,13 +3,13 @@ import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations
 from helpers.total_minutes import total_minutes
 from helpers.time_checker import time_checker
-
-
-edit_schedule_blueprint = Blueprint('edit_schedule', __name__)
+from helpers.time_adjuster import time8
 
 @edit_schedule_blueprint.route('/days', methods=['GET', 'POST'])
 def display_schedule():
     try:
+        from helpers.time_adjuster import time8  # Ensure time8 is imported correctly
+
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
         current_day_index = session.get('day_index', 0)
 
@@ -22,55 +22,40 @@ def display_schedule():
 
             frametime = data.get('frametime', {})
             selected_activities = data.get('selected_activities', [])
-            is_off = data.get('is_off', False)
 
-            # Handle "Off" work day case
-            if is_off:
-                start_minutes = None
-                end_minutes = None
-            else:
-                start_time = frametime.get('start_time')  # e.g., "08:00"
-                end_time = frametime.get('end_time')  # e.g., "16:00"
+            if not frametime:
+                return jsonify({'error': 'Invalid payload structure.'}), 400
 
-                if not start_time or not end_time:
-                    return jsonify({'error': 'Frametime start and end times are required unless the day is marked as off.'}), 400
-
-                # Convert time to total minutes since midnight
-                start_hours, start_mins = map(int, start_time.split(':'))
-                end_hours, end_mins = map(int, end_time.split(':'))
-                start_minutes = start_hours * 60 + start_mins
-                end_minutes = end_hours * 60 + end_mins
+            # Validate frametime
+            start_time = frametime.get('start_time')
+            end_time = frametime.get('end_time')
+            if not start_time or not end_time:
+                return jsonify({'error': 'Frametime start and end times are required.'}), 400
 
             # Update df1b with frametime for the current day
             current_day = days[current_day_index]
-            df1b_json = session.get('df1b', '{}')
-            df1b = pd.read_json(df1b_json) if df1b_json != '{}' else pd.DataFrame(columns=['day', 'start_time', 'end_time'])
+            df1b = pd.read_json(session.get('df1b', '{}'))
+            df1b = df1b[df1b['day'] != current_day]  # Remove any existing entry for the day
 
-            # Ensure the 'day' column exists before filtering
-            if 'day' in df1b.columns:
-                df1b = df1b[df1b['day'] != current_day]  # Remove any existing entry for the day
-
-            # Add the new frametime entry
+            # Convert start_time and end_time to total minutes
             new_frametime_entry = pd.DataFrame([{
                 'day': current_day,
-                'start_time': start_minutes,
-                'end_time': end_minutes
+                'start_time': int(start_time.split(':')[0]) * 60 + int(start_time.split(':')[1]),
+                'end_time': int(end_time.split(':')[0]) * 60 + int(end_time.split(':')[1])
             }])
             df1b = pd.concat([df1b, new_frametime_entry], ignore_index=True)
+
+            # Convert total minutes back to hh:mm format using time8
+            df1b['start_time'] = df1b['start_time'].apply(lambda x: time8(x) if pd.notnull(x) else x)
+            df1b['end_time'] = df1b['end_time'].apply(lambda x: time8(x) if pd.notnull(x) else x)
+
+            # Save updated df1b to session
             session['df1b'] = df1b.to_json()
 
-            # Update df2b with selected activities if it's not an off day
+            # Update df2b with selected activities
             df2b = pd.read_json(session.get('df2b', '{}'))
-
-            if not is_off:
-                for index in selected_activities:
-                    df2b.at[index, 'day'] = current_day
-
-            # Sort df2b by 'day' and 'timespan'
-            day_order = {'Unassigned': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5}
-            df2b['day_order'] = df2b['day'].map(day_order).fillna(0).astype(int)
-            df2b = df2b.sort_values(by=['day_order', 'timespan'], ascending=[True, True]).reset_index(drop=True)
-            df2b.drop(columns=['day_order'], inplace=True)
+            for index in selected_activities:
+                df2b.at[index, 'day'] = current_day
             session['df2b'] = df2b.to_json()
 
             # Move to the next day
@@ -84,14 +69,11 @@ def display_schedule():
         # GET request: Display the schedule for the current day
         current_day = days[current_day_index]
         df2b = pd.read_json(session.get('df2b', '{}'))
-
         return render_template('edit_schedule.html', table=df2b, current_day=current_day)
 
     except Exception as e:
         current_app.logger.error(f"Error in /days route: {str(e)}", exc_info=True)
         return jsonify({'error': 'An error occurred.'}), 500
-
-
 
 
 @edit_schedule_blueprint.route('/updated_schedule', methods=['POST'])

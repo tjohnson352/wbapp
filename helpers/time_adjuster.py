@@ -108,3 +108,23 @@ def time7(timespan_str):
     timespan_str = time2(timespan_str)  # Ensure the timespan is properly formatted
     end_time = timespan_str.split(' - ')[1]
     return end_time
+
+def time8(minutes):
+    """
+    Convert an integer representing minutes since midnight to HH:MM format.
+
+    Args:
+        minutes (int): Total minutes since midnight.
+
+    Returns:
+        str: Time in HH:MM format.
+    """
+    if minutes is None:
+        return "N/A"  # Handle None input case
+
+    # Calculate hours and minutes
+    hh = minutes // 60  # Integer division to get hours
+    mm = minutes % 60   # Modulus to get remaining minutes
+
+    # Format with leading zeros and return
+    return f"{hh:02d}:{mm:02d}"

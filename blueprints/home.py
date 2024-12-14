@@ -9,50 +9,25 @@ import inspect
 
 home_blueprint = Blueprint('home', __name__)
 
-def collect_frametime_input(request):
-    """Collect frametime input from the form."""
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    frametime_data = []
-
-    for day in days:
-        is_off = request.form.get(f"{day}_off", None)  # Checkbox value
-        if is_off:  # If OFF checkbox is checked, record NA
-            frametime_data.append({'day': day, 'start_time': None, 'end_time': None})
-        else:
-            start_time = request.form.get(f"{day}_start")
-            end_time = request.form.get(f"{day}_end")
-
-            # Validate time range
-            if not start_time or not end_time:
-                raise ValueError(f"Start and End times for {day} are required if not OFF.")
-            if start_time < "08:00" or end_time > "18:00":
-                raise ValueError(f"Times for {day} must be between 08:00 and 18:00.")
-            if start_time >= end_time:
-                raise ValueError(f"Start time must be earlier than End time for {day}.")
-
-            frametime_data.append({'day': day, 'start_time': start_time, 'end_time': end_time})
-
-    return frametime_data
-
 @home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
-    """Handle home page requests for uploading schedules and defining work parameters."""
-    message = None
-
+    """Handle home page requests for uploading schedules."""
     if request.method == 'POST':
         try:
-            uploaded_file = request.files['schedule_pdf']
-            if not uploaded_file.filename.lower().endswith('.pdf'):
+            uploaded_file = request.files.get('schedule_pdf')
+            if not uploaded_file or not uploaded_file.filename.lower().endswith('.pdf'):
                 flash('Invalid file type. Please upload a PDF file.', 'error')
-                return render_template('home.html', message=message)
-            
+                return render_template('home.html')
+
             # Save uploaded file
             upload_folder = 'uploads'
-            if not os.path.exists(upload_folder):
-                os.makedirs(upload_folder)
+            os.makedirs(upload_folder, exist_ok=True)
             filename = secure_filename(uploaded_file.filename)
             filepath = os.path.join(upload_folder, filename)
             uploaded_file.save(filepath)
+
+            # Store the file path in the session
+            session['uploaded_pdf'] = filepath
 
             # Extract text from the PDF and create df1a
             data = []
@@ -68,50 +43,15 @@ def home():
             df1a = clean_data(df1a)
             session['df1a'] = df1a.to_json() #must be stored before 
 
-            # Collect and validate frametime input from the form
-            frametime_data = collect_frametime_input(request)
+            df2a,df2b = structure_data()
 
-            # Create a DataFrame for frametime input
-            df1b = pd.DataFrame(frametime_data)
-
-            # Get the work percentage from the form
-            work_percent = request.form.get('work_percent', None)
-            middle_manager = request.form.get('middle_management')
-            session['work_percent'] = work_percent
-
-            if not work_percent:
-                flash('Please enter your work percentage.', 'error')
-                return render_template('home.html', message=message)
-
-            # Validate work percentage
-            work_percent = int(work_percent)
-            if work_percent < 0 or work_percent > 100:
-                flash('Work percentage must be between 0 and 100.', 'error')
-                return render_template('home.html', message=message)
-
-            # Handle file upload
-            if 'schedule_pdf' not in request.files or request.files['schedule_pdf'].filename == '':
-                flash('Please upload a PDF file.', 'error')
-                return render_template('home.html', message=message)
-            
-            # Process df1a to generate df2a, df2b, and df2c
-            df2a, df2b = structure_data()
-
-            session['df1a'] = df1a.to_json() #good
-            session['df1b'] = df1b.to_json()
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
-            session['uploaded_pdf'] = filename
-            session['work_percent'] = work_percent
-            session['middle_manager'] = middle_manager
 
-            return redirect('/days') #route stored in edit_schedule.py
+            return redirect('/meta1')  # Redirect to the next step
 
-        except ValueError as ve:
-            flash(str(ve), 'error')
         except Exception as e:
             flash('An unexpected error occurred. Please try again.', 'error')
-            current_app.logger.error(f'Error occurred: {e}')
 
     # For GET request, display the upload form
-    return render_template('home.html', message=message)
+    return render_template('home.html')
