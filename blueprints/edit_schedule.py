@@ -82,11 +82,14 @@ def display_schedule():
 
                 df2b['day'] = df2b['day'].apply(lambda x: x if x in days else 'DELETED')  # Replace invalid days with 'DELETED'
                 session['df2b'] = df2b.to_json()  # Save back to session
+                updated_schedule()
                 return jsonify({'message': 'All activities assigned.', 'complete': True}), 200
+            
 
         # GET request: Display the schedule for the current day
         current_day = days[current_day_index]
         df2b = pd.read_json(session.get('df2b', '{}'))
+        
 
         return render_template('edit_schedule.html', table=df2b, current_day=current_day)
 
@@ -94,17 +97,8 @@ def display_schedule():
         current_app.logger.error(f"Error in /days route: {str(e)}", exc_info=True)
         return jsonify({'error': 'An error occurred.'}), 500
 
-
-
-
-@edit_schedule_blueprint.route('/updated_schedule', methods=['POST'])
 def updated_schedule():
     try:
-        # Parse JSON from the request
-        updated_data = request.get_json().get('updated_data', [])
-        current_app.logger.info(f"Received updated data: {updated_data}")
-
-        # Retrieve the current DataFrame from session
         df2b_json = session.get('df2b')
         if not df2b_json:
             current_app.logger.error("df2b not found in session.")
@@ -112,33 +106,25 @@ def updated_schedule():
 
         df2b = pd.read_json(df2b_json)
 
-        # Update the DataFrame with the new day values
-        for index, row in enumerate(updated_data):
-            if index < len(df2b):
-                df2b.at[index, 'day'] = row.get('day', 'Assign or Delete')
+        # Extract all rows of df2b to df2c except those with column day == DELETE
+        df2c = df2b[df2b['day'] != "DELETE"].copy() 
 
-        # Save the updated DataFrame back to the session
-        session['df2b'] = df2b.to_json()
-        
-        # Extract all rows of df2b to df2d except those with column day == DELETE
-        df2d = df2b[df2b['day'] != "DELETE"].copy() 
+        # Sort df2c by columns = day, timespan
+#        day_order = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}
+#        df2c['day_order'] = df2c['day'].map(day_order)
+#        df2c['day'] = pd.Categorical(df2c['day'], categories=day_order.keys(), ordered=True)
+#        df2c.sort_values(by=['day', 'timespan'], inplace=True)
+#        df2c.drop(columns=['day_order'], inplace=True, errors='ignore')
+#        df2c.reset_index(drop=True, inplace=True)
 
-        # Sort df2d by columns = day, timespan
-        day_order = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}
-        df2d['day_order'] = df2d['day'].map(day_order)
-        df2d['day'] = pd.Categorical(df2d['day'], categories=day_order.keys(), ordered=True)
-        df2d.sort_values(by=['day', 'timespan'], inplace=True)
-        df2d.drop(columns=['day_order'], inplace=True, errors='ignore')
-        df2d.reset_index(drop=True, inplace=True)
-
-        current_app.logger.info(f"Updated df2b: {df2b}")
+#        current_app.logger.info(f"Updated df2b: {df2b}")
 
         # Create separate DataFrames for each day
-        df3a = df2d[df2d['day'] == 'Monday'].reset_index(drop=True)
-        df3b = df2d[df2d['day'] == 'Tuesday'].reset_index(drop=True)
-        df3c = df2d[df2d['day'] == 'Wednesday'].reset_index(drop=True)
-        df3d = df2d[df2d['day'] == 'Thursday'].reset_index(drop=True)
-        df3e = df2d[df2d['day'] == 'Friday'].reset_index(drop=True)
+        df3a = df2c[df2c['day'] == 'Monday'].reset_index(drop=True)
+        df3b = df2c[df2c['day'] == 'Tuesday'].reset_index(drop=True)
+        df3c = df2c[df2c['day'] == 'Wednesday'].reset_index(drop=True)
+        df3d = df2c[df2c['day'] == 'Thursday'].reset_index(drop=True)
+        df3e = df2c[df2c['day'] == 'Friday'].reset_index(drop=True)
 
         # Add frametime data from df1b to each day's DataFrame
         if 'df1b' in session:
@@ -204,7 +190,7 @@ def updated_schedule():
         df3e = gap_violations(df3e)
 
         # Save the DataFrames to the session
-        session['df2d'] = df2d.to_json()
+        session['df2c'] = df2c.to_json()
         session['df3a'] = df3a.to_json()
         session['df3b'] = df3b.to_json()
         session['df3c'] = df3c.to_json()
