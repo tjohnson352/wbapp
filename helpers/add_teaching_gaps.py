@@ -167,10 +167,10 @@ def gap_violations(df):
 def frametime_violations():
     """
     Checks for frametime violations in all day-specific DataFrames (df3a-df3e).
-    Generates reports for Start Work and End Work violations.
-    Saves the reports to the session under a single key.
+    Generates a concise, logical report for Start Work and End Work violations.
+    Saves only the days with violations to the session.
     """
-    reports = {}
+    reports = []
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     dfs = {
         'Monday': 'df3a',
@@ -184,10 +184,10 @@ def frametime_violations():
     for day, df_key in dfs.items():
         df_json = session.get(df_key)
         if not df_json:
-            reports[day] = {'error': f"No data found for {day}"}
+            current_app.logger.warning(f"No data found for {day}")
             continue
         
-        # Load DataFrame and analyze
+        # Load DataFrame and initialize
         df = pd.read_json(df_json)
         start_violation = None
         end_violation = None
@@ -196,28 +196,34 @@ def frametime_violations():
         if not df.empty and df.iloc[0]['activities'] == 'Start Work' and df.iloc[0]['type'] == 'FRAMETIME':
             first_activity = df.iloc[1]  # Next activity row
             if df.iloc[0]['timespan'] > first_activity['timespan']:
-                start_violation = {
-                    'adjust_to': first_activity['timespan'],
-                    'activity': first_activity['activities'],
-                    'timespan': first_activity['timespan']
-                }
+                start_violation = (
+                    f"{day}: Start time should be adjusted to {first_activity['timespan'].split(' - ')[0]} "
+                    f"to fall before the {first_activity['activities']} from {first_activity['timespan']}."
+                )
 
         # Check for End Work violation
         if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'FRAMETIME':
             last_activity = df.iloc[-2]  # Preceding activity row
             if df.iloc[-1]['timespan'] < last_activity['timespan']:
-                end_violation = {
-                    'adjust_to': last_activity['timespan'],
-                    'activity': last_activity['activities'],
-                    'timespan': last_activity['timespan']
-                }
+                end_violation = (
+                    f"{day}: End time should be adjusted to {last_activity['timespan'].split(' - ')[1]} "
+                    f"to fall after the {last_activity['activities']} from {last_activity['timespan']}."
+                )
 
-        # Add report for the day
-        reports[day] = {
-            'start_violation': start_violation,
-            'end_violation': end_violation
-        }
+        # Add violations to the report if any
+        if start_violation:
+            reports.append(start_violation)
+        if end_violation:
+            reports.append(end_violation)
 
-    # Save the reports to the session
-    session['frametime_reports'] = reports
-    current_app.logger.info("Frametime violations have been checked and saved to session.")
+    # Save the reports to the session if there are any violations
+    if reports:
+        if len(reports) == 1:
+            final_report = f"There is {len(reports)} issue with your frametime|\n" + "\n".join(reports)
+        else:
+            final_report = f"There are {len(reports)} issues with your frametime|\n" + "\n".join(reports)
+        session['frametime_reports'] = final_report
+        current_app.logger.info("Frametime violations have been identified and saved to session.")
+    else:
+        session['frametime_reports'] = "No frametime violations detected."
+        current_app.logger.info("No frametime violations found.")

@@ -56,7 +56,10 @@ def time_checker():
                         continue
 
             if not break_found:
-                break_issues.append(f"On {day} a compulsory 30-minutes BREAK is missing.")
+                break_issues.append(f"{day}")
+ 
+        # Calculate total number of break issues   
+        qnty_break_issues = len(break_issues)
 
         # Calculate weekly total time
         contract_frametime = 34 * work_percent / 100
@@ -76,16 +79,30 @@ def time_checker():
         session['total_general_duty_time'] = total_general_duty_time
         session['total_teaching_time'] = total_teaching_time
 
+        # Create a DataFrame with your data
+        df_time = pd.DataFrame({
+            'Metric': [
+                'Contractual frametime',
+                'Contractual frametime + breaks',
+                'Scheduled frametime',
+                'Contractual teaching',
+                'Scheduled teaching',
+                'Break issue',
+                'Qnty break issues'
+            ],
+            'Value': [
+                contract_frametime,
+                contract_frametime_with_breaks,
+                total_assigned_frametime,
+                contract_teachtime,
+                assigned_teachtime,
+                ', '.join(break_issues),
+                qnty_break_issues
+            ]
+        })
 
-        # Save results to session
-        session['time_checker_results'] = {
-            'contract_frametime': contract_frametime,
-            'contract_frametime_with_breaks': contract_frametime_with_breaks,
-            'assigned_frametime': total_assigned_frametime,
-            'contract_teachtime': contract_teachtime,
-            'assigned_teachtime': assigned_teachtime,
-            'break_issues': break_issues,
-        }
+        # Convert the DataFrame to JSON and save in session
+        session['df_time'] = df_time.to_json()
 
         current_app.logger.info("Time checker completed successfully.")
         return session['time_checker_results']
