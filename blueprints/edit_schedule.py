@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, request, jsonify, current_app
 import pandas as pd
-from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations
+from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations
 from helpers.total_minutes import total_minutes
 from helpers.time_checker import time_checker
 
@@ -26,20 +26,19 @@ def display_schedule():
 
             # Handle "Off" work day case
             if is_off:
-                start_minutes = None
-                end_minutes = None
-            else:
-                start_time = frametime.get('start_time')  # e.g., "08:00"
-                end_time = frametime.get('end_time')  # e.g., "16:00"
+                start_ft = None
+                end_ft = None
 
-                if not start_time or not end_time:
+            else:
+                start_ft = frametime.get('start_time')  # e.g., "08:00"
+                end_ft = frametime.get('end_time')  # e.g., "16:00"
+
+                if not start_ft or not end_ft:
                     return jsonify({'error': 'Frametime start and end times are required unless the day is marked as off.'}), 400
 
-                # Convert time to total minutes since midnight
-                start_hours, start_mins = map(int, start_time.split(':'))
-                end_hours, end_mins = map(int, end_time.split(':'))
-                start_minutes = start_hours * 60 + start_mins
-                end_minutes = end_hours * 60 + end_mins
+  
+            session['start_ft'] = start_ft
+            session['end_ft'] = end_ft
 
             # Update df1b with frametime for the current day
             current_day = days[current_day_index]
@@ -50,14 +49,21 @@ def display_schedule():
             if 'day' in df1b.columns:
                 df1b = df1b[df1b['day'] != current_day]  # Remove any existing entry for the day
 
+            # Convert start_ft and end_ft to ensure they are in "HH:MM" format
+            if start_ft:
+                start_ft = ':'.join(f"{int(part):02d}" for part in start_ft.split(':'))  # Ensures leading zeros
+            if end_ft:
+                end_ft = ':'.join(f"{int(part):02d}" for part in end_ft.split(':'))  # Ensures leading zeros
+
             # Add the new frametime entry
             new_frametime_entry = pd.DataFrame([{
                 'day': current_day,
-                'start_time': start_minutes,
-                'end_time': end_minutes
+                'start_time': pd.to_datetime(start_ft, format='%H:%M').strftime('%H:%M') if start_ft else None,
+                'end_time': pd.to_datetime(end_ft, format='%H:%M').strftime('%H:%M') if end_ft else None
             }])
+
             df1b = pd.concat([df1b, new_frametime_entry], ignore_index=True)
-            session['df1b'] = df1b.to_json()
+            session['df1b'] = df1b.astype({'start_time': 'string', 'end_time': 'string'}).to_json()
 
             # Update df2b with selected activities if it's not an off day
             df2b = pd.read_json(session.get('df2b', '{}'))
@@ -107,7 +113,7 @@ def updated_schedule():
         df2b = pd.read_json(df2b_json)
 
         # Extract all rows of df2b to df2c except those with column day == DELETE
-        df2c = df2b[df2b['day'] != "DELETE"].copy() 
+        df2c = df2b[df2b['day'] != "DELETED"].copy() 
 
         # Sort df2c by columns = day, timespan
 #        day_order = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4}
@@ -182,13 +188,6 @@ def updated_schedule():
         df3d = between_gaps(df3d)
         df3e = between_gaps(df3e)
 
-        # catches gap violations
-        df3a = gap_violations(df3a)
-        df3b = gap_violations(df3b)
-        df3c = gap_violations(df3c)
-        df3d = gap_violations(df3d)
-        df3e = gap_violations(df3e)
-
         # Save the DataFrames to the session
         session['df2c'] = df2c.to_json()
         session['df3a'] = df3a.to_json()
@@ -196,6 +195,16 @@ def updated_schedule():
         session['df3c'] = df3c.to_json()
         session['df3d'] = df3d.to_json()
         session['df3e'] = df3e.to_json()
+
+        # catches frametime violations
+        frametime_violations()
+
+        # catches gap violations
+        gap_violations(df3a)
+        gap_violations(df3b)
+        gap_violations(df3c)
+        gap_violations(df3d)
+        gap_violations(df3e)
 
         total_minutes()
         time_checker()

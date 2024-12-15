@@ -7,7 +7,7 @@ def time_checker():
         # Load DataFrames from the session
         work_percent = session.get('work_percent')
         assigned_teachtime = session.get('teaching') / 60
-        df2d = pd.read_json(session['df2d'])
+        df2c = pd.read_json(session['df2c'])
         df1b = pd.read_json(session['df1b'])
         df3_frames = [pd.read_json(session[f'df3{day}']) for day in ['a', 'b', 'c', 'd', 'e']]
 
@@ -62,14 +62,14 @@ def time_checker():
         contract_frametime = 34 * work_percent / 100
         contract_teachtime = 18 * work_percent / 100
 
-        total_breaks = len(df2d[df2d['type'] == 'BREAK']) * 0.5  # 30 minutes per break
+        total_breaks = len(df2c[df2c['type'] == 'BREAK']) * 0.5  # 30 minutes per break
         contract_frametime_with_breaks = contract_frametime + total_breaks
 
         # Calculate total minutes for each type
-        df2d['minutes'] = pd.to_numeric(df2d['minutes'], errors='coerce')
-        total_break_time = df2d[df2d['type'] == 'BREAK']['minutes'].sum()
-        total_general_duty_time = df2d[df2d['type'] == 'GENERAL/DUTY']['minutes'].sum()
-        total_teaching_time = df2d[df2d['type'] == 'TEACHING']['minutes'].sum()
+        df2c['minutes'] = pd.to_numeric(df2c['minutes'], errors='coerce')
+        total_break_time = df2c[df2c['type'] == 'BREAK']['minutes'].sum()
+        total_general_duty_time = df2c[df2c['type'] == 'GENERAL/DUTY']['minutes'].sum()
+        total_teaching_time = df2c[df2c['type'] == 'TEACHING']['minutes'].sum()
 
         # Save results to session or variables
         session['total_break_time'] = total_break_time
@@ -93,3 +93,6 @@ def time_checker():
     except Exception as e:
         current_app.logger.error(f"Error in time_checker: {e}")
         raise
+
+
+

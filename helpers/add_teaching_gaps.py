@@ -1,4 +1,6 @@
 import pandas as pd
+from flask import session, current_app
+
 def pre_gaps(df):
     """
     Adds a "Pre Gap" row before each row where the 'type' column equals 'TEACHING'.
@@ -161,3 +163,61 @@ def gap_violations(df):
                 print(f"Error processing row {i}: {e}")
 
     return df
+
+def frametime_violations():
+    """
+    Checks for frametime violations in all day-specific DataFrames (df3a-df3e).
+    Generates reports for Start Work and End Work violations.
+    Saves the reports to the session under a single key.
+    """
+    reports = {}
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    dfs = {
+        'Monday': 'df3a',
+        'Tuesday': 'df3b',
+        'Wednesday': 'df3c',
+        'Thursday': 'df3d',
+        'Friday': 'df3e'
+    }
+    
+    # Retrieve all DataFrames from the session
+    for day, df_key in dfs.items():
+        df_json = session.get(df_key)
+        if not df_json:
+            reports[day] = {'error': f"No data found for {day}"}
+            continue
+        
+        # Load DataFrame and analyze
+        df = pd.read_json(df_json)
+        start_violation = None
+        end_violation = None
+
+        # Check for Start Work violation
+        if not df.empty and df.iloc[0]['activities'] == 'Start Work' and df.iloc[0]['type'] == 'FRAMETIME':
+            first_activity = df.iloc[1]  # Next activity row
+            if df.iloc[0]['timespan'] > first_activity['timespan']:
+                start_violation = {
+                    'adjust_to': first_activity['timespan'],
+                    'activity': first_activity['activities'],
+                    'timespan': first_activity['timespan']
+                }
+
+        # Check for End Work violation
+        if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'FRAMETIME':
+            last_activity = df.iloc[-2]  # Preceding activity row
+            if df.iloc[-1]['timespan'] < last_activity['timespan']:
+                end_violation = {
+                    'adjust_to': last_activity['timespan'],
+                    'activity': last_activity['activities'],
+                    'timespan': last_activity['timespan']
+                }
+
+        # Add report for the day
+        reports[day] = {
+            'start_violation': start_violation,
+            'end_violation': end_violation
+        }
+
+    # Save the reports to the session
+    session['frametime_reports'] = reports
+    current_app.logger.info("Frametime violations have been checked and saved to session.")

@@ -3,7 +3,7 @@ import pandas as pd
 
 def total_minutes():
     """
-    Calculates the total minutes for each activity type in df2d 
+    Calculates the total minutes for each activity type in df2c 
     and stores them in variables for session use.
 
     Returns:
@@ -11,13 +11,13 @@ def total_minutes():
     """
     try:
         # Load DataFrame from the session
-        df2d = pd.read_json(session['df2d'])
+        df2c = pd.read_json(session['df2c'])
 
-        # Ensure the 'minutes' column in df2d is numeric
-        df2d['minutes'] = pd.to_numeric(df2d['minutes'], errors='coerce')
+        # Ensure the 'minutes' column in df2c is numeric
+        df2c['minutes'] = pd.to_numeric(df2c['minutes'], errors='coerce')
 
         # Calculate the total minutes for each activity type
-        totals = df2d.groupby('type')['minutes'].sum().to_dict()
+        totals = df2c.groupby('type')['minutes'].sum().to_dict()
 
         # Store totals in session variables
         for activity_type, total_minutes in totals.items():
