@@ -79,6 +79,9 @@ def display_schedule():
                 return jsonify({'message': f'Activities assigned to {current_day}.', 'complete': False}), 200
             else:
                 session.pop('day_index', None)  # Clear day_index after Friday
+
+                df2b['day'] = df2b['day'].apply(lambda x: x if x in days else 'DELETED')  # Replace invalid days with 'DELETED'
+                session['df2b'] = df2b.to_json()  # Save back to session
                 return jsonify({'message': 'All activities assigned.', 'complete': True}), 200
 
         # GET request: Display the schedule for the current day
