@@ -90,7 +90,7 @@ def time_checker():
         df2c['minutes'] = pd.to_numeric(df2c['minutes'], errors='coerce')
         total_break_time = df2c[df2c['type'] == 'BREAK']['minutes'].sum()
         total_general_duty_time = df2c[df2c['type'] == 'GENERAL/DUTY']['minutes'].sum()
-        assigned_teachtime = roud(df2c[df2c['type'] == 'TEACHING']['minutes'].sum()/60,1)
+        assigned_teachtime = round(df2c[df2c['type'] == 'TEACHING']['minutes'].sum()/60,1)
 
         # Save results to session or variables
         session['total_break_time'] = total_break_time
