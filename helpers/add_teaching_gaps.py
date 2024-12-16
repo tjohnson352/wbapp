@@ -197,8 +197,8 @@ def frametime_violations():
             first_activity = df.iloc[1]  # Next activity row
             if df.iloc[0]['timespan'] > first_activity['timespan']:
                 start_violation = (
-                    f"{day}: Start time should be adjusted to {first_activity['timespan'].split(' - ')[0]} "
-                    f"to fall before the {first_activity['activities']} from {first_activity['timespan']}."
+                    f"{day}: Adjust FT start to {first_activity['timespan'].split(' - ')[0]} "
+                    f"before {first_activity['activities']}."
                 )
 
         # Check for End Work violation
@@ -206,8 +206,8 @@ def frametime_violations():
             last_activity = df.iloc[-2]  # Preceding activity row
             if df.iloc[-1]['timespan'] < last_activity['timespan']:
                 end_violation = (
-                    f"{day}: End time should be adjusted to {last_activity['timespan'].split(' - ')[1]} "
-                    f"to fall after the {last_activity['activities']} from {last_activity['timespan']}."
+                    f"{day}: Adjust FT end to {last_activity['timespan'].split(' - ')[1]} "
+                    f"after {last_activity['activities']}."
                 )
 
         # Add violations to the report if any
@@ -219,9 +219,9 @@ def frametime_violations():
     # Save the reports to the session if there are any violations
     if reports:
         if len(reports) == 1:
-            final_report = f"There is {len(reports)} issue with your frametime|\n" + "\n".join(reports)
+            final_report = f"{len(reports)} frametime issue |  \n" + "\n".join(reports)
         else:
-            final_report = f"There are {len(reports)} issues with your frametime|\n" + "\n".join(reports)
+            final_report = f"{len(reports)} frametime issues |  \n" + "\n".join(reports)
         session['frametime_reports'] = final_report
         current_app.logger.info("Frametime violations have been identified and saved to session.")
     else:

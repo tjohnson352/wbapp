@@ -3,6 +3,9 @@ import re
 from collections import Counter
 
 def clean_data(df1a):
+
+    df1a = df1a[df1a['Content'].apply(lambda x: len(x.strip()) >= 3)]
+    df1a.reset_index(drop=True, inplace=True)
     
     # Step 1: Concatenate rows ending with a dash ('-') with the next row to handle split content
     i = 0

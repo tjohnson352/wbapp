@@ -37,21 +37,21 @@
                 <tr>
                     <th>Select</th>
                     <th>Day</th>
+                    <th>Timespan</th> <!-- Corrected label -->
                     <th>Activities</th>
                     <th>Type</th>
-                    <th>Timespan</th> <!-- Corrected label -->
                     <th>Minutes</th> <!-- Corrected label -->
                 </tr>
             </thead>
             <tbody>
                 {% for _, row in table.iterrows() %}
-                    <tr 
-                        class="{% if row['day'] == 'Monday' %}day-monday
+                    {% set is_unassigned = (row['day'] == 'Unassigned') %}
+                    <tr class="{% if row['day'] == 'Monday' %}day-monday
                                {% elif row['day'] == 'Tuesday' %}day-tuesday
                                {% elif row['day'] == 'Wednesday' %}day-wednesday
                                {% elif row['day'] == 'Thursday' %}day-thursday
                                {% elif row['day'] == 'Friday' %}day-friday
-                               {% elif row['day'] == 'Unassigned' %}day-unassigned{% endif %}">
+                               {% elif is_unassigned %}{% if loop.index is even %}bg-gray{% else %}bg-white{% endif %}{% endif %}">
                         <td><input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}"></td>
                         {% for col, value in row.items() %}
                             <td class="{% if value == 'undefined' %}undefined-value{% endif %}">{{ value }}</td>
@@ -87,14 +87,39 @@ document.getElementById('saveBtn').addEventListener('click', function () {
     }
 
     // Validation
-    if (isOff === 'No' && (!startTime || !endTime)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Please specify both Start Time and End Time, or select "Yes" for being off.',
-            confirmButtonText: 'OK'
-        });
-        return;
+    if (isOff === 'No') {
+        if (!startTime || !endTime) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please specify both Start Time and End Time, or select "Yes" for being off.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Validate that start time is not before 7:00 AM and end time is not after 6:00 PM
+        const startHour = startTime ? parseInt(startTime.split(':')[0], 10) : null;
+        const endHour = endTime ? parseInt(endTime.split(':')[0], 10) : null;
+
+        if (startHour < 7) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Frametime',
+                text: 'Start Time cannot be before 7:00 AM.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        if (endHour > 18) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Frametime',
+                text: 'End Time cannot be after 6:00 PM.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
     }
 
     if (isOff === 'No' && selectedActivities.length === 0) {
@@ -170,6 +195,14 @@ document.getElementById('isOff').addEventListener('change', function () {
 });
 </script>
 <style>
+    .bg-gray {
+        background-color: #F0F0F0; /* Light gray */
+    }
+
+    .bg-white {
+        background-color: #FFFFFF; /* White */
+    }
+
     .frametime-input-container {
         display: flex;
         gap: 40px;

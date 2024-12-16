@@ -37,9 +37,6 @@ def display_schedule():
                     return jsonify({'error': 'Frametime start and end times are required unless the day is marked as off.'}), 400
 
   
-            session['start_ft'] = start_ft
-            session['end_ft'] = end_ft
-
             # Update df1b with frametime for the current day
             current_day = days[current_day_index]
             df1b_json = session.get('df1b', '{}')

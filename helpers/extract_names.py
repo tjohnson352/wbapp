@@ -1,7 +1,7 @@
 import pandas as pd
 from collections import Counter
 from flask import session
-
+import regex as re
 
 def get_names():
     """
@@ -18,10 +18,17 @@ def get_names():
         filtered_content = df1a['Content'].dropna().str.strip()
 
         # Identify name candidates allowing for names with more than two words
-        name_candidates = filtered_content[filtered_content.str.contains(r'^[A-Za-z]+(?:\s[A-Za-z]+)*$', na=False)]
+        name_candidates = filtered_content[
+            filtered_content.apply(
+                lambda x: re.match(r'^[\p{L}]+(?:[-\s][\p{L}]+)+$', x, flags=re.UNICODE) is not None
+            ) &
+            (filtered_content.str.len() >= 6)  # Minimum length of 6 characters
+        ]
 
         # Find the most common string among the candidates
         most_common_string = Counter(name_candidates).most_common(1)
+        session['most_common_string'] = most_common_string
+
         full_name = most_common_string[0][0] if most_common_string else ""
 
         # Extract first and last names from the full name

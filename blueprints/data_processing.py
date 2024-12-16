@@ -86,15 +86,13 @@ def structure_data():
     )
 
     # Step 5: Get names and ids
-    full_name, first_name, last_name, school_name = get_names()
-    unique_id = generate_unique_id(last_name, first_name, school_name)
-    decode_id = decode_unique_id(unique_id)
+    get_names()
 
     # Get work_percent from session
     work_percent = session.get('work_percent', 100)  # Default to 100 if not set
 
     # Step 6: create df2b as a selected cleaned extract of df2a
-    df2b = df2a[['activities', 'type', 'timespan', 'minutes']].copy()
+    df2b = df2a[['timespan','activities', 'type', 'minutes']].copy()
     df2b.insert(0, 'day', 'Unassigned') # adds a dummy for the dropdown menu
 
     return df2a, df2b

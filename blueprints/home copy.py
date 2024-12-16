@@ -67,6 +67,7 @@ def home():
 
             df1a = clean_data(df1a)
             session['df1a'] = df1a.to_json() #must be stored before 
+            
 
             # Collect and validate frametime input from the form
             frametime_data = collect_frametime_input(request)
