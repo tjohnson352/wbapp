@@ -1,6 +1,7 @@
 import pandas as pd
 from flask import session, current_app
 from io import StringIO
+import numpy as np
 
 def time_checker():
     try:
@@ -26,7 +27,9 @@ def time_checker():
                 df1b.loc[index, 'break_time'] = str(match['timespan'].iloc[0])
 
         # Split 'break_time' into 'break_start' and 'break_end' columns
-        df1b[['break_start', 'break_end']] = df1b['break_time'].str.split(' - ', expand=True)
+        df1b['break_start'], df1b['break_end'] = zip(*df1b['break_time'].apply(
+            lambda x: x.split(' - ') if ' - ' in str(x) else [None, None]
+        ))
 
         # Convert relevant columns to datetime for calculations
         df1b['start_time'] = pd.to_datetime(df1b['start_time'], errors='coerce')
@@ -60,10 +63,10 @@ def time_checker():
 
         # Create 'comments' column based on the specified conditions
         df1b['comments'] = df1b.apply(
-            lambda row: 'Good' if row['frametimespan'] > 5 and (row['early_break'] <= 5 or row['late_break'] <= 5)
+            lambda row: 'Good' if row['frametimespan'] > 5 and (row['early_break'] <= 5 and row['late_break'] <= 5)
             else 'Off' if row['frametimespan'] == 0
-            else 'Adjustment' if row['frametimespan'] > 5 and (row['early_break'] > 5 and row['late_break'] > 5)
-            else 'Missing',
+            else 'adjustment' if row['frametimespan'] > 5 and (row['early_break'] > 5 and row['late_break'] > 5)
+            else 'missing',
             axis=1
         )
 
@@ -80,50 +83,31 @@ def time_checker():
         contract_teachtime = round(contract_teachtime,1)
         
         total_breaks = df1b[df1b['break_time'] != "None"].shape[0]*.5
-        break_issues = df1b.loc[df1b['comments'] == "Missing", 'day'].tolist()
-        qnty_break_issues = len(break_issues)
-        
+        break_issues = df1b.loc[df1b['comments'].isin(["missing", "adjustment"]), 'day'].tolist()
+        break_issues = ', '.join(break_issues)
+
         contract_frametime_with_breaks = contract_frametime + total_breaks
         contract_frametime_with_breaks = round(contract_frametime_with_breaks,1)
 
         # Calculate total minutes for each type
         df2c['minutes'] = pd.to_numeric(df2c['minutes'], errors='coerce')
-        total_break_time = df2c[df2c['type'] == 'BREAK']['minutes'].sum()
-        total_general_duty_time = df2c[df2c['type'] == 'GENERAL/DUTY']['minutes'].sum()
-        assigned_teachtime = round(df2c[df2c['type'] == 'TEACHING']['minutes'].sum()/60,1)
+        total_break_time = round((df2c[df2c['type'] == 'BREAK']['minutes'].sum())/60,1)
+        total_general_duty_time = round((df2c[df2c['type'] == 'GENERAL/DUTY']['minutes'].sum())/60,1)
+        total_teach_time = (round(df2c[df2c['type'] == 'TEACHING']['minutes'].sum()/60,1))
+
+        middle_manager = str(session.get('middle_manager', "")).lower()
+        adjusted_contract_teach_time = round(contract_teachtime - 1.5,1) if middle_manager == "yes" else np.nan
 
         # Save results to session or variables
         session['total_break_time'] = total_break_time
         session['total_general_duty_time'] = total_general_duty_time
-        session['assigned_teachtime'] = assigned_teachtime
-
-        # Create a DataFrame with your data
-        df_time = pd.DataFrame({
-            'Metric': [
-                'Contractual frametime',
-                'Contractual frametime + breaks',
-                'Assigned frametime',
-                'Contractual teaching',
-                'Assigned teaching',
-                'Break issue',
-                'Qnty break issues'
-            ],
-            'Value': [
-                contract_frametime,
-                contract_frametime_with_breaks,
-                assigned_frametime,
-                contract_teachtime,
-                assigned_teachtime,
-                ', '.join(break_issues),
-                qnty_break_issues
-            ]
-        })
-
-        # Convert the DataFrame to JSON and save in session
-        session['df_time'] = df_time.to_json()
-
-        current_app.logger.info("Time checker completed successfully.")
-        return session['time_checker_results']
+        session['total_teach_time'] = total_teach_time
+        session['contract_teachtime'] = contract_teachtime
+        session['adjusted_contract_teach_time'] = adjusted_contract_teach_time
+        session['contract_frametime'] = contract_frametime
+        session['contract_frametime_with_breaks'] = contract_frametime_with_breaks
+        session['assigned_frametime'] = assigned_frametime
+        session['break_issues'] = break_issues
 
     except Exception as e:
         current_app.logger.error(f"Error in time_checker: {e}")

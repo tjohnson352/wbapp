@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, session, current_app
 from datetime import datetime
 import pandas as pd
 import inspect
+from io import StringIO
+
  
 
 updated_schedule_blueprint = Blueprint('updated_schedule', __name__, url_prefix='/updated_schedule')
@@ -19,7 +21,7 @@ def display_schedule():
             return render_template('updated_schedule.html', error="No schedule data found.")
 
         # Convert JSON to DataFrame
-        df2d = pd.read_json(df2d_json)
+        df2d = pd.read_json(StringIO(df2d_json))
 
         # Create events for the schedule
         calendar_events = []

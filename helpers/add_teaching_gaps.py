@@ -1,5 +1,6 @@
 import pandas as pd
 from flask import session, current_app
+from io import StringIO
 
 def pre_gaps(df):
     """
@@ -188,7 +189,7 @@ def frametime_violations():
             continue
         
         # Load DataFrame and initialize
-        df = pd.read_json(df_json)
+        df = pd.read_json(StringIO(df_json))
         start_violation = None
         end_violation = None
 
@@ -198,7 +199,6 @@ def frametime_violations():
             if df.iloc[0]['timespan'] > first_activity['timespan']:
                 start_violation = (
                     f"{day}: Adjust FT start to {first_activity['timespan'].split(' - ')[0]} "
-                    f"before {first_activity['activities']}."
                 )
 
         # Check for End Work violation
@@ -207,7 +207,6 @@ def frametime_violations():
             if df.iloc[-1]['timespan'] < last_activity['timespan']:
                 end_violation = (
                     f"{day}: Adjust FT end to {last_activity['timespan'].split(' - ')[1]} "
-                    f"after {last_activity['activities']}."
                 )
 
         # Add violations to the report if any
@@ -218,12 +217,9 @@ def frametime_violations():
 
     # Save the reports to the session if there are any violations
     if reports:
-        if len(reports) == 1:
-            final_report = f"{len(reports)} frametime issue |  \n" + "\n".join(reports)
-        else:
-            final_report = f"{len(reports)} frametime issues |  \n" + "\n".join(reports)
-        session['frametime_reports'] = final_report
+        frametime_issues = "; ".join(reports)
+        session['frametime_issues'] = frametime_issues
         current_app.logger.info("Frametime violations have been identified and saved to session.")
     else:
-        session['frametime_reports'] = "No frametime violations detected."
+        session['frametime_issues'] = "No frametime violations detected."
         current_app.logger.info("No frametime violations found.")

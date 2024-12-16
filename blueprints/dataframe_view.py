@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, session
 import pandas as pd
+from io import StringIO
+
 
 # Define the blueprint
 dataframe_view_bp = Blueprint('dataframe_view', __name__, url_prefix='/')
@@ -24,7 +26,7 @@ def df_view():
         if df_name in dataframes:
             try:
                 # Load the DataFrame and convert it to an HTML table
-                df = pd.read_json(dataframes[df_name])
+                df = pd.read_json(StringIO(dataframes[df_name]))
                 df_html = df.to_html(index=False)
             except Exception as e:
                 df_html = f"<p>Error loading DataFrame: {str(e)}</p>"

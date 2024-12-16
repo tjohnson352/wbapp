@@ -2,6 +2,8 @@ import pandas as pd
 from collections import Counter
 from flask import session
 import regex as re
+from io import StringIO
+
 
 def get_names():
     """
@@ -12,7 +14,7 @@ def get_names():
     """
     try:
         # Load df1a from the session
-        df1a = pd.read_json(session['df1a'])
+        df1a = pd.read_json(StringIO(session['df1a']))
 
         # Filter the Content column to remove NaN and whitespace
         filtered_content = df1a['Content'].dropna().str.strip()

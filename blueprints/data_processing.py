@@ -8,9 +8,11 @@ from helpers.extract_names import get_names
 from helpers.clean_raw_data import clean_data
 import traceback
 import inspect #  print(f" {inspect.currentframe().f_lineno}")
+from io import StringIO
+
 
 def structure_data():
-    df1a = pd.read_json(session['df1a'])
+    df1a = pd.read_json(StringIO(session['df1a']))
 
     ### Create DataFrame df2a from Extracted Data in df1
     df2a_data = []  # New df2a DataFrame
