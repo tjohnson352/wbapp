@@ -130,17 +130,21 @@ def between_gaps(df):
     # Convert the updated rows back to a DataFrame
     return pd.DataFrame(updated_rows, columns=df.columns)
 
-def gap_violations(df):
+def gap_violations(df, df_name='df'):
     """
     Check for overlaps in 'LESSON GAP' timespans with adjacent activities.
-    If an overlap is detected, mark the 'day' column as 'Gap issue'.
+    If an overlap is detected, mark the 'gap_issues' column as 'Gap issue'.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to check.
+    df_name (str): The variable name for saving in the session dynamically.
 
     Returns:
-    pd.DataFrame: The modified DataFrame with 'day' updated for gap issues.
+    pd.DataFrame: The modified DataFrame with 'gap_issues' column updated for gap issues.
     """
+    # Initialize 'gap_issues' column with default value 'good'
+    df['gap_issues'] = 'good'
+
     # Iterate through the DataFrame rows using index
     for i in range(len(df) - 1):
         current_row = df.iloc[i]
@@ -158,11 +162,13 @@ def gap_violations(df):
 
                 # Check for overlap: current_end > next_start
                 if current_end > next_start:
-                    df.at[i, 'day'] = 'Gap issue'
+                    df.at[i, 'gap_issues'] = 'Gap issue'
             except Exception as e:
                 # Log or print error if timespan parsing fails
                 print(f"Error processing row {i}: {e}")
 
+    # Save DataFrame to session dynamically based on df_name
+    session[df_name] = df.to_json()
     return df
 
 def frametime_violations():
