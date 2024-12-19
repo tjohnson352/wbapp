@@ -237,6 +237,9 @@ def planning_block(df):
         start, end = timespan.split(" - ")
         return pd.to_datetime(start, format="%H:%M"), pd.to_datetime(end, format="%H:%M")
 
+    # Retrieve the total gap minutes from the session or initialize it
+    planning_time = session.get('planning_time', 0)
+
     # Start processing rows with a while loop to dynamically add rows
     i = 0
     while i < len(df) - 1:  # Compare each row with the next
@@ -256,11 +259,18 @@ def planning_block(df):
                 'gap_issues': 'good'
             }
             
+            # Update the total gap minutes
+            planning_time += round(int(gap_minutes)/60,3)
+
             # Insert the new row into the DataFrame
             df = pd.concat([df.iloc[:i + 1], pd.DataFrame([new_row]), df.iloc[i + 1:]]).reset_index(drop=True)
             # Increment i by 1 to skip over the new row
             i += 1
         i += 1
-    print(df)
+
+    # Store the updated total gap minutes back into the session
+    session['planning_time'] = planning_time
+
     return df
+
 
