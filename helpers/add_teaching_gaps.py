@@ -229,3 +229,38 @@ def frametime_violations():
     else:
         session['frametime_issues'] = "No frametime violations detected."
         current_app.logger.info("No frametime violations found.")
+
+
+def planning_block(df):
+    # Helper function to parse timespan into start and end times
+    def parse_timespan(timespan):
+        start, end = timespan.split(" - ")
+        return pd.to_datetime(start, format="%H:%M"), pd.to_datetime(end, format="%H:%M")
+
+    # Start processing rows with a while loop to dynamically add rows
+    i = 0
+    while i < len(df) - 1:  # Compare each row with the next
+        current_end = parse_timespan(df.loc[i, 'timespan'])[1]
+        next_start = parse_timespan(df.loc[i + 1, 'timespan'])[0]
+
+        gap_minutes = (next_start - current_end).total_seconds() / 60
+
+        # If the gap is 30 minutes or more, add a planning block row
+        if gap_minutes >= 30:
+            new_row = {
+                'day': df.loc[i, 'day'],
+                'timespan': f"{current_end.strftime('%H:%M')} - {next_start.strftime('%H:%M')}",
+                'activities': 'Planning Block',
+                'type': 'PLANNING',
+                'minutes': int(gap_minutes),
+                'gap_issues': 'good'
+            }
+            
+            # Insert the new row into the DataFrame
+            df = pd.concat([df.iloc[:i + 1], pd.DataFrame([new_row]), df.iloc[i + 1:]]).reset_index(drop=True)
+            # Increment i by 1 to skip over the new row
+            i += 1
+        i += 1
+    print(df)
+    return df
+

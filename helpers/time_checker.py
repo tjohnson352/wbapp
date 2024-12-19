@@ -69,8 +69,9 @@ def time_checker():
         df1b['comments'] = df1b.apply(
             lambda row: 'Good' if row['frametimespan'] > 5 and (row['early_break'] <= 5 and row['late_break'] <= 5)
             else 'Off' if row['frametimespan'] == 0
-            else 'adjustment' if row['frametimespan'] > 5 and (row['early_break'] > 5 and row['late_break'] > 5)
-            else 'missing',
+            else 'Needs adjustment' if row['frametimespan'] > 5 and (row['early_break'] > 5 or row['late_break'] > 5)
+            else 'missing' if row['frametimespan'] > 5
+            else 'Good',
             axis=1
         )
 
@@ -102,7 +103,7 @@ def time_checker():
 
         # Adjust contract teaching time for middle managers
         middle_manager = str(session.get('middle_manager', "")).lower()
-        adjusted_contract_teach_time = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else np.nan
+        adjusted_contract_teach_time = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else contract_teachtime
 
         # Save calculated results to session
         session['total_break_time'] = total_break_time

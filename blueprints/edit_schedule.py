@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, request, jsonify, current_app
 import pandas as pd
-from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations
+from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations, planning_block
 from helpers.time_checker import time_checker
 from io import StringIO
 
@@ -27,8 +27,8 @@ def display_schedule():
 
             # Handle "Off" work day case
             if is_off:
-                start_ft = None
-                end_ft = None
+                start_ft = "00:00"
+                end_ft = "00:00"
 
             else:
                 start_ft = frametime.get('start_time')  # e.g., "08:00"
@@ -139,8 +139,8 @@ def updated_schedule():
                         'day': day,
                         'activities': 'Start Work',
                         'type': 'FRAMETIME',
-                        'timespan': start_time,
-                        'minutes': 'N/A'
+                        'timespan': start_time+" - "+start_time,
+                        'minutes': 0
                     }
                     df.loc[-1] = start_row  # Add row at the beginning
                     df.index = df.index + 1  # Shift index
@@ -151,8 +151,8 @@ def updated_schedule():
                         'day': day,
                         'activities': 'End Work',
                         'type': 'FRAMETIME',
-                        'timespan': end_time,
-                        'minutes': 'N/A'
+                        'timespan': end_time+" - "+end_time,
+                        'minutes': 0
                     }
                     df.loc[len(df)] = end_row  # Add row at the end
             
@@ -183,6 +183,14 @@ def updated_schedule():
         gap_violations(df3c)
         gap_violations(df3d)
         gap_violations(df3e)
+
+        
+        # add planning blocks
+        df3a = planning_block(df3a)
+        df3b = planning_block(df3b)
+        df3c = planning_block(df3c)
+        df3d = planning_block(df3d)
+        df3e = planning_block(df3e)
 
         # Save the DataFrames to the session
         session['df2c'] = df2c.to_json()

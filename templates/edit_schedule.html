@@ -52,13 +52,19 @@
                                {% elif row['day'] == 'Thursday' %}day-thursday
                                {% elif row['day'] == 'Friday' %}day-friday
                                {% elif is_unassigned %}{% if loop.index is even %}bg-gray{% else %}bg-white{% endif %}{% endif %}">
-                        <td><input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}"></td>
+                        <td>
+                            {% if is_unassigned %}
+                                <input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}">
+                            {% else %}
+                                <!-- Empty cell when not unassigned -->
+                            {% endif %}
+                        </td>
                         {% for col, value in row.items() %}
                             <td class="{% if value == 'undefined' %}undefined-value{% endif %}">{{ value }}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
-            </tbody>
+            </tbody>            
         </table>
         <div class="button-container">
             <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
@@ -79,6 +85,12 @@ document.getElementById('saveBtn').addEventListener('click', function () {
 
     let startTime = startTimeInput.value.trim();
     let endTime = endTimeInput.value.trim();
+
+    // Check if there are any unassigned rows
+    const unassignedRows = Array.from(document.querySelectorAll('tr')).filter(row => {
+        const dayCell = row.querySelector('td:nth-child(2)');
+        return dayCell && dayCell.textContent.trim() === 'Unassigned';
+    });
 
     // Handle "Off" day logic
     if (isOff === 'Yes') {
@@ -122,7 +134,8 @@ document.getElementById('saveBtn').addEventListener('click', function () {
         }
     }
 
-    if (isOff === 'No' && selectedActivities.length === 0) {
+    // Allow saving if there are no unassigned rows left, even without selected activities
+    if (isOff === 'No' && unassignedRows.length > 0 && selectedActivities.length === 0) {
         Swal.fire({
             icon: 'info',
             title: 'Notice',
