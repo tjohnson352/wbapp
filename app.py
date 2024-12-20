@@ -7,6 +7,8 @@ from blueprints.dataframe_view import dataframe_view_bp
 from blueprints.updated_schedule import updated_schedule_blueprint
 from blueprints.full_calendar import full_calendar_blueprint
 from blueprints.meta1 import meta1_blueprint
+from blueprints.report_generation import report_blueprint
+
 
 
 # Initialize the Flask app
@@ -31,6 +33,8 @@ app.register_blueprint(edit_schedule_blueprint)
 app.register_blueprint(dataframe_view_bp)
 app.register_blueprint(full_calendar_blueprint)
 app.register_blueprint(updated_schedule_blueprint)
+app.register_blueprint(report_blueprint)
+
 
 # Set the upload folder for temporary PDFs
 UPLOAD_FOLDER = 'uploads'
