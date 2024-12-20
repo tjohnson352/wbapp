@@ -232,6 +232,9 @@ def frametime_violations():
 
         # Helper function to determine frametime adjustment
         def frametime_adjustment(activity_row, default_minutes, keywords):
+            # Adjust only if the type is TEACHING
+            if activity_row['type'] != 'TEACHING':
+                return default_minutes-5
             activity_lower = activity_row['activities'].lower()  # Convert activity to lowercase for comparison
             for keyword, exception in keywords.items():
                 if keyword in activity_lower:
@@ -245,16 +248,22 @@ def frametime_violations():
             first_activity = df.iloc[1]  # Next activity row
             adjustment_minutes = frametime_adjustment(first_activity, 5, keywords)
             adjustment_time = pd.to_datetime(first_activity['timespan'].split(' - ')[0]) - pd.Timedelta(minutes=adjustment_minutes)
-            start_violation = f"{day}: Adjust FT start to {adjustment_time.strftime('%H:%M')}"
-            df.at[0, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the first row
+            current_start_time = pd.to_datetime(df.iloc[0]['timespan'].split(' - ')[0])  # Current start time in Start Work row
+
+            if adjustment_time != current_start_time:
+                start_violation = f"{day}: Adjust FT start to {adjustment_time.strftime('%H:%M')}"
+                df.at[0, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the first row
 
         # Check for End Work violation
         if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'FRAMETIME':
             last_activity = df.iloc[-2]  # Preceding activity row
             adjustment_minutes = frametime_adjustment(last_activity, 5, keywords)
             adjustment_time = pd.to_datetime(last_activity['timespan'].split(' - ')[1]) + pd.Timedelta(minutes=adjustment_minutes)
-            end_violation = f"{day}: Adjust FT end to {adjustment_time.strftime('%H:%M')}"
-            df.at[len(df) - 1, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the last row
+            current_end_time = pd.to_datetime(df.iloc[-1]['timespan'].split(' - ')[1])  # Current end time in End Work row
+
+            if adjustment_time != current_end_time:
+                end_violation = f"{day}: Adjust FT end to {adjustment_time.strftime('%H:%M')}"
+                df.at[len(df) - 1, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the last row
 
         # Add violations to the report if any
         if start_violation:
