@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, request, jsonify, current
 import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations, planning_block
 from helpers.time_checker import time_checker
+from helpers.ft_days import ft_days, prime_dfs
 from io import StringIO
 
 
@@ -104,103 +105,94 @@ def display_schedule():
 
 def updated_schedule():
     try:
+        # Retrieve df2b from the session
         df2b_json = session.get('df2b')
         if not df2b_json:
             current_app.logger.error("df2b not found in session.")
             return jsonify({'error': 'df2b not found in session.'}), 400
 
+        # Convert JSON to DataFrame
         df2b = pd.read_json(StringIO(df2b_json))
 
-        # Extract all rows of df2b to df2c except those with column day == DELETE
-        df2c = df2b[df2b['day'] != "DELETED"].copy() 
+        # Extract rows where 'day' is not "DELETED" and save to df2c
+        df2c = df2b[df2b['day'] != "DELETED"].copy()
+        session['df2c'] = df2c.to_json()  # Save df2c back to the session
 
-        # Create separate DataFrames for each day
-        df3a = df2c[df2c['day'] == 'Monday'].reset_index(drop=True)
-        df3b = df2c[df2c['day'] == 'Tuesday'].reset_index(drop=True)
-        df3c = df2c[df2c['day'] == 'Wednesday'].reset_index(drop=True)
-        df3d = df2c[df2c['day'] == 'Thursday'].reset_index(drop=True)
-        df3e = df2c[df2c['day'] == 'Friday'].reset_index(drop=True)
+        # Call ft_days to extract and save unique days
+        ft_days()
+
+        # Dynamically create DataFrames for each day and save to session
+        prime_dfs()
 
         # Add frametime data from df1b to each day's DataFrame
         if 'df1b' in session:
             df1b = pd.read_json(StringIO(session['df1b']))
 
-            for day, df in [('Monday', df3a), ('Tuesday', df3b), ('Wednesday', df3c), ('Thursday', df3d), ('Friday', df3e)]:
-                frametime_row = df1b[df1b['day'] == day]
-                if not frametime_row.empty:
-                    # start_time = frametime_row['start_time'].values[0]
-                    start_time = pd.to_datetime(frametime_row['start_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['start_time'].values[0]) else 'N/A'
-                    # end_time = frametime_row['end_time'].values[0]
-                    end_time = pd.to_datetime(frametime_row['end_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['end_time'].values[0]) else 'N/A'
+            # Loop through dynamically created DataFrames
+            for day, variable_name in {
+                'Monday': 'df3a',
+                'Tuesday': 'df3b',
+                'Wednesday': 'df3c',
+                'Thursday': 'df3d',
+                'Friday': 'df3e'
+            }.items():
+                if variable_name in session:
+                    df = pd.read_json(StringIO(session[variable_name]))
+                    frametime_row = df1b[df1b['day'] == day]
+                    if not frametime_row.empty:
+                        # Extract start and end times
+                        start_time = pd.to_datetime(frametime_row['start_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['start_time'].values[0]) else 'N/A'
+                        end_time = pd.to_datetime(frametime_row['end_time'].values[0]).strftime('%H:%M') if not pd.isnull(frametime_row['end_time'].values[0]) else 'N/A'
 
+                        # Add Start Work as the first activity
+                        start_row = {
+                            'day': day,
+                            'activities': 'Start Work',
+                            'type': 'FRAMETIME',
+                            'timespan': f"{start_time} - {start_time}",
+                            'minutes': 0
+                        }
+                        df.loc[-1] = start_row  # Add row at the beginning
+                        df.index = df.index + 1  # Shift index
+                        df.sort_index(inplace=True)
 
-                    # Add Start Work as the first activity
-                    start_row = {
-                        'day': day,
-                        'activities': 'Start Work',
-                        'type': 'FRAMETIME',
-                        'timespan': start_time+" - "+start_time,
-                        'minutes': 0
-                    }
-                    df.loc[-1] = start_row  # Add row at the beginning
-                    df.index = df.index + 1  # Shift index
-                    df.sort_index(inplace=True)
+                        # Add End Work as the last activity
+                        end_row = {
+                            'day': day,
+                            'activities': 'End Work',
+                            'type': 'FRAMETIME',
+                            'timespan': f"{end_time} - {end_time}",
+                            'minutes': 0
+                        }
+                        df.loc[len(df)] = end_row  # Add row at the end
 
-                    # Add End Work as the last activity
-                    end_row = {
-                        'day': day,
-                        'activities': 'End Work',
-                        'type': 'FRAMETIME',
-                        'timespan': end_time+" - "+end_time,
-                        'minutes': 0
-                    }
-                    df.loc[len(df)] = end_row  # Add row at the end
-            
-        # add pre lesson 5-min teaching gaps
-        df3a = pre_gaps(df3a)
-        df3b = pre_gaps(df3b)
-        df3c = pre_gaps(df3c)
-        df3d = pre_gaps(df3d)
-        df3e = pre_gaps(df3e)
+                    # Save updated DataFrame back to the session
+                    session[variable_name] = df.to_json()
 
-        # add post lesson 5-min teaching gaps
-        df3a = post_gaps(df3a)
-        df3b = post_gaps(df3b)
-        df3c = post_gaps(df3c)
-        df3d = post_gaps(df3d)
-        df3e = post_gaps(df3e)
-        
-        # merge adjacent pre- and post lesson 5-min teaching gaps into between gap
-        df3a = between_gaps(df3a)
-        df3b = between_gaps(df3b)
-        df3c = between_gaps(df3c)
-        df3d = between_gaps(df3d)
-        df3e = between_gaps(df3e)
+        # Additional processing for all dynamically created DataFrames
+        for variable_name in ['df3a', 'df3b', 'df3c', 'df3d', 'df3e']:
+            if variable_name in session:
+                df = pd.read_json(StringIO(session[variable_name]))
 
-        # catches gap violations
-        gap_violations(df3a)
-        gap_violations(df3b)
-        gap_violations(df3c)
-        gap_violations(df3d)
-        gap_violations(df3e)
+                # Add pre lesson 5-min teaching gaps
+                df = pre_gaps(df)
 
-        
-        # add planning blocks
-        df3a = planning_block(df3a)
-        df3b = planning_block(df3b)
-        df3c = planning_block(df3c)
-        df3d = planning_block(df3d)
-        df3e = planning_block(df3e)
+                # Add post lesson 5-min teaching gaps
+                df = post_gaps(df)
 
-        # Save the DataFrames to the session
-        session['df2c'] = df2c.to_json()
-        session['df3a'] = df3a.to_json()
-        session['df3b'] = df3b.to_json()
-        session['df3c'] = df3c.to_json()
-        session['df3d'] = df3d.to_json()
-        session['df3e'] = df3e.to_json()
+                # Merge adjacent pre- and post lesson 5-min teaching gaps into between gaps
+                df = between_gaps(df)
 
-        # catches frametime violations and other time issues
+                # Catch gap violations
+                gap_violations(df)
+
+                # Add planning blocks
+                df = planning_block(df)
+
+                # Save the updated DataFrame back to the session
+                session[variable_name] = df.to_json()
+
+        # Catch frametime violations and other time issues
         frametime_violations()
         time_checker()
 
@@ -209,3 +201,4 @@ def updated_schedule():
     except Exception as e:
         current_app.logger.error(f"Error in updated_schedule: {e}")
         return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
+
