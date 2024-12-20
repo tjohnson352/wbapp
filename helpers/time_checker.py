@@ -104,6 +104,10 @@ def time_checker():
         # Adjust contract teaching time for middle managers
         middle_manager = str(session.get('middle_manager', "")).lower()
         adjusted_contract_teach_time = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else contract_teachtime
+        
+        overtime_teach = max(round(total_teach_time - adjusted_contract_teach_time,3),0)
+        over_framtime = max(round(assigned_frametime - contract_frametime_with_breaks,3),0)
+        total_overtime = max(round(over_framtime + overtime_teach,3),0)
 
         # Save calculated results to session
         session['total_break_time'] = total_break_time
@@ -114,7 +118,9 @@ def time_checker():
         session['contract_frametime'] = contract_frametime
         session['contract_frametime_with_breaks'] = contract_frametime_with_breaks
         session['assigned_frametime'] = assigned_frametime
-        session['break_issues'] = break_issues
+        session['overtime_teach'] = overtime_teach
+        session['over_framtime'] = over_framtime
+        session['total_overtime'] = total_overtime
 
     except Exception as e:
         # Log the error and raise the exception for debugging

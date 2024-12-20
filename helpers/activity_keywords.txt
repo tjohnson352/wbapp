@@ -1,0 +1,9 @@
+# Keywords for Start Work and End Work adjustments (used in frametime_violations function)
+# - Adjust frametime to 10 minutes if the keyword appears in 'activities'.
+# - Use 5 minutes if the keyword has an exception in parentheses (e.g., pe (theory)).
+# - Lines starting with # are comments and ignored.
+
+art
+lab
+wood
+pe (theory)

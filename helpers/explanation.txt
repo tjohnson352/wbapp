@@ -1,0 +1,83 @@
+### Explanations of Key Concepts
+
+#### **1. Contract Frametime**
+- **What It Is**: The total weekly working hours for teaching, breaks, and other duties.
+- **How It’s Calculated**:
+  - Base contract frametime: **34 hours per week**.
+  - Prorated based on `work_percent`:
+    - At 100% work_percent: 34 hours.
+    - At 50% work_percent: 17 hours.
+  - **Breaks Added**: 30 minutes per break. For example:
+    - 5 breaks = +2.5 hours → Total = **36.5 hours** at full-time.
+- **Who It Applies To**: All staff; prorated for part-time employees.
+
+---
+
+#### **2. Teaching Time**
+- **What It Is**: The total weekly hours for scheduled lessons (type = TEACHING).
+- **How It’s Calculated**:
+  - Standard teaching time: **18 hours per week** (full-time).
+  - Prorated based on `work_percent`. For example:
+    - At 100% work_percent: 18 hours.
+    - At 50% work_percent: 9 hours.
+  - **Middle Manager Reduction**:
+    - Teaching time is reduced by **1.5 hours** (or more based on local agreements).
+    - Automatically applied by the app based on agreement data. For example:
+      - A middle manager with 100% work_percent has a teaching time of **16.5 hours** (18 - 1.5).
+      - A middle manager with 50% work_percent has a teaching time of **7.5 hours** (9 - 1.5).
+
+---
+
+#### **3. Overtime**
+- **How It’s Determined**:
+  - **Teaching Overtime**:
+    - `Overtime Teach = Total Teach Time - Adjusted Contract Teaching Time`
+    - If the result is negative, it is set to **0**.
+  - **Frametime Overtime**:
+    - `Over Frametime = Assigned Frametime - Contract Frametime (with Breaks)`
+    - If the result is negative, it is set to **0**.
+  - **Total Overtime**:
+    - `Total Overtime = Overtime Teach + Over Frametime`.
+
+---
+
+#### **4. GENERAL/DUTY Activities**
+- **What It Is**: Non-teaching, non-break scheduled activities.
+- **Examples**:
+  - Supervisory duties (e.g., hallway monitoring).
+  - Staff meetings.
+  - Recess duties.
+- **Impact**: Included in the total frametime but not counted as teaching time.
+
+---
+
+#### **5. Gap Violations**
+- **What It Is**: Insufficient preparation or transition time around teaching activities.
+- **How It’s Handled**:
+  - **Pre Gap**: 5 minutes before teaching for preparation.
+  - **Post Gap**: 5 minutes after teaching for wrap-up.
+  - **In-Between Gap**: 5 minutes between consecutive teaching activities for transitions.
+- **Agreements**: Locally negotiated and agreed upon via the MBL process.
+- **Member Support**: Contact your local representative for clarification.
+
+---
+
+#### **6. Frametime Violations**
+- **What It Is**: Misalignment of start or end frametime with scheduled teaching activities.
+- **How It’s Adjusted**:
+  - **Start Frametime**:
+    - Must start **5 minutes before** the first teaching activity.
+    - Adjusted to **10 minutes** for certain activities (e.g., "art," "lab") unless exceptions apply (e.g., "pe (theory)").
+  - **End Frametime**:
+    - Must end **5 minutes after** the last teaching activity.
+    - Adjusted to **10 minutes** for certain activities unless exceptions apply.
+- **Important**: Frametime buffers apply **only** to teaching activities.
+
+---
+
+#### **7. Planning Time**
+- **What It Is**: Unscheduled time within frametime that is **30 minutes or more**.
+- **How It’s Calculated**:
+  - Identified as "PLANNING" blocks.
+  - Not included in the official schedule downloaded from Schoolsoft.
+- **Purpose**: Dedicated time for lesson preparation, grading, and administrative tasks.
