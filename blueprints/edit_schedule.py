@@ -196,9 +196,19 @@ def updated_schedule():
         frametime_violations()
         time_checker()
 
+        # Save all dynamically created DataFrames into a consolidated 'dataframes' session key
+        dataframes = {}
+        for variable_name in ['df3a', 'df3b', 'df3c', 'df3d', 'df3e']:
+            if variable_name in session:
+                df = pd.read_json(StringIO(session[variable_name]))
+                dataframes[variable_name] = df.to_json()
+
+        # Save consolidated dataframes to session
+        session['dataframes'] = dataframes
+        session.modified = True  # Ensure session is marked as modified
+
         return jsonify({'message': 'Schedule updated successfully!'}), 200
 
     except Exception as e:
         current_app.logger.error(f"Error in updated_schedule: {e}")
         return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
-

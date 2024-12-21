@@ -35,18 +35,19 @@
     <h2>Select DataFrame for Viewing</h2>
     <form method="POST" action="/df_view">
         <select id="df_name" name="df_name" required>
-            <option value="df1a">df1a</option>
-            <option value="df1b">df1b</option>
-            <option value="df2a">df2a</option>
-            <option value="df2b">df2b</option>
-            <option value="df2c">df2c</option>
-            <option value="df2d">df2d</option>
-            <option value="df3a">df3a</option>
-            <option value="df3b">df3b</option>
-            <option value="df3c">df3c</option>
-            <option value="df3d">df3d</option>
-            <option value="df3e">df3e</option>
+            {% if dataframes %}
+                {% for key in dataframes.keys() | sort %}
+                    {% if key != 'df' %}
+                        <option value="{{ key }}" {% if df_name == key %}selected{% endif %}>
+                            {{ key }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <option value="" disabled>No DataFrames available</option>
+            {% endif %}
         </select>
+        
         <button type="submit">View</button>
     </form>
 

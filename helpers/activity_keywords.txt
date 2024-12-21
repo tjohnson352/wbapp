@@ -6,4 +6,5 @@
 art
 lab
 wood
+home ec
 pe (theory)

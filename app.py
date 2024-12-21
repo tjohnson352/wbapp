@@ -1,6 +1,8 @@
 from flask import Flask, render_template, redirect, flash, session
 from flask_session import Session
 import os
+import pandas as pd
+from io import StringIO
 from blueprints.home import home_blueprint
 from blueprints.edit_schedule import edit_schedule_blueprint
 from blueprints.dataframe_view import dataframe_view_bp
@@ -58,6 +60,37 @@ def clear_session(exception=None):
     for key in list(session.keys()):
         if key not in essential_keys:
             session.pop(key, None)
+
+@app.route('/schedule_summary')
+def schedule_summary():
+    """
+    Route to display the weekly schedule summary.
+    """
+    # Retrieve relevant session data
+    ft_days = session.get('ft_days', [])
+    off_days = session.get('off_days', [])
+    df_names = session.get('df_names', [])
+    raw_dataframes = session.get('dataframes', {})
+
+    # Convert JSON strings back to DataFrames
+    dataframes = {}
+    for key, value in raw_dataframes.items():
+        if value:  # Check if value is not None
+            try:
+                dataframes[key] = pd.read_json(StringIO(value))
+            except Exception as e:
+                print(f"Error loading DataFrame {key}: {e}")
+
+    # Render the schedule summary
+    return render_template(
+        'schedule_summary.html',
+        ft_days=ft_days,
+        off_days=off_days,
+        df_names=df_names,
+        dataframes=dataframes
+    )
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

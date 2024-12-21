@@ -147,7 +147,7 @@ def between_gaps(df):
 def gap_violations(df, df_name='df'):
     """
     Check for overlaps in 'LESSON GAP' timespans with adjacent activities.
-    If an overlap is detected, mark the 'issues' column as 'Gap issue'.
+    If an overlap is detected, mark the 'issues' column as 'Gap Issue: The should be a minimum of 5 min before and after each lesson.'.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to check.
@@ -176,7 +176,7 @@ def gap_violations(df, df_name='df'):
 
                 # Check for overlap: current_end > next_start
                 if current_end > next_start:
-                    df.at[i, 'issues'] = 'Gap issue'
+                    df.at[i, 'issues'] = 'Gap Issue: The should be a minimum of 5 min before and after each lesson.'
             except Exception as e:
                 # Log or print error if timespan parsing fails
                 print(f"Error processing row {i}: {e}")
@@ -252,7 +252,7 @@ def frametime_violations():
 
             if adjustment_time != current_start_time:
                 start_violation = f"{day}: Adjust FT start to {adjustment_time.strftime('%H:%M')}"
-                df.at[0, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the first row
+                df.at[0, 'issues'] = f"Frametime issue: Adjust START time to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the first row
 
         # Check for End Work violation
         if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'FRAMETIME':
@@ -263,7 +263,7 @@ def frametime_violations():
 
             if adjustment_time != current_end_time:
                 end_violation = f"{day}: Adjust FT end to {adjustment_time.strftime('%H:%M')}"
-                df.at[len(df) - 1, 'issues'] = f"Adjust to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the last row
+                df.at[len(df) - 1, 'issues'] = f"Frametime issue: Adjust END time to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the last row
 
         # Add violations to the report if any
         if start_violation:
@@ -282,8 +282,6 @@ def frametime_violations():
     else:
         session['frametime_issues'] = "No frametime violations detected."
         current_app.logger.info("No frametime violations found.")
-
-
 
 
 def planning_block(df):
@@ -316,6 +314,7 @@ def planning_block(df):
             
             # Update the total gap minutes
             planning_time += round(int(gap_minutes)/60,3)
+            planning_time = round(planning_time,3)
 
             # Insert the new row into the DataFrame
             df = pd.concat([df.iloc[:i + 1], pd.DataFrame([new_row]), df.iloc[i + 1:]]).reset_index(drop=True)

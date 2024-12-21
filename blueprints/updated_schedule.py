@@ -10,13 +10,11 @@ updated_schedule_blueprint = Blueprint('updated_schedule', __name__, url_prefix=
 
 @updated_schedule_blueprint.route('/', methods=['GET'])
 def display_schedule():
-    print(f"XXXYYY {inspect.currentframe().f_lineno}")
 
     """Display the updated schedule based on df2d."""
     try:
         # Load df2d from session
         df2d_json = session.get('df2d')
-        print(f"XXXYYY {inspect.currentframe().f_lineno}")
         if not df2d_json:
             return render_template('updated_schedule.html', error="No schedule data found.")
 
