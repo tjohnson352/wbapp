@@ -1,0 +1,8 @@
+General:
+meet, lunch, hall, tutorial, mentor
+
+Break: 
+break
+
+Teaching: 
+cover, sub

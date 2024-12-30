@@ -3,7 +3,7 @@ import re
 from flask import session
 from helpers.time_adjuster import time1, time4, time5, time6, time7
 from helpers.assign_activity_type import assign_activity_type
-from helpers.id_coding import generate_unique_id, decode_unique_id
+from helpers.id_coding import encrypt, decrypt
 from helpers.extract_names import get_names
 from helpers.clean_raw_data import clean_data
 import traceback
@@ -86,9 +86,26 @@ def structure_data():
         df2a.loc[df2a['type'] == 'TEACHING', 'year_group'].str.upper() + " " +
         df2a.loc[df2a['type'] == 'TEACHING', 'activities']
     )
+    
+    # Modify the 'activities' column conditionally
+    df2a.loc[
+        (df2a['year_group'].astype(str).str.len() <= 5), 'activities'
+    ] = (
+        df2a['year_group'].astype(str) + " " + df2a['activities'].astype(str)
+    )
 
+    # Add location conditionally
+    df2a.loc[
+        (df2a['year_group'].astype(str).str.len() <= 5) & 
+        (df2a['location'].astype(str).str.len() > 0) & 
+        (df2a['location'].astype(str).str.len() < 7), 
+        'activities'
+    ] += " (" + df2a['location'].astype(str) + ")"
     # Step 5: Get names and ids
     get_names()
+    encrypt()
+    decrypt()
+
 
     # Get work_percent from session
     work_percent = session.get('work_percent', 100)  # Default to 100 if not set
@@ -96,5 +113,7 @@ def structure_data():
     # Step 6: create df2b as a selected cleaned extract of df2a
     df2b = df2a[['timespan','activities', 'type', 'minutes']].copy()
     df2b.insert(0, 'day', 'Unassigned') # adds a dummy for the dropdown menu
+
+
 
     return df2a, df2b

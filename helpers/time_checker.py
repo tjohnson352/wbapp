@@ -26,8 +26,8 @@ def time_checker():
 
         # Match breaks to days
         df1b['break_time'] = df1b['day'].map(
-            lambda day: df2c.query("day == @day and type == 'BREAK'")['timespan'].iloc[0]
-            if not df2c.query("day == @day and type == 'BREAK'").empty else "None"
+            lambda day: df2c.query("day == @day and type == 'Break'")['timespan'].iloc[0]
+            if not df2c.query("day == @day and type == 'Break'").empty else "None"
         )
 
         # Split timespan into start and end, convert to datetime
@@ -44,6 +44,7 @@ def time_checker():
         df1b['frametimespan'] = (df1b['end_time'] - df1b['start_time']).dt.total_seconds() / 3600
         df1b['early_break'] = (df1b['break_start'] - df1b['start_time']).dt.total_seconds() / 3600
         df1b['late_break'] = (df1b['end_time'] - df1b['break_end']).dt.total_seconds() / 3600
+        
 
         # Classify rows
         df1b['comments'] = np.where(
@@ -62,37 +63,50 @@ def time_checker():
         # Calculate totals
         assigned_frametime = round(df1b['frametimespan'].sum(), 1)
         contract_frametime = round(WORK_HOURS * work_percent / 100, 1)
-        contract_teachtime = round(TEACH_HOURS * work_percent / 100, 1)
-        total_breaks = round(df1b['break_time'].ne("None").sum() * BREAK_DURATION_HOURS, 1)
-        contract_frametime_with_breaks = round(contract_frametime + total_breaks, 1)
+        contract_teachtime = round(TEACH_HOURS * work_percent / 100, 1)  # without breaks
+        breaks = round(df1b['break_time'].ne("None").sum() * BREAK_DURATION_HOURS, 1)
+        contract_frametime = round(contract_frametime + breaks, 1)  # breaks added
 
         # Adjust teaching time for middle managers
         adjusted_teachtime = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else contract_teachtime
 
         # Calculate overtime
-        total_teach_time = round(df2c[df2c['type'] == 'TEACHING']['minutes'].sum() / 60, 1)
-        total_general_duty_time = round(df2c[df2c['type'] == 'GENERAL/DUTY']['minutes'].sum() / 60, 1)
-        total_break_time = round(df2c[df2c['type'] == 'BREAK']['minutes'].sum() / 60, 1)
-        overtime_teach = max(round(total_teach_time - adjusted_teachtime, 3), 0)
-        over_framtime = max(round(assigned_frametime - contract_frametime_with_breaks, 3), 0)
-        total_overtime = max(round(over_framtime + overtime_teach, 3), 0)
+        assigned_teachtime = round(df2c[df2c['type'] == 'Teaching']['minutes'].sum() / 60, 1)
+        general_duty = round(df2c[df2c['type'] == 'General']['minutes'].sum() / 60, 1)
+
+        # Check and calculate teaching time surplus/deficit
+        if assigned_teachtime - adjusted_teachtime < 0:
+            over_teachtime = f"{abs(round(assigned_teachtime - adjusted_teachtime, 1))} hrs under"
+        else:
+            over_teachtime = round(assigned_teachtime - adjusted_teachtime, 1)
+
+        # Check and calculate frametime surplus/deficit
+        if assigned_frametime - contract_frametime < 0:
+            over_framtime = f"{abs(round(assigned_frametime - contract_frametime, 1))} hrs under"
+        else:
+            over_framtime = round(assigned_frametime - contract_frametime, 1)
+
+        # Check and calculate total overtime surplus/deficit
+        if assigned_frametime + assigned_teachtime - (contract_frametime + adjusted_teachtime) < 0:
+            overtime_total = f"{abs(round(assigned_frametime + assigned_teachtime - (contract_frametime + adjusted_teachtime), 1))} hrs under"
+        else:
+            overtime_total = round(over_framtime + over_teachtime, 1)
 
         # Save all calculated results to the session
         session.update({
-            'total_break_time': total_break_time,
-            'total_general_duty_time': total_general_duty_time,
-            'total_teach_time': total_teach_time,
+            'breaks': breaks,
+            'general': general_duty,
             'contract_teachtime': contract_teachtime,
+            'assigned_teach': assigned_teachtime,
             'adjusted_contract_teach_time': adjusted_teachtime,
             'contract_frametime': contract_frametime,
-            'contract_frametime_with_breaks': contract_frametime_with_breaks,
             'assigned_frametime': assigned_frametime,
-            'overtime_teach': overtime_teach,
+            'over_teachtime': over_teachtime,
             'over_framtime': over_framtime,
-            'total_overtime': total_overtime
+            'total_overtime': overtime_total
         })
+
 
     except Exception as e:
         current_app.logger.error(f"Error in time_checker: {e}")
         raise
-

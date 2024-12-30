@@ -11,6 +11,12 @@ home_blueprint = Blueprint('home', __name__)
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
+    #from cryptography.fernet import Fernet
+
+    # Generate a valid Fernet key
+    #key = Fernet.generate_key()
+    #print(f"Generated Fernet Key: {key.decode()}")
+
     """Handle home page requests for uploading schedules."""
     if request.method == 'POST':
         try:
@@ -47,6 +53,7 @@ def home():
 
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
+
 
             return redirect('/meta1')  # Redirect to the next step
 

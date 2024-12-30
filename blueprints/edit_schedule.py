@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, session, request, jsonify, current
 import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations, planning_block
 from helpers.time_checker import time_checker
+from helpers.report_generator import generate_pdf, generate_plain_text_report, generate_plain_text_schedule
 from helpers.ft_days import ft_days, prime_dfs
 from io import StringIO
 
@@ -148,7 +149,7 @@ def updated_schedule():
                         start_row = {
                             'day': day,
                             'activities': 'Start Work',
-                            'type': 'FRAMETIME',
+                            'type': 'Frametime',
                             'timespan': f"{start_time} - {start_time}",
                             'minutes': 0
                         }
@@ -160,7 +161,7 @@ def updated_schedule():
                         end_row = {
                             'day': day,
                             'activities': 'End Work',
-                            'type': 'FRAMETIME',
+                            'type': 'Frametime',
                             'timespan': f"{end_time} - {end_time}",
                             'minutes': 0
                         }
@@ -195,6 +196,8 @@ def updated_schedule():
         # Catch frametime violations and other time issues
         frametime_violations()
         time_checker()
+        generate_plain_text_report()
+        generate_pdf()
 
         # Save all dynamically created DataFrames into a consolidated 'dataframes' session key
         dataframes = {}
@@ -206,6 +209,8 @@ def updated_schedule():
         # Save consolidated dataframes to session
         session['dataframes'] = dataframes
         session.modified = True  # Ensure session is marked as modified
+        generate_plain_text_schedule()
+
 
         return jsonify({'message': 'Schedule updated successfully!'}), 200
 

@@ -4,8 +4,8 @@ from io import StringIO
 
 def pre_gaps(df):
     """
-    Adds a "Pre Gap" row before each row where the 'type' column equals 'TEACHING',
-    ensuring that no "Pre Gap" rows are added in the first or second position.
+    Adds a "*Pre gap" row before each row where the 'type' column equals 'Teaching',
+    ensuring that no "*Pre gap" rows are added in the first or second position.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to modify.
@@ -21,8 +21,8 @@ def pre_gaps(df):
             rows_with_gaps.append(row.to_dict())
             continue
 
-        # Check if the 'type' column is 'TEACHING'
-        if row['type'] == 'TEACHING':
+        # Check if the 'type' column is 'Teaching'
+        if row['type'] == 'Teaching':
             # Calculate the Pre Gap timespan
             if pd.notnull(row['timespan']) and '-' in row['timespan']:
                 start_time, _ = row['timespan'].split('-')
@@ -35,8 +35,8 @@ def pre_gaps(df):
             # Create a Pre Gap row
             pre_gap_row = {
                 'day': row['day'],
-                'activities': 'Pre Gap',
-                'type': 'LESSON GAP',
+                'activities': '*Pre gap',
+                'type': '*Lesson gap',
                 'timespan': timespan,
                 'minutes': 5
             }
@@ -53,8 +53,8 @@ def pre_gaps(df):
 
 def post_gaps(df):
     """
-    Adds a "Post Gap" row after each row where the 'type' column equals 'TEACHING',
-    ensuring that no "Post Gap" rows are added as the last or second-to-last row.
+    Adds a "*Post gap" row after each row where the 'type' column equals 'Teaching',
+    ensuring that no "*Post gap" rows are added as the last or second-to-last row.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to modify.
@@ -68,12 +68,12 @@ def post_gaps(df):
         # Append the current row
         rows_with_gaps.append(row.to_dict())  # Convert row to dict for appending
 
-        # Check if adding a "Post Gap" row would make it the last or second-to-last row
+        # Check if adding a "*Post gap" row would make it the last or second-to-last row
         if idx >= len(df) - 2:
             continue
 
-        # Check if the 'type' column is 'TEACHING'
-        if row['type'] == 'TEACHING':
+        # Check if the 'type' column is 'Teaching'
+        if row['type'] == 'Teaching':
             # Calculate the Post Gap timespan
             if pd.notnull(row['timespan']) and '-' in row['timespan']:
                 start_time, end_time = row['timespan'].split('-')
@@ -86,8 +86,8 @@ def post_gaps(df):
             # Create a Post Gap row
             post_gap_row = {
                 'day': row['day'],
-                'activities': 'Post Gap',
-                'type': 'LESSON GAP',
+                'activities': '*Post gap',
+                'type': '*Lesson gap',
                 'timespan': timespan,
                 'minutes': 5
             }
@@ -100,13 +100,13 @@ def post_gaps(df):
 
 def between_gaps(df):
     """
-    Merges consecutive 'Post Gap' and 'Pre Gap' rows with the same timespan into a single 'Between Gap' row.
+    Merges consecutive '*Post gap' and '*Pre gap' rows with the same timespan into a single '*Between gap' row.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to process.
 
     Returns:
-    pd.DataFrame: The modified DataFrame with merged 'Between Gap' rows.
+    pd.DataFrame: The modified DataFrame with merged '*Between gap' rows.
     """
     # Convert rows to a list of dictionaries for easier iteration
     updated_rows = []
@@ -120,15 +120,15 @@ def between_gaps(df):
         current_row = df.iloc[i]
         next_row = df.iloc[i + 1]
 
-        # Check if current is "Post Gap" and next is "Pre Gap" with the same timespan
+        # Check if current is "*Post gap" and next is "*Pre gap" with the same timespan
         if (
-            current_row['activities'] == 'Post Gap' and
-            next_row['activities'] == 'Pre Gap' and
+            current_row['activities'] == '*Post gap' and
+            next_row['activities'] == '*Pre gap' and
             current_row['timespan'] == next_row['timespan']
         ):
-            # Replace "Pre Gap" with "Between Gap"
+            # Replace "*Pre gap" with "*Between gap"
             merged_row = next_row.copy()
-            merged_row['activities'] = 'Between Gap'
+            merged_row['activities'] = '*Between gap'
 
             # Append the merged row and skip the next row
             updated_rows.append(merged_row.to_dict())
@@ -146,51 +146,52 @@ def between_gaps(df):
 
 def gap_violations(df, df_name='df'):
     """
-    Check for overlaps in 'LESSON GAP' timespans with adjacent activities.
-    If an overlap is detected, mark the 'issues' column as 'Gap Issue: The should be a minimum of 5 min before and after each lesson.'.
+    Identify and mark gap violations in '*Lesson gap' activities.
+    Violations occur if there is less than a 5-minute buffer before or after a lesson.
 
     Parameters:
-    df (pd.DataFrame): The DataFrame to check.
-    df_name (str): The variable name for saving in the session dynamically.
+    df (pd.DataFrame): DataFrame to check.
+    df_name (str): Session variable name for saving the updated DataFrame.
 
     Returns:
-    pd.DataFrame: The modified DataFrame with 'issues' column updated for gap issues.
+    pd.DataFrame: Updated DataFrame with 'issues' column noting gap violations.
     """
     # Initialize 'issues' column with default value 'none'
     df['issues'] = 'none'
 
-    # Iterate through the DataFrame rows using index
+    # Iterate through DataFrame rows to identify overlaps
     for i in range(len(df) - 1):
         current_row = df.iloc[i]
         next_row = df.iloc[i + 1]
 
-        # Only check rows where type is 'LESSON GAP'
-        if current_row['type'] == 'LESSON GAP':
-            # Parse timespans into start and end times for both rows
+        # Check only rows with type '*Lesson gap'
+        if current_row['type'] == '*Lesson gap':
             try:
+                # Extract and parse start and end times
                 current_start, current_end = current_row['timespan'].split(' - ')
                 next_start, next_end = next_row['timespan'].split(' - ')
 
                 current_end = pd.to_datetime(current_end.strip(), format="%H:%M")
                 next_start = pd.to_datetime(next_start.strip(), format="%H:%M")
 
-                # Check for overlap: current_end > next_start
+                # Flag gap issue if current_end overlaps with next_start
                 if current_end > next_start:
-                    df.at[i, 'issues'] = 'Gap Issue: The should be a minimum of 5 min before and after each lesson.'
+                    df.at[i, 'issues'] = 'Gap Issue: Minimum 5-minute buffer required before and after lessons.'
             except Exception as e:
-                # Log or print error if timespan parsing fails
+                # Handle timespan parsing errors
                 print(f"Error processing row {i}: {e}")
 
-    # Save DataFrame to session dynamically based on df_name
+    # Save the modified DataFrame to the session dynamically
     session[df_name] = df.to_json()
     return df
+
 
 def frametime_violations():
     """
     Checks for frametime violations in all day-specific DataFrames (df3a-df3e).
     Updates the respective DataFrame with the violations in the 'issues' column.
-    Generates a concise, logical report for Start Work and End Work violations.
-    Saves only the days with violations to the session.
+    Adds comments for "Start Work" or "End Work" explaining frametime issues, including keyword-specific adjustments.
+    Saves only the days with violations to the session and logs results.
     """
     import os
 
@@ -232,38 +233,49 @@ def frametime_violations():
 
         # Helper function to determine frametime adjustment
         def frametime_adjustment(activity_row, default_minutes, keywords):
-            # Adjust only if the type is TEACHING
-            if activity_row['type'] != 'TEACHING':
-                return default_minutes-5
-            activity_lower = activity_row['activities'].lower()  # Convert activity to lowercase for comparison
+            if activity_row['type'] != 'Teaching':
+                return 0  # No buffer for non-Teaching activities
+            activity_lower = activity_row['activities'].lower()
             for keyword, exception in keywords.items():
                 if keyword in activity_lower:
                     if exception and exception in activity_lower:
                         continue  # Skip adjustment if exception is present
-                    return default_minutes + 5  # Use 10 minutes for matching keywords
-            return default_minutes
+                    return 10  # 10-minute buffer for keyword-specific adjustments
+            return default_minutes  # Default 5-minute buffer for Teaching
 
         # Check for Start Work violation
-        if not df.empty and df.iloc[0]['activities'] == 'Start Work' and df.iloc[0]['type'] == 'FRAMETIME':
+        if not df.empty and df.iloc[0]['activities'] == 'Start Work' and df.iloc[0]['type'] == 'Frametime':
             first_activity = df.iloc[1]  # Next activity row
             adjustment_minutes = frametime_adjustment(first_activity, 5, keywords)
             adjustment_time = pd.to_datetime(first_activity['timespan'].split(' - ')[0]) - pd.Timedelta(minutes=adjustment_minutes)
             current_start_time = pd.to_datetime(df.iloc[0]['timespan'].split(' - ')[0])  # Current start time in Start Work row
 
             if adjustment_time != current_start_time:
+                explanation = (
+                    "(Special case with 10-min buffer)"
+                    if adjustment_minutes == 10 else ""
+                )
                 start_violation = f"{day}: Adjust FT start to {adjustment_time.strftime('%H:%M')}"
-                df.at[0, 'issues'] = f"Frametime issue: Adjust START time to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the first row
+                df.at[0, 'issues'] = (
+                    f"Adjust START to {adjustment_time.strftime('%H:%M')}. {explanation}"
+                )
 
         # Check for End Work violation
-        if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'FRAMETIME':
+        if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'Frametime':
             last_activity = df.iloc[-2]  # Preceding activity row
             adjustment_minutes = frametime_adjustment(last_activity, 5, keywords)
             adjustment_time = pd.to_datetime(last_activity['timespan'].split(' - ')[1]) + pd.Timedelta(minutes=adjustment_minutes)
             current_end_time = pd.to_datetime(df.iloc[-1]['timespan'].split(' - ')[1])  # Current end time in End Work row
 
             if adjustment_time != current_end_time:
+                explanation = (
+                    "(Special case with 10-min buffer)"
+                    if adjustment_minutes == 10 else ""
+                )
                 end_violation = f"{day}: Adjust FT end to {adjustment_time.strftime('%H:%M')}"
-                df.at[len(df) - 1, 'issues'] = f"Frametime issue: Adjust END time to {adjustment_time.strftime('%H:%M')}"  # Update 'issues' column for the last row
+                df.at[len(df) - 1, 'issues'] = (
+                    f"Adjust END to {adjustment_time.strftime('%H:%M')}. {explanation}"
+                )
 
         # Add violations to the report if any
         if start_violation:
@@ -278,10 +290,11 @@ def frametime_violations():
     if reports:
         frametime_issues = "; ".join(reports)
         session['frametime_issues'] = frametime_issues
-        current_app.logger.info("Frametime violations have been identified and saved to session.")
+        current_app.logger.info("Frametime violations detected;saved to session.")
     else:
         session['frametime_issues'] = "No frametime violations detected."
         current_app.logger.info("No frametime violations found.")
+
 
 
 def planning_block(df):
@@ -306,15 +319,15 @@ def planning_block(df):
             new_row = {
                 'day': df.loc[i, 'day'],
                 'timespan': f"{current_end.strftime('%H:%M')} - {next_start.strftime('%H:%M')}",
-                'activities': 'Planning Block',
-                'type': 'PLANNING',
+                'activities': '*Planning Block',
+                'type': '*Planning',
                 'minutes': int(gap_minutes),
                 'issues': 'none'
             }
             
             # Update the total gap minutes
             planning_time += round(int(gap_minutes)/60,3)
-            planning_time = round(planning_time,3)
+            planning_time = round(planning_time,1)
 
             # Insert the new row into the DataFrame
             df = pd.concat([df.iloc[:i + 1], pd.DataFrame([new_row]), df.iloc[i + 1:]]).reset_index(drop=True)

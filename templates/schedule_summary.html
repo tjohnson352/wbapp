@@ -8,61 +8,27 @@
 
 {% block content %}
 <div class="schedule-container">
-    <p class="description">
-        Below is the summary of schedules for the week:
-        <br><strong>Scheduled Days:</strong> {{ ft_days | join(', ') }}
-        <br><strong>Off Days:</strong> {{ off_days | join(', ') }}
-    </p>
+    <h3 class="section-header">Weekly Schedule Report</h3>
+    <pre class="report-section">
+        {{ plain_text_report.strip() if plain_text_report else "No weekly schedule report available." }}
+    </pre>
 
-    <!-- Loop through ft_days -->
-    {% for day in ft_days %}
-        <div class="day-section">
-            <h2>{{ day }}</h2>
+    <h3 class="section-header">Weekly Schedule</h3>
+    <pre class="report-section">
+        {{ plain_text_schedule.strip() if plain_text_schedule else "No schedule available." }}
+    </pre>
 
-            <!-- Check if the day is in df_names -->
-            {% if df_names[loop.index0] in dataframes %}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th style="width: 12%; color: white; background: #0288D1;">Timespan</th>
-                            <th style="width: 18%; color: white; background: #0288D1;">Activity</th>
-                            <th style="width: 12%; color: white; background: #0288D1;">Type</th>
-                            <th style="width: 8%; color: white; background: #0288D1;">Time (min)</th>
-                            <th style="width: 50%; color: white; background: #0288D1;">Issues Found</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for _, row in dataframes[df_names[loop.index0]].iterrows() %}
-                            {% set bg_color = '#f5f8fa' if loop.index0 % 2 == 0 else '#ffffff' %}
-                            {% set font_color = '#3d85c6' if row['type'].lower() in ['planning', 'lesson gap'] else 'inherit' %}
-                            <tr style="background-color: {{ bg_color }}; color: {{ font_color }};">
-                                {% if row['type'].lower() == 'frametime' %}
-                                    <td>{{ row['timespan'].split(' - ')[0] }}</td>
-                                    <td style="text-align: left; padding-left: 12px; padding-right: 12px;">{{ row['activities'] }}</td>
-                                    <td style="text-align: left; padding-left: 12px; padding-right: 12px;">{{ row['type'].capitalize() }}</td>
-                                    <td>--</td>
-                                {% else %}
-                                    <td>{{ row['timespan'] }}</td>
-                                    <td style="text-align: left; padding-left: 12px; padding-right: 12px;">{{ row['activities'] }}</td>
-                                    <td style="text-align: left; padding-left: 12px; padding-right: 12px;">{{ row['type'].capitalize() }}</td>
-                                    <td>{{ row['minutes'] }}</td>
-                                {% endif %}
-                                <td style="text-align: left; color: {% if row['issues'] != 'none' %}red{% else %}inherit{% endif %}; padding-left: 12px; padding-right: 12px;">
-                                    {{ row['issues'] }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p class="off-day">No schedule for this day because it is an off day.</p>
-            {% endif %}
-        </div>
-    {% endfor %}
+    <h3 class="section-header">Schedule Guidelines</h3>
+    <ol class="guidelines-list">
+        <li><strong>General/Duty Activities:</strong> Non-teaching activities such as hallway monitoring, staff meetings, and recess duties. These are included in frametime but not counted as teaching time.</li>
+        <li><strong>Gap Violations:</strong> Allow a 5-minute buffer before and after teaching for preparation and wrap-up.</li>
+        <li><strong>Frametime Violations:</strong> Ensure a 5-minute buffer before the first lesson and after the last lesson of the day. A 10-minute buffer applies to certain subjects like art, woodwork, home economics, physical education (excluding theory), and science labs.</li>
+        <li><strong>Planning Time:</strong> Unscheduled blocks of 30 minutes or more used for lesson preparation, grading, and administrative tasks.</li>
+    </ol>
 </div>
-{% endblock %}
 
 <style>
+    /* General Styles */
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f7f9;
@@ -79,53 +45,32 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    h1, h2 {
+    h1, h3 {
         text-align: center;
         color: #2c3e50;
     }
-    h2 {
-        margin-top: 30px;
+    h3.section-header {
         font-size: 1.5em;
-        color: #34495e;
-        border-bottom: 2px solid #ecf0f1;
-        padding-bottom: 5px;
+        color: #0288D1;
+        margin-bottom: 15px;
     }
-    p.description {
-        text-align: center;
-        font-size: 1.2em;
-        color: #7f8c8d;
-        margin-bottom: 30px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        table-layout: fixed;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 12px 15px;
-        text-align: left;
-        word-wrap: break-word;
-    }
-    th {
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-    tr:nth-child(even) {
+    pre.report-section {
         background-color: #f9f9f9;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: "Courier New", Courier, monospace;
+        white-space: pre-wrap;
+        color: #333;
+        line-height: 1.6;
+        margin: 20px 0;
     }
-    tr:hover {
-        background-color: #f1f1f1;
+    ol.guidelines-list {
+        margin: 20px 0;
+        padding-left: 20px;
     }
-    .off-day {
-        text-align: center;
-        font-style: italic;
-        color: #95a5a6;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-    .day-section {
-        margin-bottom: 40px;
+    ol.guidelines-list li {
+        margin-bottom: 10px;
     }
 </style>
+{% endblock %}

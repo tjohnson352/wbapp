@@ -10,6 +10,7 @@ from blueprints.updated_schedule import updated_schedule_blueprint
 from blueprints.full_calendar import full_calendar_blueprint
 from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
+from helpers.report_generator import generate_plain_text_report, generate_plain_text_schedule, generate_pdf
 
 
 
@@ -61,6 +62,7 @@ def clear_session(exception=None):
         if key not in essential_keys:
             session.pop(key, None)
 
+
 @app.route('/schedule_summary')
 def schedule_summary():
     """
@@ -81,14 +83,27 @@ def schedule_summary():
             except Exception as e:
                 print(f"Error loading DataFrame {key}: {e}")
 
+    # Ensure the plain text report is generated and saved in session
+    if 'plain_text_schedule' not in session:
+        generate_plain_text_schedule()
+    if 'plain_text_report' not in session:
+        generate_plain_text_report()
+        
     # Render the schedule summary
     return render_template(
         'schedule_summary.html',
         ft_days=ft_days,
         off_days=off_days,
         df_names=df_names,
-        dataframes=dataframes
+        dataframes=dataframes,
+        plain_text_report=session.get('plain_text_report', "No report available."),
+        plain_text_schedule=session.get('plain_text_schedule', "No schedule available.")
     )
+
+@app.route('/generate_pdf', methods=['GET'])
+def generate_pdf():
+    pdf_path = generate_pdf()
+    return f"PDF report generated and saved to {pdf_path}"
 
 
 

@@ -32,12 +32,6 @@ def planning_block(df):
         if current_day == next_day:  # Only compare rows on the same day
             current_end = df.loc[i, "end_time"]
             next_start = df.loc[i + 1, "start_time"]
-            
-            print()
-            print("EEEEE")
-            print(current_end)
-            print(next_start)
-            print()
 
             # Calculate the gap in minutes
             gap_minutes = (next_start - current_end).total_seconds() / 60
@@ -47,8 +41,8 @@ def planning_block(df):
                 planning_row = {
                     "day": current_day,
                     "timespan": f"{current_end.strftime('%H:%M')} - {next_start.strftime('%H:%M')}",
-                    "activities": "Planning Block",
-                    "type": "PLANNING",
+                    "activities": "* Planning block",
+                    "type": " * Planning",
                     "minutes": int(gap_minutes),
                     "gap_issues": "good"
                 }
