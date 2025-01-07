@@ -22,7 +22,7 @@ def home():
             uploaded_file = request.files.get('schedule_pdf')
             if not uploaded_file or not uploaded_file.filename.lower().endswith('.pdf'):
                 flash('Invalid file type. Please upload a PDF file.', 'error')
-                return render_template('home.html')
+                return render_template('index.html')
 
             # Limit file size
             uploaded_file.seek(0, os.SEEK_END)
@@ -30,7 +30,7 @@ def home():
             uploaded_file.seek(0)
             if file_size_mb > 5:
                 flash('The uploaded file is too large. Please upload a file smaller than 5 MB.', 'error')
-                return render_template('home.html')
+                return render_template('index.html')
 
             # Save uploaded file
             upload_folder = 'uploads'
@@ -47,7 +47,7 @@ def home():
             with fitz.open(filepath) as pdf:
                 if pdf.page_count == 0:
                     flash('The uploaded PDF file appears to be empty.', 'error')
-                    return render_template('home.html')
+                    return render_template('index.html')
 
                 for page_num in range(pdf.page_count):
                     page = pdf.load_page(page_num)
@@ -61,7 +61,7 @@ def home():
 
             if 'Content' not in df1a.columns:
                 flash('Invalid PDF content structure.', 'error')
-                return render_template('home.html')
+                return render_template('index.html')
 
             session['df1a'] = df1a.to_json()
 
@@ -77,4 +77,4 @@ def home():
             current_app.logger.error(f"Error in home route: {e}")
 
     # For GET request, display the upload form
-    return render_template('home.html')
+    return render_template('index.html')
