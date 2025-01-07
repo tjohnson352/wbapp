@@ -7,11 +7,8 @@ from blueprints.home import home_blueprint
 from blueprints.edit_schedule import edit_schedule_blueprint
 from blueprints.dataframe_view import dataframe_view_bp
 from blueprints.updated_schedule import updated_schedule_blueprint
-from blueprints.full_calendar import full_calendar_blueprint
 from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
-from helpers.report_generator import generate_plain_text_report, generate_plain_text_schedule, generate_pdf
-
 
 
 # Initialize the Flask app
@@ -34,7 +31,6 @@ app.register_blueprint(home_blueprint)
 app.register_blueprint(meta1_blueprint)
 app.register_blueprint(edit_schedule_blueprint)
 app.register_blueprint(dataframe_view_bp)
-app.register_blueprint(full_calendar_blueprint)
 app.register_blueprint(updated_schedule_blueprint)
 app.register_blueprint(report_blueprint)
 
@@ -74,21 +70,16 @@ def schedule_summary():
     df_names = session.get('df_names', [])
     raw_dataframes = session.get('dataframes', {})
 
-    # Convert JSON strings back to DataFrames
+    # Convert JSON strings back to DataFrames and then to JSON-like structures
     dataframes = {}
     for key, value in raw_dataframes.items():
         if value:  # Check if value is not None
             try:
-                dataframes[key] = pd.read_json(StringIO(value))
+                df = pd.read_json(StringIO(value))
+                dataframes[key] = df.to_dict(orient='records')  # Convert to list of dictionaries
             except Exception as e:
                 print(f"Error loading DataFrame {key}: {e}")
 
-    # Ensure the plain text report is generated and saved in session
-    if 'plain_text_schedule' not in session:
-        generate_plain_text_schedule()
-    if 'plain_text_report' not in session:
-        generate_plain_text_report()
-        
     # Render the schedule summary
     return render_template(
         'schedule_summary.html',
@@ -99,6 +90,7 @@ def schedule_summary():
         plain_text_report=session.get('plain_text_report', "No report available."),
         plain_text_schedule=session.get('plain_text_schedule', "No schedule available.")
     )
+
 
 @app.route('/generate_pdf', methods=['GET'])
 def generate_pdf():

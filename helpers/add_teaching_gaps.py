@@ -156,6 +156,13 @@ def gap_violations(df, df_name='df'):
     Returns:
     pd.DataFrame: Updated DataFrame with 'issues' column noting gap violations.
     """
+    # Initialize 'gap_issues_count' in the session if not already present
+    if 'gap_issues_count' not in session:
+        session['gap_issues_count'] = 0
+
+    # Load the current gap issues count from the session
+    gap_issues_count = session['gap_issues_count']
+
     # Initialize 'issues' column with default value 'none'
     df['issues'] = 'none'
 
@@ -177,13 +184,19 @@ def gap_violations(df, df_name='df'):
                 # Flag gap issue if current_end overlaps with next_start
                 if current_end > next_start:
                     df.at[i, 'issues'] = 'Gap Issue: Minimum 5-minute buffer required before and after lessons.'
+                    gap_issues_count += 1  # Increment the gap issue count
             except Exception as e:
                 # Handle timespan parsing errors
                 print(f"Error processing row {i}: {e}")
 
+    # Update the weekly gap issues count in the session
+    session['gap_issues_count'] = gap_issues_count
+
     # Save the modified DataFrame to the session dynamically
     session[df_name] = df.to_json()
+
     return df
+
 
 
 def frametime_violations():
@@ -210,6 +223,7 @@ def frametime_violations():
                 keywords[line.lower()] = None  # Store keyword without exception in lowercase
 
     reports = []
+    frametime_issue_count = 0  # Initialize counter for frametime issues
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     dfs = {
         'Monday': 'df3a',
@@ -259,6 +273,7 @@ def frametime_violations():
                 df.at[0, 'issues'] = (
                     f"Adjust START to {adjustment_time.strftime('%H:%M')}. {explanation}"
                 )
+                frametime_issue_count += 1  # Increment counter for Start Work issue
 
         # Check for End Work violation
         if not df.empty and df.iloc[-1]['activities'] == 'End Work' and df.iloc[-1]['type'] == 'Frametime':
@@ -276,6 +291,7 @@ def frametime_violations():
                 df.at[len(df) - 1, 'issues'] = (
                     f"Adjust END to {adjustment_time.strftime('%H:%M')}. {explanation}"
                 )
+                frametime_issue_count += 1  # Increment counter for End Work issue
 
         # Add violations to the report if any
         if start_violation:
@@ -290,10 +306,16 @@ def frametime_violations():
     if reports:
         frametime_issues = "; ".join(reports)
         session['frametime_issues'] = frametime_issues
-        current_app.logger.info("Frametime violations detected;saved to session.")
+        session['frametime_issue_count'] = frametime_issue_count  # Save count to the session
+        current_app.logger.info("Frametime violations detected; saved to session.")
     else:
         session['frametime_issues'] = "No frametime violations detected."
+        session['frametime_issue_count'] = frametime_issue_count  # Save count as 0
         current_app.logger.info("No frametime violations found.")
+
+    # Log the total count of frametime issues
+    current_app.logger.info(f"Total frametime issues detected: {frametime_issue_count}")
+
 
 
 

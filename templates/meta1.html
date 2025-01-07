@@ -8,6 +8,15 @@
 
 {% block content %}
 <div class="upload-container">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <h2>Set Your Work Percentage and Role</h2>
     <p class="description">
         Provide your <strong>work percentage</strong> and indicate if you hold a <strong>middle management </strong>role. 
@@ -47,18 +56,13 @@
         </div>
 
         <!-- Submit Button -->
+
         <div class="input-container">
             <button type="submit" class="btn-primary upload-button">Save and Continue</button>
         </div>
     </form>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
+
 </div>
 {% endblock %}
 

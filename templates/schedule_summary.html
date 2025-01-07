@@ -1,76 +1,161 @@
 {% extends "base.html" %}
 
-{% block title %}Weekly Schedule Summary{% endblock %}
-
-{% block header %}
-<h1 class="page-header">Weekly Schedule Summary</h1>
-{% endblock %}
-
 {% block content %}
-<div class="schedule-container">
-    <h3 class="section-header">Weekly Schedule Report</h3>
-    <pre class="report-section">
-        {{ plain_text_report.strip() if plain_text_report else "No weekly schedule report available." }}
-    </pre>
-
-    <h3 class="section-header">Weekly Schedule</h3>
-    <pre class="report-section">
-        {{ plain_text_schedule.strip() if plain_text_schedule else "No schedule available." }}
-    </pre>
-
-    <h3 class="section-header">Schedule Guidelines</h3>
-    <ol class="guidelines-list">
-        <li><strong>General/Duty Activities:</strong> Non-teaching activities such as hallway monitoring, staff meetings, and recess duties. These are included in frametime but not counted as teaching time.</li>
-        <li><strong>Gap Violations:</strong> Allow a 5-minute buffer before and after teaching for preparation and wrap-up.</li>
-        <li><strong>Frametime Violations:</strong> Ensure a 5-minute buffer before the first lesson and after the last lesson of the day. A 10-minute buffer applies to certain subjects like art, woodwork, home economics, physical education (excluding theory), and science labs.</li>
-        <li><strong>Planning Time:</strong> Unscheduled blocks of 30 minutes or more used for lesson preparation, grading, and administrative tasks.</li>
-    </ol>
-</div>
-
 <style>
-    /* General Styles */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f7f9;
-        color: #333;
-        line-height: 1.6;
-        margin: 20px;
+    .table th:nth-child(1),
+    .table td:nth-child(1) {
+        width: 15%;
+        text-align: left;
+        padding-left: 10px;
     }
-    .schedule-container {
-        width: 80%;
-        max-width: 1000px;
-        margin: 20px auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    .table th:nth-child(2),
+    .table td:nth-child(2) {
+        width: 25%;
+        text-align: left;
+        padding-left: 10px;
     }
-    h1, h3 {
-        text-align: center;
-        color: #2c3e50;
+    .table th:nth-child(3),
+    .table td:nth-child(3) {
+        width: 15%;
+        text-align: left;
+        padding-left: 10px;
     }
-    h3.section-header {
-        font-size: 1.5em;
-        color: #0288D1;
-        margin-bottom: 15px;
+    .table th:nth-child(4),
+    .table td:nth-child(4) {
+        width: 10%;
+        text-align: left;
+        padding-left: 10px;
     }
-    pre.report-section {
-        background-color: #f9f9f9;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-family: "Courier New", Courier, monospace;
-        white-space: pre-wrap;
-        color: #333;
-        line-height: 1.6;
-        margin: 20px 0;
-    }
-    ol.guidelines-list {
-        margin: 20px 0;
-        padding-left: 20px;
-    }
-    ol.guidelines-list li {
-        margin-bottom: 10px;
+    .table th:nth-child(5),
+    .table td:nth-child(5) {
+        width: 30%;
+        text-align: left;
+        padding-left: 10px;
     }
 </style>
+
+<div class="upload-container">
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Teacher:</strong> {{ session.get('full_name', 'N/A') }}</p>
+            <p><strong>School:</strong> {{ session.get('school_name', 'N/A') }}</p>
+            <p><strong>Middle Manager:</strong> {{ session.get('middle_manager', 'No') }}</p>
+        </div>
+    </div>
+
+    <h2>Performance Metrics</h2>
+    <div>
+        <p><strong><i>Explanations for Performance Metrics:</i></strong></p>
+        <ul style="font-size: smaller; font-style: italic;">
+            <li><strong>Work Percentage (%):</strong> The percentage of full-time work assigned. 100% is full-time.</li>
+            <li><strong>Planning Time (hrs):</strong> Unassigned time (30 min or more) for lesson-related tasks. Not contractually required but included for reference.</li>
+            <li><strong>No. Frametime Issues:</strong> Number of issues with frametime scheduling.</li>
+            <li><strong>No. Lesson Gap Issues:</strong> Number of issues with lesson gaps where the 5-min minimum buffer is not met.</li>
+            <li><strong>Weekly Break Time (hrs):</strong> Total break time scheduled during the week.</li>
+            <li><strong>General Work Time (hrs):</strong> Time for non-teaching tasks like duties, meetings or mentoring.</li>
+            <li><strong>Contracted Teaching Time (hrs):</strong> Maximum teaching hours allowed by the agreement, based on your work percentage.</li>
+            <li><strong>Assigned Teaching Time (hrs):</strong> Actual teaching hours assigned; should not exceed the contract.</li>
+            <li><strong>Contracted Frametime (hrs):</strong> Maximum total working hours (teaching + other tasks) allowed by the agreement.</li>
+            <li><strong>Assigned Frametime (hrs):</strong> Actual scheduled hours; should not exceed the contracted frametime.</li>
+            <li><strong>Teaching Time Overage (hrs):</strong> Difference between assigned and contracted teaching hours. Negative means fewer hours than required.</li>
+            <li><strong>Frametime Overage (hrs):</strong> Difference between assigned and contracted total hours. Negative means fewer hours than required.</li>
+            <li><strong>Total Overtime (hrs):</strong> Combined difference for teaching and total hours. Negative means fewer hours worked than required.</li>
+        </ul>
+    </div>
+    
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Work Percentage (%)</td>
+                <td>{{ session.get('work_percent', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Planning Time (hrs)</td>
+                <td>{{ session.get('planning_time', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>No. Frametime Issues</td>
+                <td>{{ session.get('frametime_issue_count', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>No. Lesson Gap Issues</td>
+                <td>{{ session.get('gap_issues_count', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Weekly Break Time (hrs)</td>
+                <td>{{ session.get('breaks_time', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>General Work Time (hrs)</td>
+                <td>{{ session.get('general_time', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Contracted Teaching Time (hrs)</td>
+                <td>{{ session.get('contract_teachtime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Assigned Teaching Time (hrs)</td>
+                <td>{{ session.get('assigned_teachtime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Contracted Frametime (hrs)</td>
+                <td>{{ session.get('contract_frametime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Assigned Frametime (hrs)</td>
+                <td>{{ session.get('assigned_frametime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Teaching Time Overage (hrs)</td>
+                <td>{{ session.get('over_teachtime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Frametime Overage (hrs)</td>
+                <td>{{ session.get('over_frametime', 'N/A') }}</td>
+            </tr>
+            <tr>
+                <td>Total Overtime (hrs)</td>
+                <td>{{ session.get('total_overtime', 'N/A') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% for day, df_key in [('Monday', 'df3a'), ('Tuesday', 'df3b'), ('Wednesday', 'df3c'), ('Thursday', 'df3d'), ('Friday', 'df3e')] %}
+        <h2>Schedule for {{ day }}</h2>
+        {% if df_key in dataframes and dataframes[df_key] %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time Span</th>
+                        <th>Activity</th>
+                        <th>Type</th>
+                        <th>Minutes</th>
+                        <th>Issues</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in dataframes[df_key] %}
+                    <tr>
+                        <td>{{ row['timespan'] }}</td>
+                        <td>{{ row['activities'] }}</td>
+                        <td>{{ row['type'] }}</td>
+                        <td>{{ row['minutes'] }}</td>
+                        <td>{{ row['issues'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No schedule reported for this day.</p>
+        {% endif %}
+    {% endfor %}
+</div>
+
 {% endblock %}

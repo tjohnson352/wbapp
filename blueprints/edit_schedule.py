@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, session, request, jsonify, current
 import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations, planning_block
 from helpers.time_checker import time_checker
-from helpers.report_generator import generate_pdf, generate_plain_text_report, generate_plain_text_schedule
 from helpers.ft_days import ft_days, prime_dfs
 from io import StringIO
+from helpers.database_functions import view_database, get_user_data, save_user_data
 
 
 
@@ -119,6 +119,66 @@ def updated_schedule():
         df2c = df2b[df2b['day'] != "DELETED"].copy()
         session['df2c'] = df2c.to_json()  # Save df2c back to the session
 
+        def create_schedule_string():
+            """
+            Reads df2c from the session, creates a schedule_string by concatenating row values 
+            using '*' as a joiner for cell values in each row, and '||' as a joiner for rows.
+            Saves the resulting schedule_string back into the session.
+            """
+            try:
+                # Read df2c from session
+                df2c = pd.read_json(StringIO(session['df2c']))
+
+                # Create schedule_string
+                schedule_string = '||'.join(
+                    '*'.join(str(cell) for cell in row)
+                    for row in df2c.values
+                )
+
+                # Save schedule_string to session
+                session['schedule_string'] = schedule_string
+                current_app.logger.info("schedule_string successfully created and saved to session.")
+            
+            except Exception as e:
+                current_app.logger.error(f"Error in creating schedule_string: {e}")
+                raise
+
+        def reconstruct_df2c():
+            """
+            Reads the schedule_string from the session, reconstructs the DataFrame (df2c_recononstructed),
+            which should match the original df2c structure, including column headers,
+            and saves it back to the session.
+            """
+            try:
+                # Retrieve schedule_string and df2c from session
+                schedule_string = session.get('schedule_string', '')
+                if not schedule_string:
+                    raise ValueError("schedule_string is missing or empty in the session.")
+
+                df2c = pd.read_json(StringIO(session['df2c']))
+                original_columns = df2c.columns  # Retrieve column names from df2c
+
+                # Split the schedule_string into rows and cells
+                rows = [row.split('*') for row in schedule_string.split('||')]
+
+                # Convert to DataFrame
+                df2c_recononstructed = pd.DataFrame(rows, columns=original_columns)
+
+                # Save df2c_recononstructed to session
+                session['df2c_recononstructed'] = df2c_recononstructed.to_json()
+                current_app.logger.info("df2c_recononstructed successfully reconstructed with original headings and saved to session.")
+
+                return df2c_recononstructed  # Return the reconstructed DataFrame for verification if needed
+
+            except Exception as e:
+                current_app.logger.error(f"Error in reconstructing df2c_recononstructed: {e}")
+                raise
+
+
+        create_schedule_string()
+        reconstruct_df2c()
+
+
         # Call ft_days to extract and save unique days
         ft_days()
 
@@ -196,8 +256,10 @@ def updated_schedule():
         # Catch frametime violations and other time issues
         frametime_violations()
         time_checker()
-        generate_plain_text_report()
-        generate_pdf()
+        save_user_data()
+        view_database()
+        get_user_data()
+        
 
         # Save all dynamically created DataFrames into a consolidated 'dataframes' session key
         dataframes = {}
@@ -209,10 +271,9 @@ def updated_schedule():
         # Save consolidated dataframes to session
         session['dataframes'] = dataframes
         session.modified = True  # Ensure session is marked as modified
-        generate_plain_text_schedule()
-
 
         return jsonify({'message': 'Schedule updated successfully!'}), 200
+
 
     except Exception as e:
         current_app.logger.error(f"Error in updated_schedule: {e}")

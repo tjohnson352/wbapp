@@ -1,5 +1,6 @@
-from flask import session
 import pandas as pd
+from flask import session
+import traceback
 from io import StringIO
 
 
@@ -25,18 +26,17 @@ def ft_days():
         if 'day' not in df2c.columns:
             raise ValueError("The DataFrame does not contain a 'day' column.")
 
-        # Get unique values from the 'day' column
+        session['ft_days'] = []
+        # Get unique values from the 'day' column and create a comma-separated string
         unique_days = df2c['day'].unique().tolist()
-
-        # Save the unique values to the session as ft_days
-        session['ft_days'] = unique_days
+        session['ft_days'] = ", ".join(unique_days)
 
         # Define all weekdays
         all_weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
-        # Determine off_days as the days not in unique_days
+        # Determine off_days as the days not in unique_days and create a comma-separated string
         off_days = [day for day in all_weekdays if day not in unique_days]
-        session['off_days'] = off_days
+        session['off_days'] = ", ".join(off_days)
 
         # Mapping of days to DataFrame variable names
         day_to_variable = {
@@ -58,8 +58,8 @@ def ft_days():
             if day in day_to_variable:
                 day_df = df2c[df2c['day'] == day].reset_index(drop=True)
                 variable_name = day_to_variable[day]
-                session[variable_name] = day_df.to_json()  # Save individual DataFrame to session
-                dataframes[variable_name] = day_df.to_json()  # Add to the `dataframes` dictionary
+                session[variable_name] = day_df.to_json(orient='split')  # Save individual DataFrame to session
+                dataframes[variable_name] = day_df.to_json(orient='split')  # Add to the `dataframes` dictionary
                 df_names.append(variable_name)  # Add the name to the list
 
         # Save the list of DataFrame names and the consolidated `dataframes` dictionary
@@ -67,14 +67,12 @@ def ft_days():
         session['dataframes'] = dataframes
         session.modified = True  # Ensure session is marked as modified
 
-        # Debugging information
-        print(f"ft_days: {unique_days}")
-        print(f"off_days: {off_days}")
-        print(f"df_names: {df_names}")
-        print("Session Keys after saving df_names, off_days, and dataframes:", session.keys())
-
     except Exception as e:
-        print(f"Error: {e}")
+        # Get traceback details
+        tb = traceback.extract_tb(e.__traceback__)
+        # Extract the most recent traceback entry
+        filename, lineno, _, _ = tb[-1]
+        print(f"Error in file {filename} at line {lineno}: {e}")
 
 
 def prime_dfs():
@@ -107,7 +105,9 @@ def prime_dfs():
         # Fill DataFrames for each day in the mapping
         dataframes = {}
         for day, variable in day_to_variable.items():
-            if day in session.get('ft_days', []):  # Check if day is in session's ft_days
+            ft_days = session.get('ft_days', [])
+            print("WWW",ft_days)
+            if day in ft_days:  # Check if day is in session's ft_days
                 # Filter df2c for the specific day
                 day_df = df2c[df2c['day'] == day].reset_index(drop=True)
                 # Save filtered DataFrame in the session
@@ -123,4 +123,8 @@ def prime_dfs():
         print(f"Session DataFrames: {list(dataframes.keys())}")
 
     except Exception as e:
-        print(f"Error in prime_dfs: {e}")
+        # Get traceback details
+        tb = traceback.extract_tb(e.__traceback__)
+        # Extract the most recent traceback entry
+        filename, lineno, _, _ = tb[-1]
+        print(f"Error in file {filename} at line {lineno}: {e}")

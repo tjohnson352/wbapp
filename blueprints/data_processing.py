@@ -3,11 +3,8 @@ import re
 from flask import session
 from helpers.time_adjuster import time1, time4, time5, time6, time7
 from helpers.assign_activity_type import assign_activity_type
-from helpers.id_coding import encrypt, decrypt
-from helpers.extract_names import get_names
-from helpers.clean_raw_data import clean_data
-import traceback
-import inspect #  print(f" {inspect.currentframe().f_lineno}")
+from helpers.names_coding import get_names, decrypt
+from helpers.report_generator import display_dataframes
 from io import StringIO
 
 
@@ -103,7 +100,6 @@ def structure_data():
     ] += " (" + df2a['location'].astype(str) + ")"
     # Step 5: Get names and ids
     get_names()
-    encrypt()
     decrypt()
 
 
@@ -113,7 +109,8 @@ def structure_data():
     # Step 6: create df2b as a selected cleaned extract of df2a
     df2b = df2a[['timespan','activities', 'type', 'minutes']].copy()
     df2b.insert(0, 'day', 'Unassigned') # adds a dummy for the dropdown menu
-
+    
+    display_dataframes()
 
 
     return df2a, df2b

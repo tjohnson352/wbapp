@@ -44,7 +44,14 @@ def time_checker():
         df1b['frametimespan'] = (df1b['end_time'] - df1b['start_time']).dt.total_seconds() / 3600
         df1b['early_break'] = (df1b['break_start'] - df1b['start_time']).dt.total_seconds() / 3600
         df1b['late_break'] = (df1b['end_time'] - df1b['break_end']).dt.total_seconds() / 3600
-        
+
+        # Identify missing breaks
+        missing_break = df1b.loc[
+            (df1b['frametimespan'] > 5) & (df1b['break_time'] == "None"),
+            'day'
+        ].tolist()
+        # Save missing_break as a comma-separated string in the session
+        session['missing_break'] = ", ".join(missing_break)
 
         # Classify rows
         df1b['comments'] = np.where(
@@ -68,44 +75,41 @@ def time_checker():
         contract_frametime = round(contract_frametime + breaks, 1)  # breaks added
 
         # Adjust teaching time for middle managers
-        adjusted_teachtime = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else contract_teachtime
+        contract_teachtime = round(contract_teachtime - 1.5, 1) if middle_manager == "yes" else contract_teachtime
 
         # Calculate overtime
         assigned_teachtime = round(df2c[df2c['type'] == 'Teaching']['minutes'].sum() / 60, 1)
         general_duty = round(df2c[df2c['type'] == 'General']['minutes'].sum() / 60, 1)
 
         # Check and calculate teaching time surplus/deficit
-        if assigned_teachtime - adjusted_teachtime < 0:
-            over_teachtime = f"{abs(round(assigned_teachtime - adjusted_teachtime, 1))} hrs under"
-        else:
-            over_teachtime = round(assigned_teachtime - adjusted_teachtime, 1)
+        over_teachtime = round(assigned_teachtime - contract_teachtime, 1)
+        if over_teachtime < 0:
+            over_teachtime = f"{over_teachtime} (under)"
 
         # Check and calculate frametime surplus/deficit
-        if assigned_frametime - contract_frametime < 0:
-            over_framtime = f"{abs(round(assigned_frametime - contract_frametime, 1))} hrs under"
-        else:
-            over_framtime = round(assigned_frametime - contract_frametime, 1)
+        over_frametime = round(assigned_frametime - contract_frametime, 1)
+        if over_frametime < 0:
+            over_frametime = f"{over_frametime} (under)"
 
         # Check and calculate total overtime surplus/deficit
-        if assigned_frametime + assigned_teachtime - (contract_frametime + adjusted_teachtime) < 0:
-            overtime_total = f"{abs(round(assigned_frametime + assigned_teachtime - (contract_frametime + adjusted_teachtime), 1))} hrs under"
-        else:
-            overtime_total = round(over_framtime + over_teachtime, 1)
+        overtime_total = round((assigned_frametime + assigned_teachtime) - (contract_frametime + contract_teachtime), 1)
+        if overtime_total < 0:
+            overtime_total = f"{overtime_total} (under)"
+
 
         # Save all calculated results to the session
         session.update({
-            'breaks': breaks,
-            'general': general_duty,
+            'breaks_time': breaks,
+            'general_time': general_duty,
             'contract_teachtime': contract_teachtime,
-            'assigned_teach': assigned_teachtime,
-            'adjusted_contract_teach_time': adjusted_teachtime,
+            'assigned_teachtime': assigned_teachtime,
             'contract_frametime': contract_frametime,
             'assigned_frametime': assigned_frametime,
             'over_teachtime': over_teachtime,
-            'over_framtime': over_framtime,
-            'total_overtime': overtime_total
+            'over_frametime': over_frametime,
+            'total_overtime': overtime_total,
+            'missing_break': ", ".join(missing_break)  # Save missing breaks as string
         })
-
 
     except Exception as e:
         current_app.logger.error(f"Error in time_checker: {e}")

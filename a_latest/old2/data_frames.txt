@@ -1,5 +1,0 @@
-df1a: Raw data from the uploaded PDF schedule, capturing all initial schedule information line-by-line.
-df1b: User-provided frametime (planning/preparation time) information for each day.
-df2a: Cleaned and structured data from df1, organized into a consistent layout.
-df2b: Metadata containing the teacher’s and school’s names, linking the data to specific schedules without personal identifiers.
-df3: User-reviewed and updated schedule data, including finalized times, classifications, and day assignments.
