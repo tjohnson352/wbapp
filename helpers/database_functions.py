@@ -61,6 +61,15 @@ def setup_database():
         );
         """)
 
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS survey_responses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            review_q1 TEXT NOT NULL,
+            review_q2 INTEGER NOT NULL,
+            review_q3 TEXT
+        );
+        """)
+
         conn.commit()
         conn.close()
         print("Database setup completed successfully.")
@@ -217,3 +226,36 @@ def clear_all_tables():
 
     except Exception as e:
         print(f"Error deleting tables: {e}")
+
+from flask import session
+import sqlite3
+
+def save_review():
+    """
+    Save review responses stored in the session to the database.
+    Assumes the session contains 'review_q1', 'review_q2', and 'review_q3'.
+    """
+    try:
+        # Retrieve responses from session
+        review_q1 = session.get('review_q1', None)
+        review_q2 = session.get('review_q2', None)
+        review_q3 = session.get('review_q3', "")  # Optional field
+
+        # Ensure required fields are present
+        if not review_q1 or not review_q2:
+            raise ValueError("Required review fields are missing.")
+
+        # Connect to the database and insert the review
+        conn = sqlite3.connect("user_data.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO survey_responses (review_q1, review_q2, review_q3)
+            VALUES (?, ?, ?)
+        """, (review_q1, review_q2, review_q3))
+        conn.commit()
+        conn.close()
+
+        print("Review saved successfully.")
+
+    except Exception as e:
+        print(f"Error saving review: {e}")

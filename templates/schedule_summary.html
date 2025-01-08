@@ -127,8 +127,19 @@
         </tbody>
     </table>
 
+    <h2>Uploaded Schedules</h2>
+    <div class="card-body mt-3">
+        <h3><strong>Schedule Report Description:</strong></h3>
+        <ul style="font-size: smaller; font-style: italic; margin-left: 20px;">
+            <li><strong>Activities Marked with *:</strong> Planning and Lesson Gaps (min. 5-min buffer) are not in the SchoolSoft schedule but included for reference.</li>
+            <li><strong>Activity Types:</strong> Teaching (lessons, subbing), Frametime, Planning, Lesson Gap, Break, General (mentoring, duties, meetings).</li>
+            <li><strong>Issues:</strong> Identifies scheduling problems like insufficient lesson gaps or frametime misalignment.</li>
+        </ul>
+        
+        <p style="font-size: smaller; font-style: italic; margin-top: 10px;">*Planning blocks and gaps are not part of the official schedule but included for reference. General includes non-teaching duties like mentoring and meetings. Unscheduled days are noted as "No schedule reported."</p>
+    </div>
     {% for day, df_key in [('Monday', 'df3a'), ('Tuesday', 'df3b'), ('Wednesday', 'df3c'), ('Thursday', 'df3d'), ('Friday', 'df3e')] %}
-        <h2>Schedule for {{ day }}</h2>
+    <h3>{{ day }}</h3>
         {% if df_key in dataframes and dataframes[df_key] %}
             <table class="table">
                 <thead>
@@ -156,6 +167,16 @@
             <p>No schedule reported for this day.</p>
         {% endif %}
     {% endfor %}
+
+    <!-- Existing content -->
+    <button id="download-report" class="btn btn-primary mt-4">Download PDF Report</button>
 </div>
 
+<script>
+    document.getElementById("download-report").addEventListener("click", function () {
+        window.location.href = "/survey";
+    });
+</script>
+
 {% endblock %}
+

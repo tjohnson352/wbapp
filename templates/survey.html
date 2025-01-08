@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Survey{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Web App</h1>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <h2>Feedback Survey</h2>
+    <p class="description">
+        Please provide your feedback before downloading your report. Your input helps us improve!
+    </p>
+
+    <form method="POST" action="/survey" id="surveyForm" class="form-container">
+        <!-- Question 1 -->
+        <div class="form-group small-width">
+            <label for="review_q1" class="form-label"><strong>1. Did the web app accurately read and display your schedule?</strong></label>
+            <select id="review_q1" name="review_q1" class="form-input" required>
+                <option value="" disabled selected>Select an option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="form-group small-width">
+            <label for="review_q2" class="form-label"><strong>2. Rate the app from 1 to 5:</strong></label>
+            <div class="slider-container">
+                <input type="range" id="review_q2" name="review_q2" class="form-slider" min="1" max="5" step="1" value="3" oninput="updateSliderValue(this.value)" required>
+                <div class="ruler">
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                </div>
+                <p class="slider-value">Your Rating: <span id="slider-value">3</span></p>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="form-group large-width">
+            <label for="review_q3" class="form-label"><strong>3. Suggestions for improvement (optional):</strong></label>
+            <textarea id="review_q3" name="review_q3" class="form-input" rows="4" placeholder="Your suggestions"></textarea>
+        </div>
+
+        <div class="button-container">
+            <button type="submit" class="btn btn-primary">Submit and Download Report</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .upload-container {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .description {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-input {
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .small-width {
+        max-width: 300px; /* Smaller width for Question 1 and 2 */
+    }
+
+    .large-width {
+        max-width: 500px; /* Larger width for Question 3 */
+    }
+
+    .slider-container {
+        position: relative;
+        margin-top: 10px;
+    }
+
+    .form-slider {
+        width: 100%;
+        margin: 5px 0;
+        cursor: pointer;
+    }
+
+    .ruler {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        top: -10px;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .slider-value {
+        font-size: 1rem;
+        color: #333;
+        margin-top: 10px;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        padding: 10px 20px;
+        font-size: 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<script>
+    function updateSliderValue(value) {
+        document.getElementById('slider-value').innerText = value;
+    }
+</script>
+{% endblock %}

@@ -9,6 +9,7 @@ from blueprints.dataframe_view import dataframe_view_bp
 from blueprints.updated_schedule import updated_schedule_blueprint
 from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
+from helpers.database_functions import save_review
 
 
 # Initialize the Flask app
@@ -92,12 +93,31 @@ def schedule_summary():
     )
 
 
-@app.route('/generate_pdf', methods=['GET'])
-def generate_pdf():
-    pdf_path = generate_pdf()
-    return f"PDF report generated and saved to {pdf_path}"
+from flask import render_template, request, redirect, url_for, make_response
+import pdfkit  # Make sure you have installed pdfkit and wkhtmltopdf
 
+@app.route("/survey", methods=["GET", "POST"])
+def survey():
+    if request.method == "POST":
+        # Capture responses
+        review_q1 = request.form.get("review_q1")
+        review_q2 = request.form.get("review_q2")
+        review_q3 = request.form.get("review_q3", "")  # Optional
 
+        # Save responses or process as needed
+        save_review()
+
+        # Generate PDF
+        rendered = render_template("report.html")  # Render the current content as a report
+        pdf = pdfkit.from_string(rendered, False)  # Generate the PDF
+
+        # Send the PDF to the user for download
+        response = make_response(pdf)
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = "attachment; filename=Schedule_Report.pdf"
+        return response
+
+    return render_template("survey.html")  # Render the survey form
 
 if __name__ == '__main__':
     app.run(debug=True)

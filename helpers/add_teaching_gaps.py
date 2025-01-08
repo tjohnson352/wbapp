@@ -264,7 +264,7 @@ def frametime_violations():
             adjustment_time = pd.to_datetime(first_activity['timespan'].split(' - ')[0]) - pd.Timedelta(minutes=adjustment_minutes)
             current_start_time = pd.to_datetime(df.iloc[0]['timespan'].split(' - ')[0])  # Current start time in Start Work row
 
-            if adjustment_time != current_start_time:
+            if adjustment_time < current_start_time:
                 explanation = (
                     "(Special case with 10-min buffer)"
                     if adjustment_minutes == 10 else ""
@@ -282,7 +282,7 @@ def frametime_violations():
             adjustment_time = pd.to_datetime(last_activity['timespan'].split(' - ')[1]) + pd.Timedelta(minutes=adjustment_minutes)
             current_end_time = pd.to_datetime(df.iloc[-1]['timespan'].split(' - ')[1])  # Current end time in End Work row
 
-            if adjustment_time != current_end_time:
+            if adjustment_time > current_end_time:
                 explanation = (
                     "(Special case with 10-min buffer)"
                     if adjustment_minutes == 10 else ""
