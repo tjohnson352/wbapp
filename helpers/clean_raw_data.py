@@ -3,10 +3,24 @@ import re
 from collections import Counter
 
 def clean_data(df1a):
-
+    # Step 0: Remove rows made up of just two digits
+    df1a = df1a[~df1a['Content'].str.match(r'^\d{2}$')].reset_index(drop=True)
+    
+    # Ensure only the 'Content' column is used and reset the index
     df1a = df1a[['Content']]
     df1a.reset_index(drop=True, inplace=True)
     
+    # Step 0.5: Concatenate rows where the first substring is "Time" with the preceding row
+    i = 1  # Start from the second row
+    while i < len(df1a):
+        if df1a.iloc[i]['Content'].startswith("Time"):
+            # Join the current row with the preceding row
+            df1a.at[i - 1, 'Content'] += ' ' + df1a.iloc[i]['Content']
+            # Drop the current row
+            df1a = df1a.drop(df1a.index[i]).reset_index(drop=True)
+        else:
+            i += 1
+
     # Step 1: Concatenate rows ending with a dash ('-') with the next row to handle split content
     i = 0
     while i < len(df1a) - 1:
