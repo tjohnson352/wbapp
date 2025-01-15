@@ -1,0 +1,63 @@
+Privacy Policy for The Schedulizer Web App
+Effective Date: February 1, 2025
+The Schedulizer Web App, operated by IES Föreningens Styrelse i Sveriges Lärare ("we," "our," or "us"), is committed to safeguarding your privacy and ensuring compliance with the General Data Protection Regulation (GDPR). This Privacy Policy explains how we collect, process, and protect your personal data when you use our app.
+
+1. Who We Are
+We are IES Föreningens Styrelse i Sveriges Lärare, a part of Sveriges Lärare. For any questions or concerns regarding this Privacy Policy or your data, please contact us:
+- Email: ies@sverigeslarare.se
+- Phone: Not applicable
+
+2. What Data We Collect
+We only collect data necessary to provide our services, including:
+- Uploaded Schedule (PDF): Schedule PDFs are processed to generate compliance reports but are not stored unless flagged for debugging (error cases only).
+- Name (Encrypted): Your typed name is encrypted and stored to ensure unique identification and prevent duplicate entries.
+- Generated Report Data: The data provided in your compliance report is stored for statistical analysis and service improvement.
+- Error Reports: If you report an issue, the uploaded schedule may be temporarily stored to identify and resolve the problem.
+
+3. How We Use Your Data
+We process your data for the following purposes:
+- Report Generation: To analyze uploaded schedules and generate compliance reports.
+- Error Debugging: To address reported issues and improve our services.
+- Statistical Analysis: To evaluate trends in adherence to the collective agreement.
+We do not use your data for any purpose not explicitly stated in this policy.
+
+4. Legal Basis for Processing
+We process your personal data based on your explicit consent, which you provide by agreeing to the terms and uploading your schedule.
+
+5. How We Protect Your Data
+We implement the following measures to ensure your data is secure:
+- Encryption: All data, including names, is encrypted both in transit and at rest.
+- Access Control: Only authorized personnel have access to stored data.
+- Automated Deletion: PDFs flagged for debugging are automatically deleted after 30 days.
+
+6. Your Rights
+Under GDPR, you have the following rights:
+- Access: You can request a copy of your personal data. However, we automatically provide a copy of your stored personal data in the schedule report generated whenever you use the app.
+- Rectification: You can request corrections to inaccurate or incomplete data.
+- Erasure: You can request the deletion of your encrypted name and associated data.
+- Portability: You can request a copy of your data in a machine-readable format.
+- Objection: You can object to data processing for statistical purposes.
+- Withdraw Consent: You can withdraw your consent at any time by contacting us.
+We will respond to all requests not automatically fulfilled through the generated report within one month.
+
+7. Retention Periods
+- Uploaded Schedules: Deleted after 30 days if stored for error debugging.
+- Generated Report Data: Retained for statistical purposes without linking it to identifiable users.
+- Encrypted Name: Retained to ensure data integrity across multiple app uses.
+
+8. Data Sharing and Transfers
+We handle your data with care and transparency:
+- No Personal Data Sharing: We do not share your personal data with third parties unless required by law or for error debugging within our internal team.
+- Statistical Analysis Sharing: We share aggregated and anonymized statistical analysis derived from user data to evaluate trends and improve services. This shared information does not identify individual users.
+- Data Storage Location: All data is stored within the EU and is not transferred to third countries.
+
+9. Cookies
+We use cookies to enhance your experience and analyze usage. You can manage cookie preferences in your browser settings.
+
+10. Supervisory Authority
+If you believe we have violated your data rights, you have the right to lodge a complaint with your local supervisory authority.
+
+11. Changes to This Policy
+We may update this Privacy Policy periodically to reflect changes in our practices or legal obligations. Updates will be published on this page with the revised effective date.
+
+Thank you for trusting The Schedulizer Web App. If you have any questions or concerns, please contact us at ies@sverigeslarare.se.

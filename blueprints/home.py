@@ -4,21 +4,38 @@ import pandas as pd
 import fitz  # PyMuPDF for reading PDFs
 from werkzeug.utils import secure_filename
 from blueprints.data_processing import structure_data
+from helpers.names_coding import db_save_user_into
 from helpers.clean_raw_data import clean_data
 from helpers.database_functions import setup_database, view_database
-import inspect
 
 home_blueprint = Blueprint('home', __name__)
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
-    
     setup_database()
     view_database()
 
     """Handle home page requests for uploading schedules."""
     if request.method == 'POST':
         try:
+            # Retrieve user inputs for consent
+            consent_checkbox = request.form.get('consent')  # Checkbox input
+            user_name = request.form.get('user_name')  # Typed name input
+
+            # Validate consent inputs
+            if not consent_checkbox:
+                flash('You must agree to the consent checkbox to proceed.', 'error')
+                return render_template('index.html')
+
+            if not user_name or user_name.strip() == '':
+                flash('You must enter your full name to proceed.', 'error')
+                return render_template('index.html')
+
+            # Store consent data in the session
+            session['consent_statement'] = consent_checkbox
+            session['consent_full_name'] = user_name.strip()
+
+            # Handle file upload
             uploaded_file = request.files.get('schedule_pdf')
             if not uploaded_file or not uploaded_file.filename.lower().endswith('.pdf'):
                 flash('Invalid file type. Please upload a PDF file.', 'error')
@@ -69,8 +86,31 @@ def home():
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
 
-            flash('File uploaded and processed successfully!', 'success')
-            return redirect('/meta1')  # Redirect to the next step
+            # Verify name match
+            full_name = session['full_name'].lower()
+            consent_full_name = session['consent_full_name'].lower()
+
+            full_name_parts = full_name.split(" ")
+            session['full_name_parts'] = full_name_parts
+            consent_name_parts = consent_full_name.split(" ")
+            session['consent_name_parts'] = consent_name_parts
+
+
+            if len(consent_name_parts) < 2:
+                flash("Include First and Last names", 'error')
+                print("too short")
+                return render_template('index.html')
+
+            if not all(part in full_name_parts for part in consent_name_parts):
+                flash("Your typed name does not match the name on the schedule. GDPR regulations allow you to consent only to providing your own personal information.", 'error')
+                print("mismatched")
+
+                return render_template('index.html')
+            
+            else:
+                flash('File uploaded and processed successfully!', 'success')
+                db_save_user_into()
+                return redirect('/meta1')  # Redirect to the next step
 
         except Exception as e:
             flash('An unexpected error occurred. Please try again.', 'error')

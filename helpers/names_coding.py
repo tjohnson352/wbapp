@@ -57,39 +57,46 @@ def get_names():
         # Create name_combo
         name_combo = f"{school_name} {full_name}"
 
-        # Connect to the database
-        conn = sqlite3.connect("user_data.db")
-        cursor = conn.cursor()
-
-        # Check if the combination of school_name and full_name already exists
-        cursor.execute("""
-        SELECT id FROM users WHERE school_name = ? AND user_name = ?;
-        """, (school_name, full_name))
-        existing_record = cursor.fetchone()
-
-        if existing_record:
-            # Use the existing ID
-            id = existing_record[0]
-        else:
-            # Generate a new ID and insert it into the database
-            id = generate_id()
-            cursor.execute("""
-            INSERT INTO users (school_name, user_name, id)
-            VALUES (?, ?, ?);
-            """, (school_name, full_name, id))
-
-        conn.commit()
-        conn.close()
-
-        # Save data to the session
-        session['id'] = id
         session['full_name'] = full_name
         session['school_name'] = school_name
         session['name_combo'] = name_combo
-        print("User data processed and saved successfully.")
 
     except Exception as e:
         print(f"Error in get_names: {e}")
+
+
+def db_save_user_into():
+        
+    school_name = session['school_name']
+    full_name = session['full_name']
+
+    conn = sqlite3.connect("user_data.db")
+    cursor = conn.cursor()
+
+    # Check if the combination of school_name and full_name already exists
+    cursor.execute("""
+    SELECT id FROM users WHERE school_name = ? AND user_name = ?;
+    """, (school_name, full_name))
+    existing_record = cursor.fetchone()
+
+    if existing_record:
+        # Use the existing ID
+        id = existing_record[0]
+    else:
+        # Generate a new ID and insert it into the database
+        id = generate_id()
+        cursor.execute("""
+        INSERT INTO users (school_name, user_name, id)
+        VALUES (?, ?, ?);
+        """, (school_name, full_name, id))
+
+    conn.commit()
+    conn.close()
+
+    # Save data to the session
+    session['id'] = id
+
+    print("User data processed and saved successfully.")
 
 
 def decrypt():

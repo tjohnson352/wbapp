@@ -21,7 +21,7 @@ def clean_data(df1a):
         else:
             i += 1
 
-    # Step 1: Concatenate rows ending with a dash ('-') with the next row to handle split content
+    # Step 1a: Concatenate rows ending with a dash ('-') with the next row to handle split content
     i = 0
     while i < len(df1a) - 1:
         if len(df1a.loc[i, 'Content']) > 1 and df1a.loc[i, 'Content'].endswith('-'):
@@ -31,7 +31,30 @@ def clean_data(df1a):
             i += 1  # Move to the next row
         else:
             i += 1      
-    
+
+    # Step 1b: Concatenate rows starting with a dash ('-') with the preceding row to handle split content
+    i = 1  # Start from the second row to avoid index out of range error
+    while i < len(df1a):
+        if len(df1a.loc[i, 'Content']) > 1 and df1a.loc[i, 'Content'].startswith('-'):
+            # Concatenate the current row's content with the previous row's content using " - " as a joiner
+            df1a.loc[i - 1, 'Content'] += " - " + df1a.loc[i, 'Content'].lstrip('-').strip()
+            # Mark the current row for deletion
+            df1a = df1a.drop(index=i).reset_index(drop=True)
+        else:
+            i += 1  # Move to the next row
+
+    # Step: Concatenate rows that are exactly "Junior" or "Break" with the next row
+    i = 0  # Start from the first row
+    while i < len(df1a) - 1:  # Ensure we don't go out of range
+        # Check if the current row is exactly "Junior" or "Break"
+        if df1a.loc[i, 'Content'].strip() in ["Lunch", "Junior"]:
+            # Concatenate the current row's content with the next row's content
+            df1a.loc[i, 'Content'] += " " + df1a.loc[i + 1, 'Content']
+            # Drop the next row and reset the index
+            df1a = df1a.drop(index=i + 1).reset_index(drop=True)
+        else:
+            i += 1  # Move to the next row
+   
     # Step 2: Concatenate rows containing a single dash followed by rows with a time pattern
     i = 0
     while i < len(df1a) - 1:

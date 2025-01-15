@@ -1,8 +1,10 @@
 General:
-meet, lunch, hall, tutorial, mentor
+meet, lunch, hall, tutorial, mentor, hoy time, hod time, junior break
 
 Break: 
 break
 
 Teaching: 
 cover, sub
+
+test

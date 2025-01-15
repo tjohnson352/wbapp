@@ -42,6 +42,26 @@
         </div>
 
         <div class="input-container">
+            <label for="consent" style="font-weight: bold;">
+                <input type="checkbox" name="consent" id="consent" required>
+                I confirm that I am uploading my own schedule and agree to the processing of my data as outlined in the <a href="/privacy_policy" target="_blank">Privacy Policy</a>.
+            </label>
+        </div>
+
+        <div class="input-container">
+            <label for="user_name" style="font-weight: bold;">Sign with your full name:</label>
+            <input 
+                type="text" 
+                name="user_name" 
+                id="user_name" 
+                class="file-input" 
+                placeholder="Type your FIRST and LAST names here" 
+                required
+                pattern="\S+\s+\S+" 
+                title="Enter your first and last name">
+        </div>
+
+        <div class="input-container">
             <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
         </div>
     </form>

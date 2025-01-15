@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block header %}
+<h1 class="page-header">The Schedulizer Privacy Policy</h1>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-policy-container">
+    <h2 class="effective-date">February 1, 2025</h2>
+    <p class="description">
+        Welcome to the <strong>The Schedulizer Web App</strong> Privacy Policy. This page outlines how we handle, store, and protect your data in compliance with the General Data Protection Regulation (GDPR).
+    </p>
+
+    <h3 class="section-title">Policy Details</h3>
+    <div class="policy-content">
+        The Schedulizer Web App, operated by <strong>IES Föreningens Styrelse i Sveriges Lärare</strong>, is committed to safeguarding your privacy and ensuring compliance with the General Data Protection Regulation (GDPR). This Privacy Policy explains how we collect, process, and protect your personal data when you use our app.</p>
+
+        <h4 class="subsection-title">1. Who We Are</h4>
+        <p>We are <strong>IES Föreningens Styrelse i Sveriges Lärare</strong>. 
+            For any questions or concerns regarding this Privacy Policy or your data, 
+            please contact us via email at 
+            <a href="mailto:ies@sverigeslarare.se">ies@sverigeslarare.se</a>.</li>
+
+        <h4 class="subsection-title">2. What Data We Collect</h4>
+        <ul>
+            <li><strong>Uploaded Schedule (PDF)</strong>: Schedule PDFs are processed to generate compliance reports but are not stored unless flagged for debugging (error cases only).</li>
+            <li><strong>Name (Encrypted)</strong>: Your typed name is encrypted and stored to ensure unique identification and prevent duplicate entries.</li>
+            <li><strong>Generated Report Data</strong>: The data provided in your compliance report is stored for statistical analysis and service improvement.</li>
+            <li><strong>Error Reports</strong>: If you report an issue, the uploaded schedule may be temporarily stored to identify and resolve the problem.</li>
+        </ul>
+
+        <h4 class="subsection-title">3. How We Use Your Data</h4>
+        <p>We process your data for the following purposes:</p>
+        <ul>
+            <li><strong>Report Generation</strong>: To analyze uploaded schedules and generate compliance reports.</li>
+            <li><strong>Error Debugging</strong>: To address reported issues and improve our services.</li>
+            <li><strong>Statistical Analysis</strong>: To evaluate trends in adherence to the collective agreement.</li>
+        </ul>
+        <p>We do not use your data for any purpose not explicitly stated in this policy.</p>
+
+        <h4 class="subsection-title">4. Legal Basis for Processing</h4>
+        <p>We process your personal data based on your explicit consent, which you provide by agreeing to the terms and uploading your schedule.</p>
+
+        <h4 class="subsection-title">5. How We Protect Your Data</h4>
+        <p>We implement the following measures to ensure your data is secure:</p>
+        <ul>
+            <li><strong>Encryption:</strong> All data, including names, is encrypted both in transit and at rest.</li>
+            <li><strong>Access Control:</strong> Only authorized personnel have access to stored data.</li>
+            <li><strong>Automated Deletion:</strong> PDFs flagged for debugging are automatically deleted after 30 days.</li>
+        </ul>
+
+        <h4 class="subsection-title">6. Your Rights</h4>
+        <p>Under GDPR, you have the following rights:</p>
+        <ul>
+            <li><strong>Access:</strong> You can request a copy of your personal data. However, we automatically provide a copy of your stored personal data in the schedule report generated whenever you use the app.</li>
+            <li><strong>Rectification:</strong> You can request corrections to inaccurate or incomplete data.</li>
+            <li><strong>Erasure:</strong> You can request the deletion of your encrypted name and associated data.</li>
+            <li><strong>Portability:</strong> You can request a copy of your data in a machine-readable format.</li>
+            <li><strong>Objection:</strong> You can object to data processing for statistical purposes.</li>
+            <li><strong>Withdraw Consent:</strong> You can withdraw your consent at any time by contacting us.</li>
+        </ul>
+        <p>We will respond to all requests not automatically fulfilled through the generated report within one month.</p>
+
+        <h4 class="subsection-title">7. Retention Periods</h4>
+        <ul>
+            <li><strong>Uploaded Schedules:</strong> Deleted after 30 days if stored for error debugging.</li>
+            <li><strong>Generated Report Data:</strong> Retained for statistical purposes without linking it to identifiable users.</li>
+            <li><strong>Encrypted Name:</strong> Retained to ensure data integrity across multiple app uses.</li>
+        </ul>
+
+        <h4 class="subsection-title">8. Data Sharing and Transfers</h4>
+        <p>We handle your data with care and transparency:</p>
+        <ul>
+            <li><strong>No Personal Data Sharing:</strong> We do not share your personal data with third parties unless required by law or for error debugging within our internal team.</li>
+            <li><strong>Statistical Analysis Sharing:</strong> We share aggregated and anonymized statistical analysis derived from user data to evaluate trends and improve services. This shared information does not identify individual users.</li>
+            <li><strong>Data Storage Location:</strong> All data is stored within the EU and is not transferred to third countries.</li>
+        </ul>
+
+        <h4 class="subsection-title">9. Cookies</h4>
+        <p>We use cookies to enhance your experience and analyze usage. You can manage cookie preferences in your browser settings.</p>
+
+        <h4 class="subsection-title">10. Supervisory Authority</h4>
+        <p>If you believe we have violated your data rights, you have the right to lodge a complaint with your local supervisory authority.</p>
+
+        <h4 class="subsection-title">11. Changes to This Policy</h4>
+        <p>We may update this Privacy Policy periodically to reflect changes in our practices or legal obligations. Updates will be published on this page with the revised effective date.</p>
+
+        <p>Thank you for trusting <strong>The Schedulizer Web App</strong>. If you have any questions or concerns, please contact us at <a href="mailto:ies@sverigeslarare.se">ies@sverigeslarare.se</a>.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .privacy-policy-container {
+        background-color: #ffffff;
+        padding: 20px;
+        margin: 30px auto;
+        max-width: 900px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .effective-date {
+        color: #2980b9;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .description, .note {
+        font-size: 1.1em;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .section-title {
+        font-size: 1.5em;
+        color: #34495e;
+        margin-top: 20px;
+        border-bottom: 2px solid #e1e8ed;
+        padding-bottom: 5px;
+    }
+
+    .subsection-title {
+        font-size: 1.25em;
+        color: #2c3e50;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .policy-content {
+        font-size: 1rem;
+        color: #333;
+        line-height: 1.8;
+    }
+
+    ul {
+        padding-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    ul li {
+        margin-bottom: 10px;
+    }
+
+    a {
+        color: #2980b9;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
