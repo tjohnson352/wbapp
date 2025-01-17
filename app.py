@@ -6,7 +6,6 @@ from io import StringIO
 from blueprints.home import home_blueprint
 from blueprints.edit_schedule import edit_schedule_blueprint
 from blueprints.dataframe_view import dataframe_view_bp
-from blueprints.updated_schedule import updated_schedule_blueprint
 from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
 from helpers.database_functions import save_review
@@ -34,7 +33,6 @@ app.register_blueprint(home_blueprint)
 app.register_blueprint(meta1_blueprint)
 app.register_blueprint(edit_schedule_blueprint)
 app.register_blueprint(dataframe_view_bp)
-app.register_blueprint(updated_schedule_blueprint)
 app.register_blueprint(report_blueprint)
 app.register_blueprint(privacy_policy_blueprint)
 
@@ -97,8 +95,8 @@ def schedule_summary():
     )
 
 
-from flask import render_template, request, redirect, url_for, make_response
-import pdfkit  # Make sure you have installed pdfkit and wkhtmltopdf
+from flask import render_template, request, session, make_response, redirect, url_for
+import pdfkit
 
 @app.route("/survey", methods=["GET", "POST"])
 def survey():
@@ -106,22 +104,78 @@ def survey():
         # Capture responses
         review_q1 = request.form.get("review_q1")
         review_q2 = request.form.get("review_q2")
-        review_q3 = request.form.get("review_q3", "")  # Optional
+        review_q3 = request.form.get("review_q3", "No suggestions provided.")  # Default if empty
 
-        # Save responses or process as needed
-        save_review()
+        # Store the responses in the session
+        session['review_q1'] = review_q1
+        session['review_q2'] = review_q2
+        session['review_q3'] = review_q3
 
-        # Generate PDF
-        rendered = render_template("report.html")  # Render the current content as a report
-        pdf = pdfkit.from_string(rendered, False)  # Generate the PDF
+        # Redirect to the GET request to reload the page and display feedback
+        return redirect(url_for('survey'))
 
-        # Send the PDF to the user for download
-        response = make_response(pdf)
-        response.headers["Content-Type"] = "application/pdf"
-        response.headers["Content-Disposition"] = "attachment; filename=Schedule_Report.pdf"
-        return response
+    # Check if the form has been submitted
+    submitted = 'review_q1' in session
 
-    return render_template("survey.html")  # Render the survey form
+    # Pass the stored responses to the template
+    return render_template(
+        "survey.html",
+        review_q1=session.get('review_q1'),
+        review_q2=session.get('review_q2'),
+        review_q3=session.get('review_q3'),
+        submitted=submitted
+    )
+
+
+from flask import render_template, request, session, make_response
+import pdfkit
+
+@app.route("/download_pdf")
+def download_pdf():
+    # Retrieve full name from the session
+    full_name = session.get('full_name', 'User')  # Default to "User" if not in session
+
+    # Clean up the full name for the filename (e.g., replace spaces with underscores)
+    sanitized_name = full_name.replace(" ", "_")
+
+    # Generate the dynamic filename
+    file_name = f"{sanitized_name}_schedule_report.pdf"
+
+    # Use the same context as `schedule_summary()` to generate the PDF
+    ft_days = session.get('ft_days', [])
+    off_days = session.get('off_days', [])
+    df_names = session.get('df_names', [])
+    raw_dataframes = session.get('dataframes', {})
+
+    # Convert JSON strings back to DataFrames and then to JSON-like structures
+    dataframes = {}
+    for key, value in raw_dataframes.items():
+        if value:  # Check if value is not None
+            try:
+                df = pd.read_json(StringIO(value))
+                dataframes[key] = df.to_dict(orient='records')  # Convert to list of dictionaries
+            except Exception as e:
+                print(f"Error loading DataFrame {key}: {e}")
+
+    # Render the `schedule_summary.html` template with the context
+    rendered = render_template(
+        'schedule_summary.html',
+        ft_days=ft_days,
+        off_days=off_days,
+        df_names=df_names,
+        dataframes=dataframes,
+        plain_text_report=session.get('plain_text_report', "No report available."),
+        plain_text_schedule=session.get('plain_text_schedule', "No schedule available.")
+    )
+
+    # Generate the PDF
+    pdf = pdfkit.from_string(rendered, False)
+
+    # Send the PDF to the user for download with the dynamic filename
+    response = make_response(pdf)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)

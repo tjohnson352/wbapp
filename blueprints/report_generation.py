@@ -6,69 +6,6 @@ import os
 
 report_blueprint = Blueprint('report', __name__)
 
-@report_blueprint.route('/generate-report', methods=['GET'])
-def generate_report():
-    try:
-        explanations = read_explanation_file("helpers/explanation.txt")
-
-        # Retrieve teacher name, school name, and ft_days from session
-        full_name = session.get('full_name', 'Unknown Teacher')
-        school_name = session.get('school_name', 'Unknown School')
-        ft_days = session.get('ft_days', [])
-
-        # Determine off days dynamically using the `off_days` function
-        calculated_off_days = off_days(ft_days)
-
-        # Retrieve DataFrames for each day from the session
-        day_dfs = {
-            'Monday': pd.read_json(StringIO(session.get('df3a', '{}'))),
-            'Tuesday': pd.read_json(StringIO(session.get('df3b', '{}'))),
-            'Wednesday': pd.read_json(StringIO(session.get('df3c', '{}'))),
-            'Thursday': pd.read_json(StringIO(session.get('df3d', '{}'))),
-            'Friday': pd.read_json(StringIO(session.get('df3e', '{}'))),
-        }
-
-        # Prepare schedules by filtering OFF days and formatting
-        filtered_schedules, included_days, off_days_result = prepare_schedules(day_dfs, ft_days)
-
-        # Ensure off_days_result is updated with the calculated off days
-        off_days_result = calculated_off_days
-
-        # Generate the PDF
-        output_path = "uploads/output_report.pdf"
-        generate_pdf_with_schedules(
-            full_name, school_name, explanations, filtered_schedules, included_days, off_days_result, output_path
-        )
-
-        # Return the PDF as a downloadable file
-        return send_file(output_path, as_attachment=True)
-
-    except Exception as e:
-        return {"error": str(e)}, 500
-
-
-
-def read_explanation_file(filepath):
-    """
-    Reads the explanation text file and returns its content as a dictionary for easy integration into the report.
-    """
-    content = {}
-    current_section = None
-
-    with open(filepath, 'r', encoding='utf-8') as file:
-        for line in file:
-            line = line.strip()
-            if line.startswith("####"):
-                current_section = line[4:].strip()
-                content[current_section] = []
-            elif current_section:
-                content[current_section].append(line)
-
-    for section in content:
-        content[section] = "\n".join(content[section])
-    print(content)
-    return content
-
 # Function to prepare schedules for the PDF report
 def prepare_schedules(day_dfs, ft_days):
     """

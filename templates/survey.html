@@ -8,6 +8,7 @@
 
 {% block content %}
 <div class="upload-container">
+    {% if not submitted %}
     <h2>Feedback Survey</h2>
     <p class="description">
         Please provide your feedback before downloading your report. Your input helps us improve!
@@ -27,17 +28,11 @@
         <!-- Question 2 -->
         <div class="form-group small-width">
             <label for="review_q2" class="form-label"><strong>2. Rate the app from 1 to 5:</strong></label>
-            <div class="slider-container">
-                <input type="range" id="review_q2" name="review_q2" class="form-slider" min="1" max="5" step="1" value="3" oninput="updateSliderValue(this.value)" required>
-                <div class="ruler">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>4</span>
-                    <span>5</span>
-                </div>
-                <p class="slider-value">Your Rating: <span id="slider-value">3</span></p>
+            <input type="range" id="review_q2" name="review_q2" class="form-slider" min="1" max="5" step="1" value="3" oninput="updateSliderValue(this.value)" required>
+            <div class="ruler">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
             </div>
+            <p class="slider-value">Your Rating: <span id="slider-value">3</span></p>
         </div>
 
         <!-- Question 3 -->
@@ -47,26 +42,92 @@
         </div>
 
         <div class="button-container">
-            <button type="submit" class="btn btn-primary">Submit and Download Report</button>
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
         </div>
     </form>
+    {% else %}
+    <h2 class="thank-you-title">Thank You for Your Feedback!</h2>
+    <p>We greatly appreciate your input! Here's a summary of your responses:</p>
+
+    <div class="survey-responses">
+        <div class="response-item">
+            <p class="question"><strong>1. Did the web app accurately read and display your schedule?</strong></p>
+            <p class="answer">{{ review_q1 }}</p>
+        </div>
+
+        <div class="response-item">
+            <p class="question"><strong>2. Rate the app from 1 to 5:</strong></p>
+            <p class="answer">{{ review_q2 }}</p>
+        </div>
+
+        <div class="response-item">
+            <p class="question"><strong>3. Suggestions for improvement:</strong></p>
+            <p class="answer">{{ review_q3 }}</p>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <a href="/download_pdf" class="btn btn-primary">Download Your Report</a>
+    </div>
+    {% endif %}
 </div>
 
 <style>
-    .upload-container {
-        margin: 20px;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
+
+
+    /* Titles and Descriptions */
+    .thank-you-title {
+        font-size: 2rem;
+        color: #2980b9;
+        margin-bottom: 15px;
+        text-align: center;
     }
 
-    .description {
+    /* Survey Responses */
+    .survey-responses {
+        margin: 20px 0;
+    }
+
+    .response-item {
+        margin-bottom: 15px;
+    }
+
+    .response-item .question {
         font-size: 1rem;
-        color: #666;
-        margin-bottom: 20px;
+        color: #555;
     }
 
+    .response-item .answer {
+        font-size: 1rem;
+        font-style: italic;
+        color: #b92929;
+        margin-left: 15px;
+    }
+
+    /* Button Styling */
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        text-decoration: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: bold;
+        background-color: #2980b9;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    /* Form Elements */
     .form-container {
         display: flex;
         flex-direction: column;
@@ -91,13 +152,14 @@
     }
 
     .small-width {
-        max-width: 300px; /* Smaller width for Question 1 and 2 */
+        max-width: 300px;
     }
 
     .large-width {
-        max-width: 500px; /* Larger width for Question 3 */
+        max-width: 500px;
     }
 
+    /* Slider Styling */
     .slider-container {
         position: relative;
         margin-top: 10px;
@@ -122,25 +184,6 @@
         font-size: 1rem;
         color: #333;
         margin-top: 10px;
-    }
-
-    .button-container {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .btn-primary {
-        padding: 10px 20px;
-        font-size: 1rem;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
     }
 </style>
 

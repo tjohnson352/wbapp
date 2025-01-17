@@ -183,7 +183,7 @@ def gap_violations(df, df_name='df'):
 
                 # Flag gap issue if current_end overlaps with next_start
                 if current_end > next_start:
-                    df.at[i, 'issues'] = 'Gap Issue: Minimum 5-minute buffer required before and after lessons.'
+                    df.at[i, 'issues'] = 'Minimum 5-minute buffer required before and after lessons.'
                     gap_issues_count += 1  # Increment the gap issue count
             except Exception as e:
                 # Handle timespan parsing errors

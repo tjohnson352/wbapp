@@ -18,6 +18,9 @@ def home():
     """Handle home page requests for uploading schedules."""
     if request.method == 'POST':
         try:
+            # Clear the session when a new file is uploaded
+            session.clear()
+            
             # Retrieve user inputs for consent
             consent_checkbox = request.form.get('consent')  # Checkbox input
             user_name = request.form.get('user_name')  # Typed name input
