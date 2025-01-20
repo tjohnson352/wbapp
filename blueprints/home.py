@@ -6,13 +6,14 @@ from werkzeug.utils import secure_filename
 from blueprints.data_processing import structure_data
 from helpers.names_coding import db_save_user_into
 from helpers.clean_raw_data import clean_data
-from helpers.database_functions import setup_database, view_database
+from helpers.database_functions import setup_database, view_database, setup_school_table
 
 home_blueprint = Blueprint('home', __name__)
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
     setup_database()
+    setup_school_table()
     view_database()
 
     """Handle home page requests for uploading schedules."""

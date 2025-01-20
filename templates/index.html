@@ -1,70 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Upload Your Schedule{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block header %}
-<h1 class="page-header">The Schedulizer Web App</h1>
 {% endblock %}
 
 {% block content %}
-<div class="upload-container">
-    <h2>Upload Your Schedule</h2>
+<div class="login-container">
+    <h2 style="color: #2980b9;">
+        The Schedulizer <span style="color: gray; font-weight: normal;">Login</span>
+    </h2>  
     <p class="description">
-        Upload your schedule PDF to start analyzing your work hours and ensuring compliance with the 
-        <strong>Collective Agreement</strong>. Please ensure the file is in the correct format as outlined below.
+        This app automatically analyzes teachers' schedules, 
+        delivering key metrics to ensure alignment with the collective agreement. 
+        It is designed to identify problem areas and offer suggestions to improve compliance.
     </p>
 
-    <h3 class="instructions-header">Steps to Upload Your Schedule:</h3>
-    <ol class="instructions-list">
-        <li>Log in to <strong><a href="https://sms.schoolsoft.se/engelska/jsp/Login.jsp?eventMessage=ERR_Not_Logged_In" target="_blank">SchoolSoft</a></strong>.</li>
-        <li>Navigate to <strong>"My Schedule"</strong> in the left menu.</li>
-        <li>
-            Click the 
-            <img src="/static/images/pdf.gif" alt="PDF Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;">
-            icon to download your schedule (do not click the 
-            <img src="/static/images/printer.png" alt="Printer Icon" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"> 
-            icon).
-        </li>
-        <li>Return here and click <strong>Choose File</strong> below.</li>
-        <li>Locate the downloaded PDF (usually in your <strong>Downloads folder</strong>), click <strong>Open</strong>, and then click <strong>Upload Schedule</strong>.</li>
-    </ol>
-
-    <form method="post" enctype="multipart/form-data" class="upload-form">
+    <form action="/login" method="POST" class="login-form">
         <div class="input-container">
-            <label for="schedule_pdf" style="font-weight: bold;">Upload Schedule (PDF):</label>
+            <label for="email" style="font-weight: bold;">Email Address:</label>
             <input 
-                type="file" 
-                name="schedule_pdf" 
-                id="schedule_pdf" 
-                accept="application/pdf" 
+                type="email" 
+                name="email" 
+                id="email" 
                 class="file-input" 
+                placeholder="Enter your email address" 
                 required>
         </div>
 
         <div class="input-container">
-            <label for="consent" style="font-weight: bold;">
-                <input type="checkbox" name="consent" id="consent" required>
-                I confirm that I am uploading my own schedule and agree to the processing of my data as outlined in the <a href="/privacy_policy" target="_blank">Privacy Policy</a>.
-            </label>
-        </div>
-
-        <div class="input-container">
-            <label for="user_name" style="font-weight: bold;">Sign with your full name:</label>
+            <label for="password" style="font-weight: bold;">Password:</label>
             <input 
-                type="text" 
-                name="user_name" 
-                id="user_name" 
+                type="password" 
+                name="password" 
+                id="password" 
                 class="file-input" 
-                placeholder="Type your FIRST and LAST names here" 
-                required
-                pattern="\S+\s+\S+" 
-                title="Enter your first and last name">
+                placeholder="Enter your password" 
+                required>
         </div>
 
         <div class="input-container">
-            <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
+            <button type="submit" class="btn-primary">Login</button>
         </div>
     </form>
+
+    <div class="register-link">
+        <p>Don't have an account? <a href="/register">Register here</a>.</p>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -78,6 +60,22 @@
 
 {% block extra_styles %}
 <style>
+    .login-container {
+        max-width: 400px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
     .btn-primary {
         background-color: #2980b9;
         color: #ffffff;
@@ -105,15 +103,9 @@
         box-sizing: border-box;
     }
 
-    .upload-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
     .description {
-        font-size: 1.1em;
-        line-height: 1.6;
+        font-size: 0.7em; 
+        line-height: 1.24; 
         color: #333;
         text-align: justify;
     }
@@ -123,14 +115,19 @@
         color: #000;
     }
 
-    .instructions-header {
-        margin-top: 20px;
-        font-size: 1.2em;
+    .register-link {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9em;
     }
 
-    .instructions-list {
-        margin-left: 20px;
-        line-height: 1.5;
+    .register-link a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
     }
 
     .alert {

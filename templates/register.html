@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <h2 style="color: #2980b9;">
+        The Schedulizer <span style="color: gray; font-weight: normal;">Register an account</span>
+    </h2>  
+    <p class="description">
+        Create an account to access tools for analyzing your work schedule. Already have an account? <a href="/">Sign in here</a>.
+    </p>
+
+    <form action="/register" method="POST" class="register-form" onsubmit="return validateEmail()">
+        <div class="input-container">
+            <label for="first_name" style="font-weight: bold;">First Name:</label>
+            <input 
+                type="text" 
+                name="first_name" 
+                id="first_name" 
+                class="file-input" 
+                placeholder="Enter your first name" 
+                required>
+        </div>
+
+        <div class="input-container">
+            <label for="last_name" style="font-weight: bold;">Last Name:</label>
+            <input 
+                type="text" 
+                name="last_name" 
+                id="last_name" 
+                class="file-input" 
+                placeholder="Enter your last name" 
+                required>
+        </div>
+
+        <div class="input-container">
+            <label for="email" style="font-weight: bold;">Email:</label>
+            <input 
+                type="email" 
+                name="email" 
+                id="email" 
+                class="file-input" 
+                placeholder="Enter your email address" 
+                required>
+        </div>
+
+        <div class="input-container">
+            <label for="school" style="font-weight: bold;">School:</label>
+            <select name="school_id" id="school" class="file-input" required>
+                <option value="">Select your school</option>
+                {% for school in schools %}
+                    <option value="{{ school }}">{{ school }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="input-container">
+            <label for="password" style="font-weight: bold;">Password:</label>
+            <input 
+                type="password" 
+                name="password" 
+                id="password" 
+                class="file-input" 
+                placeholder="Choose a password" 
+                required>
+        </div>
+        
+        <div class="input-container">
+            <label for="confirm_password" style="font-weight: bold;">Confirm Password:</label>
+            <input 
+                type="password" 
+                name="confirm_password" 
+                id="confirm_password" 
+                class="file-input" 
+                placeholder="Re-enter your password" 
+                required>
+        </div>
+        
+        <div id="password-message" class="password-message">
+            <!-- Feedback dynamically updates here -->
+        </div>
+        
+
+        <div class="input-container">
+            <label for="consent" style="font-weight: normal;">
+                <input 
+                    type="checkbox" 
+                    name="consent" 
+                    id="consent" 
+                    required>
+                I agree to the <a href="/privacy_policy" target="_blank">privacy policy</a>.
+            </label>
+        </div>
+
+        <div class="input-container">
+            <button type="submit" class="btn-primary">Register</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .register-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .description {
+        font-size: 0.9em;
+        line-height: 1.4;
+        color: #333;
+        text-align: justify;
+        font-style: italic;
+    }
+
+    .register-link {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .register-link a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function validateEmail() {
+        const email = document.getElementById('email').value;
+        const invalidDomain = "engelska.se";
+
+        if (email.endsWith(`@${invalidDomain}`)) {
+            alert("Work emails ending in 'engelska.se' are not allowed. Please use a different email.");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

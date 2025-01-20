@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, flash, session
 from flask_session import Session
+import sqlite3
 import os
 import pandas as pd
 from io import StringIO
@@ -9,8 +10,9 @@ from blueprints.dataframe_view import dataframe_view_bp
 from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
 from helpers.database_functions import save_review
+from helpers.load_schools import load_schools
 from blueprints.privacy_policy import privacy_policy_blueprint
-
+import bcrypt
 
 
 # Initialize the Flask app
@@ -176,6 +178,54 @@ def download_pdf():
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
     return response
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Process registration form
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        school_id = request.form['school_id']
+        password = request.form['password']
+        consent = request.form.get('consent') == 'on'  # Checkbox value is "on" if checked
+
+        try:
+            # Hash the password
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+            # Database operations
+            conn = sqlite3.connect("user_data.db")
+            cursor = conn.cursor()
+
+            # Insert user into the `users` table
+            cursor.execute("""
+                INSERT INTO users (first_name, last_name, email, password_hash, consent)
+                VALUES (?, ?, ?, ?, ?)
+            """, (first_name, last_name, email, hashed_password.decode('utf-8'), consent))
+            user_id = cursor.lastrowid  # Retrieve the newly created user's ID
+
+            # Insert school_name into the `meta1` table
+            cursor.execute("""
+                INSERT INTO meta1 (id, school_name)
+                VALUES (?, ?)
+            """, (user_id, school_name))
+            
+            conn.commit()
+            conn.close()
+
+            flash("Registration successful! Please verify your email to activate your account.", "success")
+            return redirect('/login')
+        except sqlite3.IntegrityError:
+            flash("Email or username already exists. Please use another.", "error")
+            return redirect('/register')
+        except Exception as e:
+            flash(f"An unexpected error occurred: {e}", "error")
+            return redirect('/register')
+
+    # Load schools and pass them to the template
+    schools = load_schools()
+    return render_template('register.html', schools=schools)
 
 if __name__ == '__main__':
     app.run(debug=True)
