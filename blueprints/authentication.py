@@ -58,76 +58,87 @@ def login():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # Load the school list (as before)
-    school_file_path = os.path.join('helpers', 'school_list.txt')
+    # Ensure the database and tables are set up
+    from helpers.database_functions import setup_database, view_database, setup_school_table
+    setup_database()
+    setup_school_table()
+    view_database()
+
+    # Fetch the school names from the database
+    schools = []
     try:
-        with open(school_file_path, 'r', encoding='utf-8') as file:
-            schools = [line.strip() for line in file.readlines()]
-    except FileNotFoundError:
-        flash("School list file not found. Please contact the administrator.", "error")
-        schools = []
-    except UnicodeDecodeError:
-        flash("Error decoding the school list file. Please ensure it is saved in UTF-8 encoding.", "error")
-        schools = []
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT school_name FROM schools")
+        schools = [row[0] for row in cursor.fetchall()]  # Fetch all school names
+        conn.close()
+    except Exception as e:
+        flash("An error occurred while retrieving the school list. Please try again later.", "error")
+        print(f"Error: {e}")
 
     if request.method == 'POST':
-        print(request.form.to_dict())  # Log all submitted form data
-
-        # Collect input data
-        first_name = request.form.get('first_name').strip()
-        last_name = request.form.get('last_name').strip()
-        email = request.form.get('email').strip()
-        school = request.form.get('school').strip()
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+        # Safely retrieve form inputs with default values
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
+        email = request.form.get('email', '').strip()
+        school = request.form.get('school', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
 
         # Validate required fields
         if not all([first_name, last_name, email, school, password, confirm_password]):
             flash("All fields are required. Please fill in all the details.", "error")
             return render_template('register.html', schools=schools)
 
-        # Validate password requirements
+        # Ensure the selected school is valid
+        if school not in schools:
+            flash("Please select a valid school from the dropdown.", "error")
+            return render_template('register.html', schools=schools)
+
+        # Password validation (e.g., length, alphanumeric)
         password_regex = re.compile(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$')
         if not password_regex.match(password):
             flash("Password must be at least 6 characters long, alphanumeric, and include at least one special character.", "error")
             return render_template('register.html', schools=schools)
 
-        # Validate password match
+        # Check password match
         if password != confirm_password:
             flash("Passwords do not match. Please try again.", "error")
             return render_template('register.html', schools=schools)
 
-        # Proceed with hashing and database insertion (as before)
-        hashed_password = generate_password_hash(password)
-
+        # Save user data to the database
         try:
-            with get_db_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
-                if cursor.fetchone():
-                    flash("An account with this email already exists. Please log in.", "error")
-                    return render_template('register.html', schools=schools)
+            conn = get_db_connection()
+            cursor = conn.cursor()
 
-                # Insert user data into users and user_auth tables
-                cursor.execute("""
-                    INSERT INTO users (first_name, last_name, email, school_id, consent)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (first_name, last_name, email, school, True))
+            # Check if email already exists
+            cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+            if cursor.fetchone():
+                flash("An account with this email already exists. Please log in.", "error")
+                return render_template('register.html', schools=schools)
 
-                user_id = cursor.lastrowid
+            # Insert user data
+            cursor.execute("""
+                INSERT INTO users (first_name, last_name, email, school_id, consent)
+                VALUES (?, ?, ?, ?, ?)
+            """, (first_name, last_name, email, school, True))
 
-                # Add authentication data
-                cursor.execute("""
-                    INSERT INTO user_auth (user_id, password_hash)
-                    VALUES (?, ?)
-                """, (user_id, hashed_password))
+            user_id = cursor.lastrowid
 
-                conn.commit()
+            # Insert authentication data
+            cursor.execute("""
+                INSERT INTO user_auth (user_id, password_hash)
+                VALUES (?, ?)
+            """, (user_id, generate_password_hash(password)))
+
+            conn.commit()
+            conn.close()
+
             flash("Account created successfully! Please log in.", "success")
             return redirect(url_for('auth_bp.login'))
         except Exception as e:
             flash("An error occurred during registration. Please try again later.", "error")
             print(f"Error: {e}")
-            return render_template('register.html', schools=schools)
 
     return render_template('register.html', schools=schools)
+
