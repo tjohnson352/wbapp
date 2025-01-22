@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2 style="color: #2980b9;">
+        The Schedulizer <span style="color: gray; font-weight: normal;">Login</span>
+    </h2>  
+    <p class="description">
+        This app automatically analyzes teachers' schedules, 
+        delivering key metrics to ensure alignment with the collective agreement. 
+        It is designed to identify problem areas and offer suggestions to improve compliance.
+    </p>
+
+    <form action="/login" method="POST" class="login-form">
+        <div class="input-container">
+            <label for="email" style="font-weight: bold;">Email Address:</label>
+            <input 
+                type="email" 
+                name="email" 
+                id="email" 
+                class="file-input" 
+                placeholder="Enter your email address" 
+                required>
+        </div>
+
+        <div class="input-container">
+            <label for="password" style="font-weight: bold;">Password:</label>
+            <input 
+                type="password" 
+                name="password" 
+                id="password" 
+                class="file-input" 
+                placeholder="Enter your password" 
+                required>
+        </div>
+
+        <div class="input-container">
+            <button type="submit" class="btn-primary">Login</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" style="font-size: 0.7em;">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- Forgot Password -->
+    <div class="forgot-password-link">
+        <p>Forgot your password? <a href="/password-reset"> Reset </a></p>
+    </div>
+
+    <!-- Register Link -->
+    <div class="register-link">
+        <p>Don't have an account? <a href="/register">Register</a></p>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: .8em;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #1abc9c;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: .8em;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .description {
+        font-size: 0.8em; 
+        line-height: 1.24; 
+        color: #333;
+        text-align: justify;
+    }
+
+    .description strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .forgot-password-link {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 0.7em;
+    }
+
+    .forgot-password-link a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .forgot-password-link a:hover {
+        text-decoration: underline;
+    }
+
+    .register-link {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.7em;
+    }
+
+    .register-link a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+{% endblock %}

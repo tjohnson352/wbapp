@@ -68,12 +68,28 @@ def setup_database():
             last_name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             school_id INTEGER NOT NULL,
-            user_name TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
             consent BOOLEAN NOT NULL CHECK (consent IN (0, 1)),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (school_id) REFERENCES schools(school_id)
+        );
+        """)
+
+        # Create auth user_auth
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_auth (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            password_hash TEXT NOT NULL,
+            security_question_1 TEXT NOT NULL,
+            security_answer_1 TEXT NOT NULL,
+            security_question_2 TEXT NOT NULL,
+            security_answer_2 TEXT NOT NULL,
+            security_question_3 TEXT NOT NULL,
+            security_answer_3 TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """)
 

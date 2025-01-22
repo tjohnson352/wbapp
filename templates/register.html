@@ -8,13 +8,14 @@
 {% block content %}
 <div class="register-container">
     <h2 style="color: #2980b9;">
-        The Schedulizer <span style="color: gray; font-weight: normal;">Register an account</span>
+        The Schedulizer <span style="color: gray; font-weight: normal;">Registration</span>
     </h2>  
     <p class="description">
-        Create an account to access tools for analyzing your work schedule. Already have an account? <a href="/">Sign in here</a>.
+        Complete this form to create an account. Already have an account? <a href="/">Sign in here</a>.
     </p>
 
     <form action="/register" method="POST" class="register-form" onsubmit="return validateEmail()">
+        <!-- User Information -->
         <div class="input-container">
             <label for="first_name" style="font-weight: bold;">First Name:</label>
             <input 
@@ -50,7 +51,7 @@
 
         <div class="input-container">
             <label for="school" style="font-weight: bold;">School:</label>
-            <select name="school_id" id="school" class="file-input" required>
+            <select name="school" id="school" class="file-input" required>
                 <option value="">Select your school</option>
                 {% for school in schools %}
                     <option value="{{ school }}">{{ school }}</option>
@@ -58,6 +59,7 @@
             </select>
         </div>
 
+        <!-- Password -->
         <div class="input-container">
             <label for="password" style="font-weight: bold;">Password:</label>
             <input 
@@ -84,7 +86,65 @@
             <!-- Feedback dynamically updates here -->
         </div>
         
+        <!-- Security Questions -->
+        <h4 style="color: #2980b9; font-size: 1.1em; margin-top: 20px;">Security Questions</h4>
 
+        <div class="input-container">
+            <label for="security_question_1" style="font-weight: bold;">Security Question 1:</label>
+            <select name="security_question_1" id="security_question_1" class="file-input" required>
+                <option value="">Select a question</option>
+                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
+                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
+                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
+                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
+                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
+                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
+                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+            </select>
+            <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="security_question_2" style="font-weight: bold;">Security Question 2:</label>
+            <select name="security_question_2" id="security_question_2" class="file-input" required>
+                <option value="">Select a question</option>
+                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
+                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
+                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
+                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
+                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
+                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
+                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+            </select>
+            <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="security_question_3" style="font-weight: bold;">Security Question 3:</label>
+            <select name="security_question_3" id="security_question_3" class="file-input" required>
+                <option value="">Select a question</option>
+                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
+                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
+                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
+                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
+                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
+                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
+                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+            </select>
+            <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
+        </div>
+        
+
+        <!-- Privacy Policy -->
         <div class="input-container">
             <label for="consent" style="font-weight: normal;">
                 <input 
@@ -96,11 +156,13 @@
             </label>
         </div>
 
+        <!-- Submit Button -->
         <div class="input-container">
             <button type="submit" class="btn-primary">Register</button>
         </div>
     </form>
 
+    <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -114,7 +176,7 @@
 {% block extra_styles %}
 <style>
     .register-container {
-        max-width: 500px;
+        max-width: 600px;
         margin: 0 auto;
         background: #fff;
         padding: 20px;
@@ -157,33 +219,17 @@
     }
 
     .description {
-        font-size: 0.9em;
-        line-height: 1.4;
+        font-size: 0.8em;
+        line-height: 1.5;
         color: #333;
         text-align: justify;
-        font-style: italic;
-    }
-
-    .register-link {
-        margin-top: 15px;
-        text-align: center;
-        font-size: 0.9em;
-    }
-
-    .register-link a {
-        color: #007BFF;
-        text-decoration: none;
-    }
-
-    .register-link a:hover {
-        text-decoration: underline;
     }
 
     .alert {
         padding: 10px;
         border-radius: 5px;
         margin-bottom: 15px;
-        font-size: 0.9em;
+        font-size: 0.7em;
     }
 
     .alert-success {
@@ -211,4 +257,30 @@
         return true;
     }
 </script>
+<script>
+    function validatePassword() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const passwordMessage = document.getElementById('password-message');
+
+        // Regex to enforce the password requirements
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$/;
+
+        if (!passwordRegex.test(password)) {
+            passwordMessage.innerHTML = "Password must be at least 6 characters long, alphanumeric, and include at least one special character.";
+            passwordMessage.style.color = "red";
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            passwordMessage.innerHTML = "Passwords do not match.";
+            passwordMessage.style.color = "red";
+            return false;
+        }
+
+        passwordMessage.innerHTML = ""; // Clear the message if validation passes
+        return true;
+    }
+</script>
+
 {% endblock %}

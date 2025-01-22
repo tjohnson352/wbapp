@@ -11,6 +11,7 @@ from blueprints.meta1 import meta1_blueprint
 from blueprints.report_generation import report_blueprint
 from helpers.database_functions import save_review
 from helpers.load_schools import load_schools
+from blueprints.authentication import auth_bp
 from blueprints.privacy_policy import privacy_policy_blueprint
 import bcrypt
 
@@ -31,14 +32,13 @@ app.config['SESSION_USE_SIGNER'] = True
 Session(app)
 
 # Register blueprints
+app.register_blueprint(auth_bp, url_prefix='/')  # This registers all auth_bp routes under /auth
 app.register_blueprint(home_blueprint)
 app.register_blueprint(meta1_blueprint)
 app.register_blueprint(edit_schedule_blueprint)
 app.register_blueprint(dataframe_view_bp)
 app.register_blueprint(report_blueprint)
 app.register_blueprint(privacy_policy_blueprint)
-
-
 
 # Set the upload folder for temporary PDFs
 UPLOAD_FOLDER = 'uploads'
@@ -179,53 +179,6 @@ def download_pdf():
     response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
     return response
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        # Process registration form
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email = request.form['email']
-        school_id = request.form['school_id']
-        password = request.form['password']
-        consent = request.form.get('consent') == 'on'  # Checkbox value is "on" if checked
-
-        try:
-            # Hash the password
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-            # Database operations
-            conn = sqlite3.connect("user_data.db")
-            cursor = conn.cursor()
-
-            # Insert user into the `users` table
-            cursor.execute("""
-                INSERT INTO users (first_name, last_name, email, password_hash, consent)
-                VALUES (?, ?, ?, ?, ?)
-            """, (first_name, last_name, email, hashed_password.decode('utf-8'), consent))
-            user_id = cursor.lastrowid  # Retrieve the newly created user's ID
-
-            # Insert school_name into the `meta1` table
-            cursor.execute("""
-                INSERT INTO meta1 (id, school_name)
-                VALUES (?, ?)
-            """, (user_id, school_name))
-            
-            conn.commit()
-            conn.close()
-
-            flash("Registration successful! Please verify your email to activate your account.", "success")
-            return redirect('/login')
-        except sqlite3.IntegrityError:
-            flash("Email or username already exists. Please use another.", "error")
-            return redirect('/register')
-        except Exception as e:
-            flash(f"An unexpected error occurred: {e}", "error")
-            return redirect('/register')
-
-    # Load schools and pass them to the template
-    schools = load_schools()
-    return render_template('register.html', schools=schools)
 
 if __name__ == '__main__':
     app.run(debug=True)
