@@ -17,6 +17,9 @@
     </p>
 
     <form action="/login" method="POST" class="login-form">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <div class="input-container">
             <label for="email" style="font-weight: bold;">Email Address:</label>
             <input 
@@ -25,6 +28,8 @@
                 id="email" 
                 class="file-input" 
                 placeholder="Enter your email address" 
+                aria-label="Email Address"
+                autocomplete="email"
                 required>
         </div>
 
@@ -36,8 +41,21 @@
                 id="password" 
                 class="file-input" 
                 placeholder="Enter your password" 
+                aria-label="Password"
                 required>
+                <div class="input-container">
+                    <input type="checkbox" id="show-password" onclick="togglePassword()">
+                    <label for="show-password" style="font-size: 0.8em;">Show password</label>
+                </div>
+                
         </div>
+
+        <script>
+            function togglePassword() {
+                const passwordField = document.getElementById("password");
+                passwordField.type = passwordField.type === "password" ? "text" : "password";
+            }
+        </script>
 
         <div class="input-container">
             <button type="submit" class="btn-primary">Login</button>
@@ -61,10 +79,9 @@
     <div class="register-link">
         <p>Don't have an account? <a href="/register">Register</a></p>
     </div>
-
-
 </div>
 {% endblock %}
+
 
 {% block extra_styles %}
 <style>
@@ -126,7 +143,7 @@
     .forgot-password-link {
         margin-top: 10px;
         text-align: center;
-        font-size: 0.7em;
+        font-size: 0.8em;
     }
 
     .forgot-password-link a {
@@ -141,7 +158,7 @@
     .register-link {
         margin-top: 15px;
         text-align: center;
-        font-size: 0.7em;
+        font-size: 0.8em;
     }
 
     .register-link a {
@@ -158,6 +175,8 @@
         border-radius: 5px;
         margin-bottom: 15px;
         font-size: 0.9em;
+        word-wrap: break-word;
+        max-width: 350px;
     }
 
     .alert-success {

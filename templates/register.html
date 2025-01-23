@@ -15,6 +15,9 @@
     </p>
 
     <form action="/register" method="POST" class="register-form" onsubmit="return validateEmail()">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <!-- User Information -->
         <div class="input-container">
             <label for="first_name" style="font-weight: bold;">First Name:</label>

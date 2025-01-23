@@ -8,10 +8,12 @@ from helpers.names_coding import db_save_user_into
 from helpers.clean_raw_data import clean_data
 from helpers.database_functions import setup_database, view_database, setup_school_table
 
+
 home_blueprint = Blueprint('home', __name__)
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
+    # Initialize database
     setup_database()
     setup_school_table()
     view_database()

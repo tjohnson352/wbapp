@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, flash, session
 from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
 import sqlite3
 import os
 import pandas as pd
@@ -14,13 +15,20 @@ from helpers.load_schools import load_schools
 from blueprints.authentication import auth_bp
 from blueprints.privacy_policy import privacy_policy_blueprint
 import bcrypt
-
+from helpers.database_functions import setup_database, view_database, setup_school_table
 
 # Initialize the Flask app
 app = Flask(__name__)
 
 # Secret key for session management
 app.secret_key = os.urandom(24)
+
+csrf = CSRFProtect(app)
+
+# Initialize database
+setup_database()
+setup_school_table()
+
 
 # Configure server-side session
 app.config['SESSION_TYPE'] = 'filesystem'
