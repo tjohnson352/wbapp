@@ -16,6 +16,8 @@ from blueprints.authentication import auth_bp
 from blueprints.privacy_policy import privacy_policy_blueprint
 import bcrypt
 from helpers.database_functions import setup_database, view_database, setup_school_table
+from datetime import timedelta
+
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -29,6 +31,8 @@ csrf = CSRFProtect(app)
 setup_database()
 setup_school_table()
 
+# Set session timeout to 30 minutes
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 # Configure server-side session
 app.config['SESSION_TYPE'] = 'filesystem'

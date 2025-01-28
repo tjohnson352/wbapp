@@ -16,7 +16,6 @@ def home():
     # Initialize database
     setup_database()
     setup_school_table()
-    view_database()
 
     # Redirect to login if email is not in session
     if 'email' not in session:

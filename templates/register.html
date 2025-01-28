@@ -21,13 +21,14 @@
         <!-- User Information -->
         <div class="input-container">
             <label for="first_name" style="font-weight: bold;">First Name:</label>
-            <input 
-                type="text" 
-                name="first_name" 
-                id="first_name" 
-                class="file-input" 
-                placeholder="Enter your first name" 
-                required>
+        <input 
+            type="text" 
+            name="first_name" 
+            id="first_name" 
+            class="file-input" 
+            placeholder="Enter your first name" 
+            value="{{ form_data.get('first_name', '') }}" 
+            required>       
         </div>
 
         <div class="input-container">
@@ -55,7 +56,7 @@
         <div class="input-container">
             <label for="school" style="font-weight: bold;">School:</label>
             <select name="school" id="school" class="file-input" required>
-                <option value="">Select your school</option>
+                <option value="">Select your workplace</option>
                 {% for school in schools %}
                     <option value="{{ school }}">{{ school }}</option>
                 {% endfor %}
@@ -72,6 +73,11 @@
                 class="file-input" 
                 placeholder="Choose a password" 
                 required>
+            <ul style="font-size: 0.7em; color: gray; margin: 5px 0 0 15px; padding-left: 10px;">
+                <li>At least 6 characters long</li>
+                <li>Includes both letters and numbers</li>
+                <li>Contains at least one special character (e.g., !, @, #, $)</li>
+            </ul>
         </div>
         
         <div class="input-container">
@@ -85,13 +91,36 @@
                 required>
         </div>
         
+        <div class="input-container">
+            <input 
+                type="checkbox" 
+                id="show_password" 
+                style="margin-right: 5px;" 
+                onclick="togglePasswords()">
+            <label for="show_password" style="font-size: 0.9em; font-weight: normal;">Show Passwords</label>
+        </div>
+        
+        <script>
+            function togglePasswords() {
+                const passwordField = document.getElementById("password");
+                const confirmPasswordField = document.getElementById("confirm_password");
+                const fieldType = passwordField.type === "password" ? "text" : "password";
+                
+                passwordField.type = fieldType;
+                confirmPasswordField.type = fieldType;
+            }
+        </script>
+        
+        
         <div id="password-message" class="password-message">
             <!-- Feedback dynamically updates here -->
         </div>
         
         <!-- Security Questions -->
         <h4 style="color: #2980b9; font-size: 1.1em; margin-top: 20px;">Security Questions</h4>
-
+        <p class="description">
+            Complete this form to create an account. Already have an account? <a href="/">Sign in here</a>.
+        </p>
         <div class="input-container">
             <label for="security_question_1" style="font-weight: bold;">Security Question 1:</label>
             <select name="security_question_1" id="security_question_1" class="file-input" required>

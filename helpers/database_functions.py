@@ -40,6 +40,9 @@ def setup_database():
             security_answer_2 TEXT NOT NULL,
             security_question_3 TEXT NOT NULL,
             security_answer_3 TEXT NOT NULL,
+            question_index INTEGER DEFAULT 0,
+            login_attempts INTEGER DEFAULT 0,
+            temp_password TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -54,6 +57,17 @@ def setup_database():
             ft_days TEXT,
             off_days TEXT,
             FOREIGN KEY (user_id) REFERENCES user_auth(user_id)
+        );
+                       
+        """)
+        # Create reset_tokens table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reset_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
         );
         """)
 
@@ -198,13 +212,17 @@ def view_database():
         # List all tables
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
-        print("Tables in the database:", tables)
 
         # Display the content of each table
         for table_name, in tables:
             print(f"\nContents of table '{table_name}':")
             df = pd.read_sql_query(f"SELECT * FROM {table_name};", conn)
-            print(df)
+            
+            if df.empty:
+                print("--- E M P T Y ---")
+            else:
+                print(df)
+
 
         conn.close()
 
