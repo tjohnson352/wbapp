@@ -32,6 +32,8 @@
     </div>
     {% if table is not none %}
     <form id="scheduleForm" class="schedule-form">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <table class="table">
             <thead>
                 <tr>
@@ -77,6 +79,12 @@
 </div>
 
 <script>
+document.getElementById('isOff').addEventListener('change', function () {
+    const isOff = this.value === 'Yes';
+    document.getElementById('startTime').disabled = isOff;
+    document.getElementById('endTime').disabled = isOff;
+});
+
 document.getElementById('saveBtn').addEventListener('click', function () {
     const selectedActivities = Array.from(document.querySelectorAll('.activity-checkbox:checked')).map(cb => parseInt(cb.value));
     const isOff = document.getElementById('isOff').value.trim();
@@ -86,126 +94,74 @@ document.getElementById('saveBtn').addEventListener('click', function () {
     let startTime = startTimeInput.value.trim();
     let endTime = endTimeInput.value.trim();
 
-    // Check if there are any unassigned rows
-    const unassignedRows = Array.from(document.querySelectorAll('tr')).filter(row => {
-        const dayCell = row.querySelector('td:nth-child(2)');
-        return dayCell && dayCell.textContent.trim() === 'Unassigned';
-    });
-
-    // Handle "Off" day logic
     if (isOff === 'Yes') {
-        startTime = null; // Set to NaN for backend
-        endTime = null;   // Set to NaN for backend
-    }
-
-    // Validation
-    if (isOff === 'No') {
-        if (!startTime || !endTime) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Please specify both Start Time and End Time, or select "Yes" for being off.',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-
-        // Validate that start time is not before 7:00 AM and end time is not after 6:00 PM
-        const startHour = startTime ? parseInt(startTime.split(':')[0], 10) : null;
-        const endHour = endTime ? parseInt(endTime.split(':')[0], 10) : null;
-
-        if (startHour < 7) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Frametime',
-                text: 'Start Time cannot be before 7:00 AM.',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        if (endHour > 18) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Frametime',
-                text: 'End Time cannot be after 6:00 PM.',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-    }
-
-    // Allow saving if there are no unassigned rows left, even without selected activities
-    if (isOff === 'No' && unassignedRows.length > 0 && selectedActivities.length === 0) {
+        startTime = 'null';
+        endTime = 'null';
+    } else if (!startTime || !endTime || selectedActivities.length === 0) {
         Swal.fire({
-            icon: 'info',
-            title: 'Notice',
-            text: 'Please select at least one activity to assign to this day.',
+            icon: 'error',
+            title: 'Error',
+            text: 'Please complete all required fields.',
             confirmButtonText: 'OK'
         });
         return;
     }
 
-    // Prepare payload
     const payload = {
         frametime: { start_time: startTime, end_time: endTime },
         selected_activities: isOff === 'Yes' ? [] : selectedActivities,
         is_off: isOff === 'Yes'
     };
 
-    console.log("Data being sent to the server:", payload); // Debugging
-
-    // Send payload to the backend
     fetch('/days', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        },
         body: JSON.stringify(payload)
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.complete) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'All days have been updated successfully!',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = '/schedule_summary'; // Redirect to summary
-                });
-            } else if (data.message) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.reload(); // Reload the page for the next day
-                });
-            } else if (data.error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: data.error,
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error during fetch:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An unexpected error occurred. Please try again.',
-                confirmButtonText: 'OK'
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Server error:', err);
+                throw new Error(err.error || 'Unexpected error occurred.');
             });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.complete) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'All days have been updated successfully!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/schedule_summary';
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error during fetch:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'An unexpected error occurred. Please try again.',
+            confirmButtonText: 'OK'
         });
+    });
 });
 
-// Automatically disable Start and End Time inputs when "Off" is selected
-document.getElementById('isOff').addEventListener('change', function () {
-    const isOff = this.value === 'Yes';
-    document.getElementById('startTime').disabled = isOff;
-    document.getElementById('endTime').disabled = isOff;
-});
 </script>
 <style>
     .bg-gray {

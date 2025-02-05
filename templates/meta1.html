@@ -24,6 +24,9 @@
     </p>
 
     <form method="post" class="upload-form">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
         <div class="input-container row">
             <!-- Work Percentage Input -->
             <div class="column">

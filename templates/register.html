@@ -6,185 +6,392 @@
 {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <div class="register-container">
     <h2 style="color: #2980b9;">
         The Schedulizer <span style="color: gray; font-weight: normal;">Registration</span>
-    </h2>  
+    </h2>
     <p class="description">
-        Complete this form to create an account. Already have an account? <a href="/">Sign in here</a>.
+        <strong>Create an account</strong> to get started.
+        <br>
+        Already have an account?
+        <a href="/login" class="link">
+            <i class="fas fa-sign-in-alt"></i> Log in to your account here!
+        </a>
+        <br>
+        Forgot your password?
+        <a href="/reset-password" class="link">
+            <i class="fas fa-key"></i> Reset your password here!
+        </a>
     </p>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     <form action="/register" method="POST" class="register-form" onsubmit="return validateEmail()">
         <!-- CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <!-- User Information -->
-        <div class="input-container">
-            <label for="first_name" style="font-weight: bold;">First Name:</label>
-        <input 
-            type="text" 
-            name="first_name" 
-            id="first_name" 
-            class="file-input" 
-            placeholder="Enter your first name" 
-            value="{{ form_data.get('first_name', '') }}" 
-            required>       
+        <!-- First/Last Name Row -->
+        <div style="display: flex;">
+            <!-- First Name -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="first_name" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    First name:
+                </label>
+                <input type="text" name="first_name" id="first_name" class="file-input" placeholder="Enter first name" value="{{ form_data.get('first_name', '') }}" style="flex: 1;" required>
+            </div>
+
+            <!-- Last Name -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="last_name" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    Last name:
+                </label>
+                <input type="text" name="last_name" id="last_name" class="file-input" placeholder="Enter last name" style="flex: 1;" required>
+            </div>
         </div>
 
-        <div class="input-container">
-            <label for="last_name" style="font-weight: bold;">Last Name:</label>
-            <input 
-                type="text" 
-                name="last_name" 
-                id="last_name" 
-                class="file-input" 
-                placeholder="Enter your last name" 
-                required>
-        </div>
+        <!-- Email/School Row -->
+        <div style="display: flex;">
+            <!-- Email -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="email" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    Email:
+                </label>
+                <input type="email" name="email" id="email" class="file-input" placeholder="Enter email" style="flex: 1;" required>
+            </div>
 
-        <div class="input-container">
-            <label for="email" style="font-weight: bold;">Email:</label>
-            <input 
-                type="email" 
-                name="email" 
-                id="email" 
-                class="file-input" 
-                placeholder="Enter your email address" 
-                required>
-        </div>
-
-        <div class="input-container">
-            <label for="school" style="font-weight: bold;">School:</label>
-            <select name="school" id="school" class="file-input" required>
-                <option value="">Select your workplace</option>
-                {% for school in schools %}
+            <!-- School -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="school" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    School:
+                </label>
+                <select name="school" id="school" style="flex: 1;" required>
+                    <option value=""> Workplace</option>
+                    {% for school in schools %}
                     <option value="{{ school }}">{{ school }}</option>
-                {% endfor %}
-            </select>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <!-- Password -->
-        <div class="input-container">
-            <label for="password" style="font-weight: bold;">Password:</label>
-            <input 
-                type="password" 
-                name="password" 
-                id="password" 
-                class="file-input" 
-                placeholder="Choose a password" 
-                required>
-            <ul style="font-size: 0.7em; color: gray; margin: 5px 0 0 15px; padding-left: 10px;">
-                <li>At least 6 characters long</li>
-                <li>Includes both letters and numbers</li>
-                <li>Contains at least one special character (e.g., !, @, #, $)</li>
-            </ul>
+        <!-- Password/Confirm Password Row -->
+        <div style="display: flex;">
+            <!-- Password Field -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="password" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    Password:
+                </label>
+                <input type="password" name="password" id="password" class="file-input" placeholder="Enter password" required oninput="removeWhitespace(this); validatePassword();" style="flex: 1;">
+            </div>
+            <!-- Confirm Password Field -->
+            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
+                <label for="confirm_password" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+                    Confirm:
+                </label>
+                <input type="password" name="confirm_password" id="confirm_password" class="file-input" placeholder="Re-enter password" required oninput="checkPasswordsMatch()" style="flex: 1;">
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; width: 100%;">
+
+
+
+        </div>
+        <!-- Password Requirements / Feedback (optional) -->
+        <div style="display: flex; justify-content: left; align-items: center; font-size: 0.7em; width: 100%; gap: 0.5em;">
+            <div style="display: flex; align-items: center; gap: 0.2em;">
+                <input type="checkbox" id="show_password" onclick="togglePasswords()" oninput="checkPasswordsMatch()">
+                <label for="show_password" style="cursor: pointer;">
+                    make visible
+                </label>
+            </div>
+            <div id="password-feedback" style="color: gray;">
+                <span id="length-check">✓ 6 characters</span>
+                <span id="alpha-check">✓ 1 letter</span>
+                <span id="numeric-check">✓ 1 number</span>
+                <span id="special-char-check">✓ 1 special character</span>
+            </div>
+            <!-- Dynamic Messages (optional) -->
+            <div id="password-message" style="margin-top: 0px;">
+                <span id="matched-password" style="font-weight: bold; color: green; display: none;">
+                    ✓ PASSWORD CONFIRMED
+                </span>
+                <span id="mismatched-password" style="font-weight: bold; color: red; display: none;">
+                    MISMATCHED PASSWORDS!
+                </span>
+            </div>
         </div>
         
-        <div class="input-container">
-            <label for="confirm_password" style="font-weight: bold;">Confirm Password:</label>
-            <input 
-                type="password" 
-                name="confirm_password" 
-                id="confirm_password" 
-                class="file-input" 
-                placeholder="Re-enter your password" 
-                required>
-        </div>
-        
-        <div class="input-container">
-            <input 
-                type="checkbox" 
-                id="show_password" 
-                style="margin-right: 5px;" 
-                onclick="togglePasswords()">
-            <label for="show_password" style="font-size: 0.9em; font-weight: normal;">Show Passwords</label>
-        </div>
-        
+
+
         <script>
-            function togglePasswords() {
-                const passwordField = document.getElementById("password");
-                const confirmPasswordField = document.getElementById("confirm_password");
-                const fieldType = passwordField.type === "password" ? "text" : "password";
-                
-                passwordField.type = fieldType;
-                confirmPasswordField.type = fieldType;
+        /**
+         * Whenever the user types, remove any whitespace characters.
+         * This effectively prevents them from using spaces in the password.
+         */
+        function removeWhitespace(input) {
+          input.value = input.value.replace(/\s/g, "");
+        }
+
+        /**
+         * Validates password requirements (length, alpha, numeric, special char)
+         * and checks if password matches confirm password.
+         */
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+
+            // Elements for feedback
+            const lengthCheck = document.getElementById('length-check');
+            const alphaCheck = document.getElementById('alpha-check');
+            const numericCheck = document.getElementById('numeric-check');
+            const specialCharCheck = document.getElementById('special-char-check');
+
+            // Check length
+            lengthCheck.style.color = (password.length >= 6) ? "green" : "red";
+
+            // Check alpha character
+            alphaCheck.style.color = /[a-zA-Z]/.test(password) ? "green" : "red";
+
+            // Check numeric character
+            numericCheck.style.color = /\d/.test(password) ? "green" : "red";
+
+            // Check special character
+            specialCharCheck.style.color = /[^a-zA-Z\d]/.test(password) ? "green" : "red";
+
+            // Check if it matches confirm password
+            checkPasswordsMatch();
+        }
+
+        /**
+         * Toggles the visibility of both password and confirm password fields.
+         */
+        function togglePasswords() {
+            const passwordField = document.getElementById("password");
+            const confirmField = document.getElementById("confirm_password");
+            const fieldType = (passwordField.type === "password") ? "text" : "password";
+
+            passwordField.type = fieldType;
+            confirmField.type = fieldType;
+        }
+
+        /**
+         * Checks if the password and confirm password match.
+         * Shows or hides confirmation/mismatch messages.
+         */
+        function checkPasswordsMatch() {
+            const passwordValue = document.getElementById("password").value;
+            const confirmPasswordValue = document.getElementById("confirm_password").value;
+
+            const matchedSpan = document.getElementById("matched-password");
+            const mismatchedSpan = document.getElementById("mismatched-password");
+
+            // Hide both by default
+            matchedSpan.style.display = "none";
+            mismatchedSpan.style.display = "none";
+
+            // Only check if both fields have a value
+            if (passwordValue && confirmPasswordValue) {
+                if (passwordValue === confirmPasswordValue) {
+                    matchedSpan.style.display = "inline";
+                } else {
+                    mismatchedSpan.style.display = "inline";
+                }
             }
+        }
         </script>
-        
-        
-        <div id="password-message" class="password-message">
-            <!-- Feedback dynamically updates here -->
-        </div>
-        
         <!-- Security Questions -->
-        <h4 style="color: #2980b9; font-size: 1.1em; margin-top: 20px;">Security Questions</h4>
-        <p class="description">
-            Complete this form to create an account. Already have an account? <a href="/">Sign in here</a>.
-        </p>
-        <div class="input-container">
-            <label for="security_question_1" style="font-weight: bold;">Security Question 1:</label>
-            <select name="security_question_1" id="security_question_1" class="file-input" required>
-                <option value="">Select a question</option>
-                <option value="What was the name of your first school?">What was the name of your first school?</option>
-                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
-                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
-                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
-                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
-                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
-                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
-                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
-                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+            <select name="security_question_1" id="security_question_1" required onchange="preventDuplicateQuestions()">
+                <option value="">Select Security Question 1</option>
+                {% for question in security_questions %}
+                    <option value="{{ question }}">{{ question }}</option>
+                {% endfor %}
             </select>
             <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
         </div>
-        
-        <div class="input-container">
-            <label for="security_question_2" style="font-weight: bold;">Security Question 2:</label>
-            <select name="security_question_2" id="security_question_2" class="file-input" required>
-                <option value="">Select a question</option>
-                <option value="What was the name of your first school?">What was the name of your first school?</option>
-                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
-                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
-                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
-                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
-                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
-                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
-                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
-                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+
+        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+            <select name="security_question_2" id="security_question_2" required onchange="preventDuplicateQuestions()">
+                <option value="">Select Security Question 2</option>
+                {% for question in security_questions %}
+                    <option value="{{ question }}">{{ question }}</option>
+                {% endfor %}
             </select>
             <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
         </div>
-        
-        <div class="input-container">
-            <label for="security_question_3" style="font-weight: bold;">Security Question 3:</label>
-            <select name="security_question_3" id="security_question_3" class="file-input" required>
-                <option value="">Select a question</option>
-                <option value="What was the name of your first school?">What was the name of your first school?</option>
-                <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
-                <option value="What is the middle name of your oldest sibling?">What is the middle name of your oldest sibling?</option>
-                <option value="What was your childhood best friend's first name?">What was your childhood best friend's first name?</option>
-                <option value="What was the make and model of your first car?">What was the make and model of your first car?</option>
-                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                <option value="What is the title of your favorite book or movie?">What is the title of your favorite book or movie?</option>
-                <option value="What city were you in when you had your first job?">What city were you in when you had your first job?</option>
-                <option value="What is your mother’s maiden name?">What is your mother’s maiden name?</option>
-                <option value="What is the name of the hospital where you were born?">What is the name of the hospital where you were born?</option>
+
+        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+            <select name="security_question_3" id="security_question_3" required onchange="preventDuplicateQuestions()">
+                <option value="">Select Security Question 3</option>
+                {% for question in security_questions %}
+                    <option value="{{ question }}">{{ question }}</option>
+                {% endfor %}
             </select>
             <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
         </div>
-        
 
-        <!-- Privacy Policy -->
-        <div class="input-container">
-            <label for="consent" style="font-weight: normal;">
-                <input 
-                    type="checkbox" 
-                    name="consent" 
-                    id="consent" 
-                    required>
-                I agree to the <a href="/privacy_policy" target="_blank">privacy policy</a>.
+        <!-- Membership Question (Yes/No Radio Buttons) -->
+        <div class="input-container" style="display: flex; align-items: center;">
+            <!-- Question -->
+            <p style="font-weight: bold; font-size: 0.8em;">
+                Member of Sveriges Lärare?
+            </p>
+        
+            <!-- Yes/No Radio Buttons (on a new line) -->
+            <div>
+                <!-- No -->
+                <label style="margin-left: 1em; font-size: 0.8em;">
+                    <input type="radio" name="sl_member" value="0" checked>
+                  No
+                </label>
+              
+                <!-- Yes -->
+                <label style="margin-left: 1em; font-size: 0.8em;">
+                    <input type="radio" name="sl_member" value="1" required>
+                  Yes
+                </label>
+              </div>
+        </div>
+        
+        <!-- 2. Are you an elected officer? (Initially Hidden) -->
+        <div id="is_elected_officer_container" style="display: none;">
+            <!-- Question with options on the same line -->
+            <p style="font-weight: bold; font-size: 0.8em; display: inline; margin-right: 1em;">
+                Are you an elected officer?
+            </p>
+
+            <!-- Radio buttons on the same line -->
+            <label style="margin-right: 1em; font-size: 0.8em;">
+                <input type="radio" name="is_elected_officer_radio" value="no" checked>
+                No (Regular)
+            </label>
+            <label style="font-size: 0.8em;">
+                <input type="radio" name="is_elected_officer_radio" value="yes">
+                Yes (Elected)
+            </label>
+        </div>
+
+            <!-- 3. Local or Central or Both? (Initially Hidden) -->
+            <div id="officer_type_container" style="display: none; font-size: 0.8em;">
+                <span style="font-weight: bold;">Select relevant level(s):</span>
+                <label style="font-weight: normal; margin-left: 1em;">
+                    <input type="checkbox" id="local_officer_checkbox"> Local Officer
+                </label>
+                <label style="font-weight: normal; margin-left: 1em;">
+                    <input type="checkbox" id="central_officer_checkbox"> Central Officer
+                </label>
+            </div>
+
+        <!-- 4. Central Roles (Initially Hidden) -->
+        <div id="central_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7;">
+            <label style="font-weight: bold; font-size: 0.8em;">Central Roles:</label>
+            <div style="font-size: 0.8em; font-weight: normal;">
+                <input type="checkbox" name="sl_roles" value="Förhandlingsombud"> Förhandlingsombud (Negotiations Officer)<br>
+                <input type="checkbox" name="sl_roles" value="Huvudskyddsombud"> Huvudskyddsombud (Main Safety Officer)<br>
+                <input type="checkbox" name="sl_roles" value="Styrelseledamot"> Styrelseledamot (Board Member)<br>
+            </div>
+        </div>
+
+        <!-- 5. Local Roles (Initially Hidden) -->
+        <div id="local_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7;">
+            <label style="font-weight: bold; font-size: 0.8em;">Local Roles:</label>
+            <div style="font-size: 0.8em; font-weight: normal;">
+                <input type="checkbox" name="sl_roles" value="Lokalombud"> Lokalombud (Local Representative)<br>
+                <input type="checkbox" name="sl_roles" value="Skyddsombud"> Lokal Skyddsombud (Local Safety Officer)<br>
+            </div>
+            </p>
+        </div>
+
+
+        <script>
+            window.onload = function () {
+                // Listen for changes in "Sveriges Lärare" Membership (sl_member)
+                document.querySelectorAll('input[name="sl_member"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const electedOfficerContainer = document.getElementById('is_elected_officer_container');
+                        const officerTypeContainer = document.getElementById('officer_type_container');
+                        const localOfficerContainer = document.getElementById('local_officer_container');
+                        const centralOfficerContainer = document.getElementById('central_officer_container');
+            
+                        if (this.value === '1') {  // "Yes" was selected
+                            electedOfficerContainer.style.display = 'block';
+                        } else {
+                            electedOfficerContainer.style.display = 'none';
+                            officerTypeContainer.style.display = 'none';
+                            localOfficerContainer.style.display = 'none';
+                            centralOfficerContainer.style.display = 'none';
+                        }
+                    });
+                });
+            
+                // Listen for changes in "Are you an elected officer?" radio buttons
+                document.querySelectorAll('input[name="is_elected_officer_radio"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const officerTypeContainer = document.getElementById('officer_type_container');
+                        const localOfficerContainer = document.getElementById('local_officer_container');
+                        const centralOfficerContainer = document.getElementById('central_officer_container');
+            
+                        if (this.value === 'yes') {
+                            officerTypeContainer.style.display = 'block';
+                        } else {
+                            officerTypeContainer.style.display = 'none';
+                            localOfficerContainer.style.display = 'none';
+                            centralOfficerContainer.style.display = 'none';
+                        }
+                    });
+                });
+            
+                // Show local roles if "Local Officer" checkbox is checked
+                document.getElementById('local_officer_checkbox').addEventListener('change', function() {
+                    const localContainer = document.getElementById('local_officer_container');
+                    localContainer.style.display = this.checked ? 'block' : 'none';
+                });
+            
+                // Show central roles if "Central Officer" checkbox is checked
+                document.getElementById('central_officer_checkbox').addEventListener('change', function() {
+                    const centralContainer = document.getElementById('central_officer_container');
+                    centralContainer.style.display = this.checked ? 'block' : 'none';
+                });
+            };
+
+        /**
+         * Prevents duplicate selections across the three security questions.
+         */
+        function preventDuplicateQuestions() {
+          const question1 = document.getElementById("security_question_1");
+          const question2 = document.getElementById("security_question_2");
+          const question3 = document.getElementById("security_question_3");
+
+          // If Q1 == Q2 and not empty, reset Q2
+          if (question1.value && question1.value === question2.value) {
+            alert("Security Question 2 cannot be the same as Question 1. Please choose a different question.");
+            question2.value = "";
+          }
+          // If Q1 == Q3, reset Q3
+          if (question1.value && question1.value === question3.value) {
+            alert("Security Question 3 cannot be the same as Question 1. Please choose a different question.");
+            question3.value = "";
+          }
+          // If Q2 == Q3, reset Q3
+          if (question2.value && question2.value === question3.value) {
+            alert("Security Question 3 cannot be the same as Question 2. Please choose a different question.");
+            question3.value = "";
+          }
+        }
+        </script>
+
+        <!-- Privacy Consent -->
+        <div class="input-container" style="margin-top: 15px;">
+            <label style="display: flex; align-items: center; font-size: 0.9em; gap: 0.5em;">
+                <input type="checkbox" name="privacy_consent" id="privacy_consent" required>
+                I agree to the <a href="/privacy_policy" target="_blank" style="color: #2980b9;">Privacy Policy</a>.
             </label>
         </div>
 
@@ -207,11 +414,31 @@
 
 {% block extra_styles %}
 <style>
+    body {
+        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    select {
+        background-color: #6b6d6ec0;
+        color: white;
+        border: .5px solid #454546;
+        border-radius: 5px;
+        padding: 5px;
+        font-size: 0.8em;
+        width: 100%;
+        font-family: Arial, sans-serif;
+    }
+    
     .register-container {
         max-width: 600px;
         margin: 0 auto;
         background: #fff;
-        padding: 20px;
+        padding: 40px;
         border: 1px solid #ddd;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -220,14 +447,14 @@
     .register-form {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
     }
 
     .btn-primary {
-        background-color: #2980b9;
+        background:  linear-gradient(to left, #1abc9c, #2980b9);
         color: #ffffff;
         padding: 10px;
-        font-size: .8em;
+        font-size: 0.8em;
         border: none;
         border-radius: 5px;
         width: 100%;
@@ -237,31 +464,58 @@
     }
 
     .btn-primary:hover {
-        background-color: #1abc9c;
+        background:  linear-gradient(to left, #2980b9, #1abc9c);
     }
 
     .file-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
+        background-color: #00000007;
+        width: 60%;
+        padding: 7px;
+        border: .5px solid #aaaaaa;
         border-radius: 5px;
-        font-size: .8em;
-        cursor: pointer;
+        font-size: 0.7em;
         box-sizing: border-box;
+        display: flex;
+        font-family: "Courier New", Courier, monospace;
     }
 
     .description {
         font-size: 0.8em;
-        line-height: 1.5;
-        color: #333;
-        text-align: justify;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .description strong {
+        color: #000;
+    }
+
+    .description .link {
+        color: #2980b9;
+        text-decoration: none;
+        font-weight: normal;
+    }
+
+    .description .link:hover {
+        color: #1abc9c;
+        font-weight: bold;
+    }
+
+    .description .link i {
+        margin-right: 5px;
+        font-size: 0.8em;
+    }
+
+    .description .link:hover i {
+        color: #1abc9c;
+        transition: color 0.3s ease;
     }
 
     .alert {
         padding: 10px;
         border-radius: 5px;
         margin-bottom: 15px;
-        font-size: 0.7em;
+        font-size: 0.8em;
     }
 
     .alert-success {
@@ -310,9 +564,8 @@
             return false;
         }
 
-        passwordMessage.innerHTML = ""; // Clear the message if validation passes
+        passwordMessage.innerHTML = ""; // Clear if validation passes
         return true;
     }
 </script>
-
 {% endblock %}

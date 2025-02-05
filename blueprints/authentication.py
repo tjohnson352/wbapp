@@ -5,28 +5,23 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers.auth_functions import get_db_connection
 from helpers.database_functions import setup_database, view_database, setup_school_table
-import secrets 
+import secrets
 import sqlite3
 from datetime import timedelta
+import random
+import string
+import datetime
+import random
 
 
 auth_bp = Blueprint('auth_bp', __name__)
 
-from datetime import timedelta
-from flask import session, redirect, url_for, flash, render_template, request
-from werkzeug.security import check_password_hash
-import sqlite3
-import random
-import string
-
-# Function to generate a new temporary password
 def generate_temp_password(length=6):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(characters) for _ in range(length))
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    # Initialize database and ensure setup
     setup_database()
     setup_school_table()
 
@@ -34,78 +29,105 @@ def login():
         email = request.form.get('email').strip()
         password = request.form.get('password')
 
-        # Connect to the database and fetch the user
         conn = get_db_connection()
+        conn.row_factory = sqlite3.Row  # Enable dictionary-like access for rows
         cursor = conn.cursor()
+
+        # Fetch user details from the database
         cursor.execute("SELECT * FROM user_auth WHERE login_id = ?", (email,))
         user = cursor.fetchone()
 
         if user is None:
-            # Email not found
-            flash("The email address is not found. Please try again or register an account.", "error")
+            flash("Email not found. Try again or register an account.", "error")
             conn.close()
             return redirect(url_for('auth_bp.login'))
 
-        # Extract user details
-        stored_password_hash = user['password_hash']
-        temp_password_hash = user.get('temp_password')
+        # Check if the user_id exists in the database
+        cursor.execute("SELECT user_id FROM user_auth WHERE user_id = ?", (user['user_id'],))
+        result = cursor.fetchone()
+
+        if not result:
+            flash("Account not found. Check 'Email Address' or 'Register' an account.", "error")
+            conn.close()
+            return redirect(url_for('auth_bp.login'))
+
         login_attempts = user['login_attempts']
-        print(f"[DEBUG] Temporary password for user {email}: {temp_password_hash}")
+        stored_password_hash = user['password_hash']
+        temp_password_hash = user['temp_password']  # Read temp_password from the database
 
+        # Decide which password hash to use for authentication
+        if temp_password_hash:  # Temporary password exists
+            password_hash_to_use = temp_password_hash
+            print("[INFO] Using temporary password for authentication.")
+        else:  # Use stored password
+            password_hash_to_use = stored_password_hash
+            print("[INFO] Using stored password for authentication.")
 
-        # Check if account is locked
+        # Check if the account is locked
         if login_attempts >= 3:
-            print("login_attempts", login_attempts)
-            # Regenerate and store a temporary password
-            new_temp_password = generate_temp_password()
-            print(f"[DEBUG] Generated temporary password: {new_temp_password}")
+            flash("Your account is locked. Please reset your password to regain access.", "error")
+            conn.close()
+            return redirect(url_for('auth_bp.reset_password'))  # Redirect to reset-password page
 
-            cursor.execute(
-                "UPDATE user_auth SET temp_password = ?, login_attempts = 3 WHERE user_id = ?",
-                (generate_password_hash(new_temp_password), user['user_id'])
-            )
+        # Authenticate the user
+        if check_password_hash(password_hash_to_use, password):
+            flash("Login successful!", "success")
+            print("Login successful!")
+
+            # Reset login attempts and clear temp_password if it was used
+            cursor.execute("UPDATE user_auth SET login_attempts = 0, temp_password = NULL WHERE user_id = ?", (user['user_id'],))
             conn.commit()
 
-            flash("Too many failed attempts. A new temporary password has been sent to your email.", "error")
+            # Save user session and redirect to the dashboard
+            session['user_id'] = user['user_id']
+            session.permanent = True  # Enable session timeout
             conn.close()
-            return redirect(url_for('auth_bp.reset_password'))
+            return redirect(url_for('auth_bp.dashboard'))
 
-        # Check if the entered password matches either the stored or temporary password
-        if not (check_password_hash(stored_password_hash, password) or 
-                (temp_password_hash and check_password_hash(temp_password_hash, password))):
-            # Increment login attempts
+        else:
+            # Increment login attempts after failed login
             login_attempts += 1
-            cursor.execute("UPDATE user_auth SET login_attempts = ? WHERE user_id = ?", 
-                           (login_attempts, user['user_id']))
+            cursor.execute("UPDATE user_auth SET login_attempts = ? WHERE user_id = ?", (login_attempts, user['user_id']))
             conn.commit()
 
             remaining_attempts = 3 - login_attempts
-            flash(f"Invalid email or password. {remaining_attempts} login attempts remaining.", "error")
+            if remaining_attempts > 0:
+                flash(f"Invalid email or password. {remaining_attempts} login attempts remaining.", "error")
+            else:
+                flash("Your account is locked. Please reset your password to regain access.", "error")
+                conn.close()
+                return redirect(url_for('auth_bp.reset_password'))  # Redirect to reset-password page
+
             conn.close()
             return redirect(url_for('auth_bp.login'))
 
-        # Successful login
-        session['login_attempts'] = 0  # Reset session login attempts
-        session['user_id'] = user['user_id']
-        session.permanent = True  # Enable session timeout
-
-        # Reset login attempts and clear the temporary password in the database
-        cursor.execute("UPDATE user_auth SET login_attempts = 0, temp_password = NULL WHERE user_id = ?", 
-                       (user['user_id'],))
-        conn.commit()
-        conn.close()
-
-        flash("Login successful!", "success")
-        return redirect(url_for('dashboard_bp.dashboard'))  # Redirect to the dashboard
-
     return render_template('login.html')
+    
+# Function to get random security questions
+def get_random_security_questions():
+    """
+    Reads the security questions from a text file and selects 10 random questions.
+    """
+    file_path = "helpers/security_questions.txt"
+    
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            questions = [line.strip() for line in file if line.strip()]
 
+        if len(questions) < 10:
+            raise ValueError("Not enough questions in the file to select 10.")
 
-
+        return random.sample(questions, 10)
+    
+    except FileNotFoundError:
+        print("Error: Security questions file not found.")
+        return []
+    except ValueError as e:
+        print(f"Error: {e}")
+        return []
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # Ensure the database and tables are set up
     setup_database()
     setup_school_table()
 
@@ -119,8 +141,10 @@ def register():
         conn.close()
     except Exception as e:
         flash("An error occurred while retrieving the school list. Please try again later.", "error")
-        print(f"Error: {e}")
 
+    # Fetch random security questions
+    security_questions = get_random_security_questions()
+    
     if request.method == 'POST':
         # Safely retrieve form inputs with default values
         first_name = request.form.get('first_name', '').strip()
@@ -130,6 +154,14 @@ def register():
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
 
+        # Privacy consent
+        privacy_consent = request.form.get('privacy_consent', None)
+
+        # Check if privacy consent was provided
+        if not privacy_consent:
+            flash("You must agree to the Privacy Policy to create an account.", "error")
+            return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
+        
         # Security questions and answers
         question1 = request.form.get('security_question_1', '').strip()
         answer1 = request.form.get('security_answer_1', '').strip()
@@ -138,28 +170,46 @@ def register():
         question3 = request.form.get('security_question_3', '').strip()
         answer3 = request.form.get('security_answer_3', '').strip()
 
+        # Sveriges Lärare Membership & Roles
+        sl_member = 0  # Default value for Sveriges Lärare membership
+        lokalombud = 0  # Default value for Lokalombud
+        skyddsombud = 0  # Default value for Skyddsombud
+        forhandlingsombud = 0  # Default value for Förhandlingsombud
+        huvudskyddsombud = 0  # Default value for Huvudskyddsombud
+        styrelseledamot = 0  # Default value for Styrelseledamot
+
+        # Update variables based on form inputs
+        if request.form.get('sl_member', '0') == '1':  
+            sl_member = 1
+
+        selected_roles = request.form.getlist('sl_roles')
+
+        if 'Lokalombud' in selected_roles:
+            lokalombud = 1
+        if 'Skyddsombud' in selected_roles:
+            skyddsombud = 1
+        if 'Förhandlingsombud' in selected_roles:
+            forhandlingsombud = 1
+        if 'Huvudskyddsombud' in selected_roles:
+            huvudskyddsombud = 1
+        if 'Styrelseledamot' in selected_roles:
+            styrelseledamot = 1
+
         # Validate required fields
         if not all([first_name, last_name, email, school, password, confirm_password, question1, answer1, question2, answer2, question3, answer3]):
-            flash("All fields are required. Please fill in all the details.", "error")
-            return render_template('register.html', schools=schools, form_data=request.form)
-
-        # Ensure the selected school is valid
-        if school not in schools:
-            flash("Please select a valid school from the dropdown.", "error")
-            return render_template('register.html', schools=schools, form_data=request.form)
+            flash("Please complete all fields.", "error")
+            return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
         # Password validation
         password_regex = re.compile(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$')
         if not password_regex.match(password):
-            flash("Password must be at least 6 characters long, alphanumeric, and include at least one special character.", "error")
-            return render_template('register.html', schools=schools, form_data=request.form)
+            flash("Password must be at least 6 characters long, with letters, numbers, and a special character.", "error")
+            return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
         # Check password match
         if password != confirm_password:
             flash("Passwords do not match. Please try again.", "error")
-            return render_template('register.html', schools=schools, form_data=request.form)
-
-        temp_password = generate_temp_password()
+            return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
         # Save user data to the database
         try:
@@ -169,27 +219,35 @@ def register():
             # Check if email already exists
             cursor.execute("SELECT user_id FROM users WHERE login_id = ?", (email,))
             if cursor.fetchone():
-                flash("An account with this email already exists. Please log in.", "error")
-                return render_template('register.html', schools=schools, form_data=request.form)
+                flash(f"An account for {email} exists. Click 'Reset' if you forgot the password.", "error")
+                return render_template('login.html', schools=schools, form_data=request.form)
 
-            # Insert into `users` table
+            # Insert into `users` table with privacy_consent
             cursor.execute("""
                 INSERT INTO users (first_name, last_name, login_id, school_id, consent)
                 VALUES (?, ?, ?, (SELECT school_id FROM schools WHERE school_name = ?), ?)
-            """, (first_name, last_name, email, school, True))
+            """, (first_name, last_name, email, school, privacy_consent == 'on'))
+
             user_id = cursor.lastrowid  # Get the generated user_id
+
+            # Insert into `sl_member_level` table
+            cursor.execute("""
+                INSERT INTO sl_member_level (user_id, sl_member, lokalombud, skyddsombud, 
+                                            forhandlingsombud, huvudskyddsombud, styrelseledamot)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (user_id, sl_member, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot))
+
 
             # Insert into `user_auth` table
             cursor.execute("""
                 INSERT INTO user_auth (user_id, login_id, password_hash, security_question_1, security_answer_1, 
-                                       security_question_2, security_answer_2, security_question_3, security_answer_3, temp_password)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                       security_question_2, security_answer_2, security_question_3, security_answer_3)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 user_id, email, generate_password_hash(password),
                 question1, generate_password_hash(answer1),
                 question2, generate_password_hash(answer2),
                 question3, generate_password_hash(answer3),
-                generate_password_hash(temp_password)
             ))
 
             conn.commit()
@@ -198,15 +256,12 @@ def register():
             # Store user_id in session
             session['user_id'] = user_id
 
-            flash("Account created successfully! Please log in.", "success")
+            flash("Account created! Please log in.", "success")
             return redirect(url_for('auth_bp.login'))
         except Exception as e:
             flash("An error occurred during registration. Please try again later.", "error")
-            print(f"Error: {e}")
 
-    # Render the form with any previously entered data if the page is reloaded
-    return render_template('register.html', schools=schools, form_data=request.form)
-
+    return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
 
 @auth_bp.route('/reset-password', methods=['GET', 'POST'])
@@ -223,21 +278,30 @@ def reset_password():
 
             if user:
                 token = secrets.token_urlsafe(32)
+                created_at = datetime.datetime.now()  # Store the current timestamp
 
                 try:
-                    cursor.execute("INSERT INTO reset_tokens (user_id, token) VALUES (?, ?)", (user['user_id'], token))
+                    # Insert new token with timestamp or update existing token
+                    cursor.execute(
+                        "INSERT INTO reset_tokens (user_id, token, created_at) VALUES (?, ?, ?)",
+                        (user['user_id'], token, created_at)
+                    )
                     conn.commit()
                 except sqlite3.IntegrityError:
-                    cursor.execute("UPDATE reset_tokens SET token = ? WHERE user_id = ?", (token, user['user_id']))
+                    cursor.execute(
+                        "UPDATE reset_tokens SET token = ?, created_at = ? WHERE user_id = ?",
+                        (token, created_at, user['user_id'])
+                    )
                     conn.commit()
 
+                # Redirect to the next step with the token
                 return redirect(url_for('auth_bp.reset_password_security_questions', token=token))
             else:
                 flash("Email not found.", "error")
 
-        except sqlite3.Error as e: # Add error handling
+        except sqlite3.Error as e:  # Add error handling
             flash(f"A database error occurred: {e}", "error")
-            conn.rollback() # Rollback in case of an error
+            conn.rollback()  # Rollback in case of an error
         finally:
             conn.close()  # Close the connection in the finally block
 

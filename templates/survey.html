@@ -15,6 +15,8 @@
     </p>
 
     <form method="POST" action="/survey" id="surveyForm" class="form-container">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
         <!-- Question 1 -->
         <div class="form-group small-width">
             <label for="review_q1" class="form-label"><strong>1. Did the web app accurately read and display your schedule?</strong></label>

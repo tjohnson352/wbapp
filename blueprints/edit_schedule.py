@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, request, jsonify, current_app
+from flask import Blueprint, render_template, session, request, jsonify, current_app, url_for, flash, redirect
 import pandas as pd
 from helpers.add_teaching_gaps import post_gaps, pre_gaps, between_gaps, gap_violations, frametime_violations, planning_block
 from helpers.time_checker import time_checker
@@ -6,22 +6,36 @@ from helpers.ft_days import ft_days, prime_dfs
 from io import StringIO
 from helpers.database_functions import view_database, get_user_data, save_user_data
 
-
-
 edit_schedule_blueprint = Blueprint('edit_schedule', __name__)
 
 @edit_schedule_blueprint.route('/days', methods=['GET', 'POST'])
 def display_schedule():
     try:
+        # Get the user_id from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            flash("User not logged in.", 'error')
+            return redirect(url_for('auth_bp.login'))  # Ensure 'auth_bp' is the correct blueprint name
+    except Exception as e:
+        flash("An error occurred: " + str(e), 'error')
+        return redirect(url_for('auth_bp.login'))  # Redirect to login in case of an unexpected error
+
+    print("kkkkkkkkkkk1")
+    try:
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
         current_day_index = session.get('day_index', 0)
+        print("kkkkkkkkkkk2")
 
         if request.method == 'POST':
             data = request.get_json()
             current_app.logger.info(f"Received payload: {data}")  # Debugging
+            print("kkkkkkkkkkk3")
+            print(data)
 
             if not data:
+                print("kkkkkkkkkkk31")
                 return jsonify({'error': 'No data received.'}), 400
+                
 
             frametime = data.get('frametime', {})
             selected_activities = data.get('selected_activities', [])
@@ -96,7 +110,7 @@ def display_schedule():
         # GET request: Display the schedule for the current day
         current_day = days[current_day_index]
         df2b = pd.read_json(StringIO(session.get('df2b', '{}')))
-        
+        print("kkkkkkkkkkk4")
 
         return render_template('edit_schedule.html', table=df2b, current_day=current_day)
 

@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}My Account{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="account-container">
+    <h2 class="account-title">
+        The Schedulizer <span>My account</span>
+    </h2>
+
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Name:</label>
+        <p style="margin: 0;">{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</p>
+    </div>
+
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Email:</label>
+        <p style="margin: 0;">{{ user.login_id }}</p>
+    </div>
+
+    <div class="input-container">
+        <button id="editEmailBtn" class="btn-secondary">Change email</button>
+        <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="email" name="new_email" id="new_email" placeholder="Enter new email" class="file-input" required>
+            <button type="submit" class="btn-primary">Save Email</button>
+        </form>
+    </div>
+
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">School/Workplace:</label>
+        <p style="margin: 0;">{{ user.school_name }}</p>
+    </div>
+    
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Middle Manager:</label>
+        <p style="margin: 0;">{{ user.middle_manager }}</p>
+    </div>
+    
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Account Created:</label>
+        <p style="margin: 0;">{{ user.created_at }}</p>
+    </div>
+    
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Last Updated:</label>
+        <p style="margin: 0;">{{ user.updated_at }}</p>
+    </div>
+    
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Work Percentage:</label>
+        <p style="margin: 0;">{{ user.work_percent }}</p>
+    </div>
+    
+    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
+        <label style="font-weight: bold; margin-right: 10px;">Privacy consent:</label>
+        <p style="margin: 0;">{{ user.consent }}</p>
+    </div>
+    
+
+    <!-- Leadership Roles Section -->
+    <div class="input-container">
+        <label><strong>Sveriges Lärare membership and roles:</strong></label>
+        <table class="roles-table">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Registered Member</td>
+                    <td style="color: {{ 'green' if user.sl_member == 'Yes' else 'red' }};">
+                        {{ user.sl_member }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lokalombud</td>
+                    <td style="color: {{ 'green' if user.lokalombud == 'Yes' else 'red' }};">
+                        {{ user.lokalombud }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Skyddsombud</td>
+                    <td style="color: {{ 'green' if user.skyddsombud == 'Yes' else 'red' }};">
+                        {{ user.skyddsombud }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Förhandlingsombud</td>
+                    <td style="color: {{ 'green' if user.forhandlingsombud == 'Yes' else 'red' }};">
+                        {{ user.forhandlingsombud }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Huvudskyddsombud</td>
+                    <td style="color: {{ 'green' if user.huvudskyddsombud == 'Yes' else 'red' }};">
+                        {{ user.huvudskyddsombud }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Styrelseledamot</td>
+                    <td style="color: {{ 'green' if user.styrelseledamot == 'Yes' else 'red' }};">
+                        {{ user.styrelseledamot }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+
+
+
+
+        <!-- Security Settings -->
+        <div class="input-container">
+            <label><strong>Security Settings:</strong></label>
+        </div>
+
+
+        <!-- Change Password Section -->
+        <div class="input-container">
+            <button id="changePasswordBtn" class="btn-secondary">Change password</button>
+            <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Current Password:</label>
+                <input type="password" name="current_password" id="current_password" class="file-input" required>
+
+                <label>New Password:</label>
+                <input type="password" name="new_password" id="new_password" class="file-input" required>
+
+                <label>Verify New Password:</label>
+                <input type="password" id="verify_password" class="file-input" required>
+
+                <div class="input-container">
+                    <input type="checkbox" id="show-password-toggle">
+                    <label for="show-password-toggle">Show Passwords</label>
+                </div>
+
+                <button type="submit" class="btn-primary">Save Password</button>
+            </form>
+        </div>
+
+    <!-- Update Security Questions Section -->
+    <div class="input-container">
+        <button id="updateSecurityBtn" class="btn-secondary">Update security questions</button>
+        <form id="updateSecurityForm" class="hidden" method="POST" action="/update_security_questions">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+                <select name="security_question_1" id="security_question_1" required onchange="preventDuplicateQuestions()">
+                    <option value="{{ user.security_question_1 }}" selected>{{ user.security_question_1 }}</option>
+                    {% for question in security_questions %}
+                        <option value="{{ question }}">{{ question }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
+            </div>
+    
+            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+                <select name="security_question_2" id="security_question_2" required onchange="preventDuplicateQuestions()">
+                    <option value="{{ user.security_question_2 }}" selected>{{ user.security_question_2 }}</option>
+                    {% for question in security_questions %}
+                        <option value="{{ question }}">{{ question }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
+            </div>
+    
+            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+                <select name="security_question_3" id="security_question_3" required onchange="preventDuplicateQuestions()">
+                    <option value="{{ user.security_question_3 }}" selected>{{ user.security_question_3 }}</option>
+                    {% for question in security_questions %}
+                        <option value="{{ question }}">{{ question }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
+            </div>
+            <button type="submit" class="btn-primary">Save Security Questions</button>
+        </form>
+    </div>
+
+    <div class="button-container">
+        <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
+        <a href="/logout" class="btn-secondary logout-btn">Logout</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById("editEmailBtn").addEventListener("click", function() {
+        document.getElementById("editEmailForm").classList.toggle("hidden");
+    });
+
+    document.getElementById("changePasswordBtn").addEventListener("click", function() {
+        document.getElementById("changePasswordForm").classList.toggle("hidden");
+    });
+
+    document.getElementById("updateSecurityBtn").addEventListener("click", function() {
+        document.getElementById("updateSecurityForm").classList.toggle("hidden");
+    });
+
+    // Password visibility toggle
+    document.getElementById("show-password-toggle").addEventListener("change", function() {
+        let passwordFields = ["current_password", "new_password", "verify_password"];
+        passwordFields.forEach(id => {
+            let field = document.getElementById(id);
+            field.type = this.checked ? "text" : "password";
+        });
+    });
+
+    
+    // Verify new password match
+    document.getElementById("changePasswordForm").addEventListener("submit", function(event) {
+        let newPassword = document.getElementById("new_password").value;
+        let verifyPassword = document.getElementById("verify_password").value;
+        if (newPassword !== verifyPassword) {
+            alert("New passwords do not match.");
+            event.preventDefault();
+        }
+    });
+</script>
+
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    body {
+        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 60px;
+
+    }
+    
+
+    .account-container {
+    max-width: 800px; /* Increase max width */
+    width: 90%; /* Allow it to stretch while keeping margins */
+    min-width: 600px; /* Prevent it from being too small */
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    display: block;
+    margin: 0 auto; /* Center the container */
+}
+
+    .account-title {
+        color: #2980b9;
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .account-title span {
+        color: gray;
+        font-weight: normal;
+    }
+
+    
+    .input-container {
+        margin-bottom: 15px;
+    }
+
+    .input-container label {
+        font-weight: bold;
+        font-size: 0.9em;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .input-container p {
+        font-family: 'Courier New', Courier, monospace; 
+        font-size: 0.9em; 
+        margin: 0;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 10px;
+        border: .9px solid #ccc;
+        border-radius: 8px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+
+    .user-data {
+        font-family: 'Courier New', Courier, monospace; /* Apply Courier font */
+        font-size: .9em; 
+        color: #333; /* Optional: Add color if needed */
+        margin-left: 10px;
+    }
+
+    .btn-primary {
+        background-color: #2980b9;
+        color: #ffffff;
+        padding: 10px;
+        font-size: 0.9em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none; /* Removes underline */
+
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #1abc9c, #2980b9);
+        transform: scale(1.05);
+        text-decoration: none; /* Removes underline */
+
+    }
+
+    .btn-secondary {
+        background: #ddd;
+        color: #333;
+        padding: 5px;
+        font-size: 0.9em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #bbb;
+    }
+
+    .logout-btn {
+        background: #d9534f;
+        color: white;
+    }
+
+    .logout-btn:hover {
+        background: #c9302c;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .roles-table {
+        width: 75%;
+        margin-top: 10px;
+        border-collapse: collapse;
+        border: 1px solid #ddd;
+    }
+
+    .roles-table th {
+        background-color: #b8cedd;
+        color: white;
+        text-align: center;
+        padding: 5px;
+        font-size: 0.9em;
+    }
+
+    .roles-table td {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+    .roles-table tr:hover {
+        background-color: #f2f2f2;
+    }
+
+    .roles-table .status {
+        font-weight: bold;
+    }
+
+    .roles-table .status::before {
+        content: attr(data-status);
+        display: none;
+    }
+
+    .roles-table .status {
+        color: #333;
+    }
+
+    /* Specific Colors for Yes and No */
+    .roles-table .status:contains("Yes") {
+        color: green;
+    }
+
+    .status-answer-in-table
+
+</style>.
+
+{% endblock %}

@@ -3,7 +3,7 @@ import re
 from flask import session
 from helpers.time_adjuster import time1, time4, time5, time6, time7
 from helpers.assign_activity_type import assign_activity_type
-from helpers.names_coding import get_names, decrypt
+from helpers.names_coding import get_names
 from helpers.report_generator import display_dataframes
 from io import StringIO
 
@@ -99,9 +99,8 @@ def structure_data():
         'activities'
     ] += " (" + df2a['location'].astype(str) + ")"
     # Step 5: Get names and ids
-    get_names()
-    decrypt()
 
+    get_names()
 
     # Get work_percent from session
     work_percent = session.get('work_percent', 100)  # Default to 100 if not set
@@ -110,7 +109,4 @@ def structure_data():
     df2b = df2a[['timespan','activities', 'type', 'minutes']].copy()
     df2b.insert(0, 'day', 'Unassigned') # adds a dummy for the dropdown menu
     
-    display_dataframes()
-
-
     return df2a, df2b

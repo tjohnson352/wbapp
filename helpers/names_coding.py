@@ -1,19 +1,8 @@
 import pandas as pd
-from collections import Counter
+import re
 from flask import session
-import regex as re
+from collections import Counter
 from io import StringIO
-import sqlite3
-import random
-import string
-
-def generate_id():
-    """
-    Generate a random 10-character string using uppercase letters and numbers.
-    """
-    import random
-    import string
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
 
 def get_names():
     """
@@ -65,72 +54,20 @@ def get_names():
         print(f"Error in get_names: {e}")
 
 
-def db_save_user_into():
-        
-    school_name = session['school_name']
-    full_name = session['full_name']
-
-    conn = sqlite3.connect("user_data.db")
-    cursor = conn.cursor()
-
-    # Check if the combination of school_name and full_name already exists
-    cursor.execute("""
-    SELECT id FROM users WHERE school_name = ? AND user_name = ?;
-    """, (school_name, full_name))
-    existing_record = cursor.fetchone()
-
-    if existing_record:
-        # Use the existing ID
-        id = existing_record[0]
-    else:
-        # Generate a new ID and insert it into the database
-        id = generate_id()
-        cursor.execute("""
-        INSERT INTO users (school_name, user_name, id)
-        VALUES (?, ?, ?);
-        """, (school_name, full_name, id))
-
-    conn.commit()
-    conn.close()
-
-    # Save data to the session
-    session['id'] = id
-
-    print("User data processed and saved successfully.")
-
-
-def decrypt():
+def validate_names(full_name: str, consent_full_name: str) -> bool:
     """
-    Retrieve the school name and user name from the database using the given id from the session.
+    Validates that all parts of the consent_full_name exist in the full_name.
+
+    Args:
+        full_name (str): The complete name of the user from session (e.g., "John Doe").
+        consent_full_name (str): The name provided for consent (e.g., "John D.").
+
+    Returns:
+        bool: True if all parts of consent_full_name exist in full_name, False otherwise.
     """
-    try:
-        # Read the ID from the session
-        id = session.get('id', None)
+    # Normalize and split names into lowercase parts
+    full_name_parts = [part.strip().lower() for part in full_name.split()]
+    consent_name_parts = [part.strip().lower() for part in consent_full_name.split()]
 
-        # Ensure the ID exists in the session
-        if not id:
-            raise ValueError("ID is missing from the session.")
-
-        # Query the database for school_name and user_name
-        conn = sqlite3.connect("user_data.db")
-        cursor = conn.cursor()
-        cursor.execute("""
-        SELECT school_name, user_name FROM users WHERE id = ?;
-        """, (id,))
-        result = cursor.fetchone()
-        conn.close()
-
-        if result:
-            school_name, user_name = result
-            print(f"Found record: School Name: {school_name}, User Name: {user_name}")
-            return {
-                "school_name": school_name,
-                "user_name": user_name,
-                "id": id
-            }
-        else:
-            raise ValueError(f"No record found for ID: {id}")
-
-    except Exception as e:
-        print(f"Error finding name by ID: {e}")
-        return None
+    # Check if every part of consent_full_name is present in full_name
+    return all(part in full_name_parts for part in consent_name_parts)

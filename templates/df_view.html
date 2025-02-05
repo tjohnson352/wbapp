@@ -34,6 +34,8 @@
     <!-- Form to select DataFrame -->
     <h2>Select DataFrame for Viewing</h2>
     <form method="POST" action="/df_view">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <select id="df_name" name="df_name" required>
             {% if dataframes %}
                 {% for key in dataframes.keys() | sort %}

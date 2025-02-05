@@ -7,21 +7,16 @@
 
 {% block content %}
 <div class="login-container">
-    <h2 style="color: #2980b9;">
-        The Schedulizer <span style="color: gray; font-weight: normal;">Login</span>
-    </h2>  
-    <p class="description">
-        This app automatically analyzes teachers' schedules, 
-        delivering key metrics to ensure alignment with the collective agreement. 
-        It is designed to identify problem areas and offer suggestions to improve compliance.
-    </p>
+    <h2 class="login-title">
+        The Schedulizer <span>Login</span>
+    </h2>
 
     <form action="/login" method="POST" class="login-form">
         <!-- CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="input-container">
-            <label for="email" style="font-weight: bold;">Email Address:</label>
+            <label for="email">Email:</label>
             <input 
                 type="email" 
                 name="email" 
@@ -34,7 +29,7 @@
         </div>
 
         <div class="input-container">
-            <label for="password" style="font-weight: bold;">Password:</label>
+            <label for="password">Password:</label>
             <input 
                 type="password" 
                 name="password" 
@@ -43,11 +38,10 @@
                 placeholder="Enter your password" 
                 aria-label="Password"
                 required>
-                <div class="input-container">
-                    <input type="checkbox" id="show-password" onclick="togglePassword()">
-                    <label for="show-password" style="font-size: 0.8em;">Show password</label>
-                </div>
-                
+            <div class="input-container">
+                <input type="checkbox" id="show-password" onclick="togglePassword()">
+                <label for="show-password">show</label>
+            </div>
         </div>
 
         <script>
@@ -65,44 +59,91 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}" style="font-size: 0.7em;">{{ message }}</div>
+        <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
     {% endwith %}
 
-    <!-- Forgot Password -->
     <div class="forgot-password-link">
-        <p>Forgot your password? <a href="/reset-password"> Reset </a></p>
-    </div>
-
-    <!-- Register Link -->
-    <div class="register-link">
-        <p>Don't have an account? <a href="/register">Register</a></p>
+        <p>Forgot password? <a href="/reset-password">Reset</a> | No account? <a href="/register">Register</a></p>
     </div>
 </div>
 {% endblock %}
 
-
 {% block extra_styles %}
 <style>
+    body {
+        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
     .login-container {
         max-width: 400px;
-        margin: 0 auto;
+        width: 90%;
         background: #fff;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        text-align: center;
+    }
+
+    .login-title {
+        color: #2980b9;
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .login-title span {
+        color: gray;
+        font-weight: normal;
+    }
+
+    .description {
+        font-size: 0.8em;
+        line-height: 1.5;
+        color: #555;
+        margin-bottom: 30px;
+        text-align: justify;
     }
 
     .login-form {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
+    }
+
+    .input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+}
+    .input-container label {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        display: block;
+        text-align: left;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 7px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 0.9em;
+        box-sizing: border-box;
+        display: flex;
+        font-family: "Courier New", Courier, monospace;
     }
 
     .btn-primary {
-        background-color: #2980b9;
+        background:  linear-gradient(to left, #1abc9c, #2980b9);
         color: #ffffff;
         padding: 10px;
         font-size: .8em;
@@ -115,57 +156,25 @@
     }
 
     .btn-primary:hover {
-        background-color: #1abc9c;
+        background: linear-gradient(to right, #1abc9c, #2980b9);
+        transform: scale(1.05);
     }
 
-    .file-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: .8em;
-        cursor: pointer;
-        box-sizing: border-box;
-    }
-
-    .description {
-        font-size: 0.8em; 
-        line-height: 1.24; 
-        color: #333;
-        text-align: justify;
-    }
-
-    .description strong {
-        font-weight: bold;
-        color: #000;
-    }
-
-    .forgot-password-link {
-        margin-top: 10px;
-        text-align: center;
-        font-size: 0.8em;
-    }
-
-    .forgot-password-link a {
-        color: #007BFF;
-        text-decoration: none;
-    }
-
-    .forgot-password-link a:hover {
-        text-decoration: underline;
-    }
-
+    .forgot-password-link,
     .register-link {
-        margin-top: 15px;
-        text-align: center;
+        margin-top: 10px;
         font-size: 0.8em;
+        text-align: center;
     }
 
+    .forgot-password-link a,
     .register-link a {
-        color: #007BFF;
+        color: #2980b9;
         text-decoration: none;
+        font-weight: bold;
     }
 
+    .forgot-password-link a:hover,
     .register-link a:hover {
         text-decoration: underline;
     }
@@ -176,7 +185,6 @@
         margin-bottom: 15px;
         font-size: 0.9em;
         word-wrap: break-word;
-        max-width: 350px;
     }
 
     .alert-success {
@@ -189,5 +197,4 @@
         color: #721c24;
     }
 </style>
-
 {% endblock %}

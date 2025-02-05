@@ -48,6 +48,21 @@ def setup_database():
         );
         """)
 
+        # Create sl_member_level table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS sl_member_level (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            sl_member INTEGER DEFAULT 0,
+            lokalombud INTEGER DEFAULT 0,
+            skyddsombud INTEGER DEFAULT 0,
+            forhandlingsombud INTEGER DEFAULT 0,
+            huvudskyddsombud INTEGER DEFAULT 0,
+            styrelseledamot INTEGER DEFAULT 0,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+        );
+        """)
+        
         # Create meta1 table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS meta1 (
