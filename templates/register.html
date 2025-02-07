@@ -7,21 +7,19 @@
 
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<div class="register-container">
-    <h2 style="color: #2980b9;">
-        The Schedulizer <span style="color: gray; font-weight: normal;">Registration</span>
-    </h2>
+<div class="container-a">
+    <h2 class="schedulizer-header">
+        The Schedulizer <span>Registration</span>
+    </h2>   
     <p class="description">
-        <strong>Create an account</strong> to get started.
-        <br>
-        Already have an account?
+        Already registered?
         <a href="/login" class="link">
-            <i class="fas fa-sign-in-alt"></i> Log in to your account here!
+            <i class="fas fa-sign-in-alt"></i> Log in!
         </a>
-        <br>
-        Forgot your password?
+        <span class="separator">⋮</span>
+        Forgot password?
         <a href="/reset-password" class="link">
-            <i class="fas fa-key"></i> Reset your password here!
+            <i class="fas fa-key"></i> Reset!
         </a>
     </p>
 
@@ -34,7 +32,7 @@
     {% endif %}
     {% endwith %}
 
-    <form action="/register" method="POST" class="register-form" onsubmit="return validateEmail()">
+    <form action="/register" method="POST" class="form-a" onsubmit="return validateEmail()">
         <!-- CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -214,7 +212,7 @@
                     <option value="{{ question }}">{{ question }}</option>
                 {% endfor %}
             </select>
-            <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
+            <input type="text" name="security_answer_1" class="file-input custom-width" placeholder="Answer" required>
         </div>
 
         <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
@@ -224,7 +222,7 @@
                     <option value="{{ question }}">{{ question }}</option>
                 {% endfor %}
             </select>
-            <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
+            <input type="text" name="security_answer_2" class="file-input custom-width" placeholder="Answer" required>
         </div>
 
         <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
@@ -234,7 +232,7 @@
                     <option value="{{ question }}">{{ question }}</option>
                 {% endfor %}
             </select>
-            <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
+            <input type="text" name="security_answer_3" class="file-input custom-width" placeholder="Answer" required>
         </div>
 
         <!-- Membership Question (Yes/No Radio Buttons) -->
@@ -388,9 +386,8 @@
         </script>
 
         <!-- Privacy Consent -->
-        <div class="input-container" style="margin-top: 15px;">
-            <label style="display: flex; align-items: center; font-size: 0.9em; gap: 0.5em;">
-                <input type="checkbox" name="privacy_consent" id="privacy_consent" required>
+        <div class="description" style="text-align: left;">
+            <input type="checkbox" name="privacy_consent" id="privacy_consent" required>
                 I agree to the <a href="/privacy_policy" target="_blank" style="color: #2980b9;">Privacy Policy</a>.
             </label>
         </div>
@@ -414,119 +411,15 @@
 
 {% block extra_styles %}
 <style>
-    body {
-        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 50px;
-        margin-bottom: 50px;
+
+    .custom-width {
+        width: 50%; /* Customize the width */
     }
 
-    select {
-        background-color: #6b6d6ec0;
-        color: white;
-        border: .5px solid #454546;
-        border-radius: 5px;
-        padding: 5px;
-        font-size: 0.8em;
-        width: 100%;
-        font-family: Arial, sans-serif;
-    }
-    
-    .register-container {
-        max-width: 600px;
-        margin: 0 auto;
-        background: #fff;
-        padding: 40px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
 
-    .register-form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
 
-    .btn-primary {
-        background:  linear-gradient(to left, #1abc9c, #2980b9);
-        color: #ffffff;
-        padding: 10px;
-        font-size: 0.8em;
-        border: none;
-        border-radius: 5px;
-        width: 100%;
-        box-sizing: border-box;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
 
-    .btn-primary:hover {
-        background:  linear-gradient(to left, #2980b9, #1abc9c);
-    }
 
-    .file-input {
-        background-color: #00000007;
-        width: 60%;
-        padding: 7px;
-        border: .5px solid #aaaaaa;
-        border-radius: 5px;
-        font-size: 0.7em;
-        box-sizing: border-box;
-        display: flex;
-        font-family: "Courier New", Courier, monospace;
-    }
-
-    .description {
-        font-size: 0.8em;
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .description strong {
-        color: #000;
-    }
-
-    .description .link {
-        color: #2980b9;
-        text-decoration: none;
-        font-weight: normal;
-    }
-
-    .description .link:hover {
-        color: #1abc9c;
-        font-weight: bold;
-    }
-
-    .description .link i {
-        margin-right: 5px;
-        font-size: 0.8em;
-    }
-
-    .description .link:hover i {
-        color: #1abc9c;
-        transition: color 0.3s ease;
-    }
-
-    .alert {
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        font-size: 0.8em;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .alert-error {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
 </style>
 {% endblock %}
 

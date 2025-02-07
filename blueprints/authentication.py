@@ -250,6 +250,13 @@ def register():
                 question3, generate_password_hash(answer3),
             ))
 
+            # Check if the user has any officer roles
+            if any([lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot]):
+                cursor.execute("""
+                    INSERT INTO verify_officer (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot))
+
             conn.commit()
             conn.close()
 

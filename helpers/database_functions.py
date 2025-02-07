@@ -24,9 +24,11 @@ def setup_database():
             consent BOOLEAN NOT NULL CHECK (consent IN (0, 1)),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (school_id) REFERENCES schools(school_id)
+            FOREIGN KEY (school_id) REFERENCES schools(school_id),
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
+        
 
         # Create user_auth table
         cursor.execute("""
@@ -44,15 +46,16 @@ def setup_database():
             login_attempts INTEGER DEFAULT 0,
             temp_password TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+
         );
         """)
 
         # Create sl_member_level table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS sl_member_level (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
+            user_id INTEGER PRIMARY KEY,  -- Make user_id the primary key
             sl_member INTEGER DEFAULT 0,
             lokalombud INTEGER DEFAULT 0,
             skyddsombud INTEGER DEFAULT 0,
@@ -62,6 +65,21 @@ def setup_database():
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
+
+        # Create verify_officer table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS verify_officer (
+            user_id INTEGER PRIMARY KEY,  -- Make user_id the primary key
+            lokalombud INTEGER DEFAULT 0,
+            skyddsombud INTEGER DEFAULT 0,
+            forhandlingsombud INTEGER DEFAULT 0,
+            huvudskyddsombud INTEGER DEFAULT 0,
+            styrelseledamot INTEGER DEFAULT 0,
+            verified INTEGER DEFAULT 0,  -- 0 = Not verified, 1 = Verified
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+        );
+        """)
+
         
         # Create meta1 table
         cursor.execute("""
@@ -71,7 +89,7 @@ def setup_database():
             middle_manager TEXT,
             ft_days TEXT,
             off_days TEXT,
-            FOREIGN KEY (user_id) REFERENCES user_auth(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
                        
         """)
@@ -103,7 +121,7 @@ def setup_database():
             over_teachtime REAL,
             over_frametime REAL,
             total_overtime REAL,
-            FOREIGN KEY (user_id) REFERENCES user_auth(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
 
@@ -112,7 +130,7 @@ def setup_database():
         CREATE TABLE IF NOT EXISTS schedule (
             user_id INTEGER PRIMARY KEY,  -- user_id matches user_auth.user_id
             schedule_string TEXT,
-            FOREIGN KEY (user_id) REFERENCES user_auth(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
 
@@ -131,7 +149,7 @@ def setup_database():
             review_q1 TEXT NOT NULL,
             review_q2 INTEGER NOT NULL,
             review_q3 TEXT,
-            FOREIGN KEY (user_id) REFERENCES user_auth(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
 

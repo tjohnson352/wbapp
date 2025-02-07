@@ -51,6 +51,20 @@
         </div>
     </form>
 </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          <span class="icon">⚠️</span> <!-- Add an icon for clarity -->
+          {{ message | safe }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
 {% endblock %}
 
 {% block extra_styles %}
@@ -197,7 +211,52 @@
     font-weight: bold; /* Hover font weight for Logout */
 }
 
+.flash-messages {
+    margin-bottom: 20px;
+}
 
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid transparent; /* Ensures all alerts have consistent styling */
+}
+
+/* Specific styles for different alert types */
+.alert-success {
+    background-color: #4CAF50; /* Green for success */
+    color: white;
+    border-color: #45a049; /* Darker green border */
+}
+
+.alert-danger {
+    background-color: #f44336; /* Bright red for danger */
+    color: white;
+    border-color: #d32f2f; /* Darker red border */
+}
+
+.alert-warning {
+    background-color: #ff9800; /* Orange for warning */
+    color: white;
+    border-color: #f57c00; /* Darker orange border */
+}
+
+.alert-info {
+    background-color: #2196F3; /* Blue for info */
+    color: white;
+    border-color: #1976D2; /* Darker blue border */
+}
+
+/* Optional icon styling for all alert types */
+.alert .icon {
+    margin-right: 10px;
+    font-size: 1.5rem; /* Icon size */
+    color: inherit; /* Match icon color to text color */
+}
 
 </style>
 

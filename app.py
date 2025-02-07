@@ -5,8 +5,8 @@ import sqlite3
 import os
 import pandas as pd
 from io import StringIO
-from blueprints.account import account_bp
-from blueprints.home import home_blueprint
+from blueprints.static.css.account import account_bp
+from blueprints.schedule_upload import schedule_upload_bp
 from blueprints.edit_schedule import edit_schedule_blueprint
 from blueprints.dataframe_view import dataframe_view_bp
 from blueprints.meta1 import meta1_blueprint
@@ -21,7 +21,9 @@ from datetime import timedelta
 
 
 # Initialize the Flask app
-app = Flask(__name__)
+from flask import Flask
+
+app = Flask(__name__, static_folder='static')
 
 # Secret key for session management
 app.secret_key = os.urandom(24)
@@ -46,7 +48,7 @@ Session(app)
 
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix='/')  # This registers all auth_bp routes under /auth
-app.register_blueprint(home_blueprint)
+app.register_blueprint(schedule_upload_bp)
 app.register_blueprint(meta1_blueprint)
 app.register_blueprint(edit_schedule_blueprint)
 app.register_blueprint(dataframe_view_bp)

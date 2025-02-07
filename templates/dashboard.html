@@ -6,13 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
-    <h2 class="dashboard-title">
+<div class="container-a">
+    <h2 class="schedulizer-header">
         The Schedulizer <span>Dashboard</span>
     </h2>
-    <p class="description">
-        Welcome! Select an option from below.
-    </p>
+
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -23,117 +21,31 @@
     {% endwith %}
 
     <div class="action-buttons">
-        <!-- Run the Web App -->
-        <a href="/" class="btn-primary">Run the Web App</a>
-
-        <!-- View My Account -->
-        <a href="/account" class="btn-primary">View My Account</a>
-
-        <!-- Contact Us -->
-        <a href="/contact" class="btn-primary">Contact Us</a>
-
-        <!-- Logout -->
-        <a href="/logout" class="btn-secondary">Logout</a>
+        <a href="/" class="btn-primary">
+            <i class="fas fa-calendar-alt"></i> Analyze Schedule
+        </a>
+        <a href="/account" class="btn-primary">
+            <i class="fas fa-user"></i> View Account
+        </a>
+        <a href="/contact" class="btn-primary">
+            <i class="fas fa-envelope"></i> Contact Us
+        </a>
+        <a href="/logout" class="btn-secondary">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
     </div>
+    
 </div>
 {% endblock %}
 
 {% block extra_styles %}
 <style>
-    body {
-        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
-        font-family: 'Arial', sans-serif;
-        font-size: 0.8em;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
 
-    .dashboard-container {
-        max-width: 400px;
-        width: 90%;
-        margin: 0;
-        background: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        text-align: center;
-    }
-
-    .dashboard-title {
-        color: #2980b9;
-        font-size: 1.8em;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    .dashboard-title span {
-        color: gray;
-        font-weight: normal;
-    }
-
-    .description {
-        font-size: 0.9em;
-        line-height: 1.5;
-        color: #555;
-        margin-bottom: 30px;
-    }
 
     .action-buttons {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-    }
-
-    .btn-primary {
-        background: linear-gradient(to right, #2980b9, #1abc9c);
-        color: #ffffff;
-        padding: 12px 20px;
-        font-size: 1em;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(to right, #1abc9c, #2980b9);
-        transform: scale(1.05);
-    }
-
-    .btn-secondary {
-        background: linear-gradient(to right, #ff6b6b, #fc8282);
-        color: #ffffff;
-        padding: 12px 20px;
-        font-size: 1em;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-        background: linear-gradient(to right, #fc8282, #ff6b6b);
-        transform: scale(1.05);
-    }
-
-    .alert {
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        font-size: 0.9em;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .alert-error {
-        background-color: #f8d7da;
-        color: #721c24;
+        gap: 10px;
     }
 </style>
 {% endblock %}

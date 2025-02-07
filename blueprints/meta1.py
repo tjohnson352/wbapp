@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, request, session, flash, redirect
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for
 
 meta1_blueprint = Blueprint('meta1', __name__)
 
 @meta1_blueprint.route('/meta1', methods=['GET', 'POST'])
 def meta1():
-    print("dddddddddddddddd1")
     """Handle additional metadata inputs."""
     if request.method == 'POST':
-        print("dddddddddddddddd2")
         try:
             # Collect the work percentage and middle manager status
             work_percent = request.form.get('work_percent', '100')  # Default is 100%
@@ -22,7 +20,6 @@ def meta1():
             # Store values in session
             session['work_percent'] = work_percent
             session['middle_manager'] = middle_manager
-            print("dddddddddddddddd3")
 
             return redirect('/days')  # Proceed to the next step (defined elsewhere)
 

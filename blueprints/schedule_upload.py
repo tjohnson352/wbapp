@@ -1,20 +1,20 @@
 from flask import Blueprint, render_template, request, session, redirect, flash, current_app, url_for
 import os
 import pandas as pd
-from blueprints.data_processing import structure_data
+from helpers.pdf_processing import extract_text_from_pdf, process_schedule_data
 from helpers.names_coding import validate_names
 from helpers.clean_raw_data import clean_data
 from helpers.auth_functions import get_db_connection
-from helpers.pdf_processing import extract_pdf_content
+from helpers.pdf_processing import extract_text_from_pdf
 from helpers.file_storage import validate_and_save_uploaded_file
 from flask import get_flashed_messages
 
-home_blueprint = Blueprint('home', __name__)
+schedule_upload_bp = Blueprint('schedule_upload_bp', __name__)
 
 # Configurable upload folder path
 UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
 
-@home_blueprint.route('/', methods=['GET', 'POST'])
+@schedule_upload_bp.route('/', methods=['GET', 'POST'])
 def home():
     # Clear irrelevant flash messages before rendering
     _ = get_flashed_messages(with_categories=True)
@@ -56,12 +56,13 @@ def home():
     if request.method == 'POST':
         try:
             # Validate and save uploaded file
+            print("dsfgsfasfasdvdcsdsdjs333")
             uploaded_file = request.files.get('schedule_pdf')
             filepath = validate_and_save_uploaded_file(uploaded_file, UPLOAD_FOLDER)
             session['uploaded_pdf'] = filepath
 
             # Process the uploaded PDF
-            data = extract_pdf_content(filepath)
+            data = extract_text_from_pdf(filepath)
             if not isinstance(data, list) or not all(isinstance(line, str) for line in data):
                 raise ValueError("Extracted PDF content is not valid.")
 
@@ -71,7 +72,7 @@ def home():
             session['df1a'] = df1a.to_json()
 
             # Process structured data and save temporary files
-            df2a, df2b = structure_data()
+            df2a, df2b = process_schedule_data()
 
             session['df2a'] = df2a.to_json()
             session['df2b'] = df2b.to_json()
@@ -81,20 +82,26 @@ def home():
             full_name = session.get('full_name', '').lower()
             if not full_name:
                 flash("Session error: Full name not found.", 'error')
+                print("dsfgsfasfasdvdcsdsdjs555")
                 return redirect(url_for('auth_bp.login'))
 
             consent_full_name = session['first_name'] + " " + session['last_name']
             if not validate_names(full_name, consent_full_name):
-                flash("GDPR violation: your name does not match the name on this schedule", 'error')
-                return render_template('index.html')
+                flash("Data Privacy Violation!<br>You can only process schedules that belong to you.<br>For GDPR compliance, the uploaded file was not processed.", 'danger')
+                return redirect(url_for('schedule_upload_bp.home'))  
 
+
+            #print("dsfgsfasfasdvdcsdsdjs676 - home line 94")
             flash('File uploaded and processed successfully!', 'success')
+            print(url_for('meta1.meta1'))
             return redirect(url_for('meta1.meta1'))
+            
 
         except ValueError as e:
             flash(f"Validation error: {str(e)}", 'error')
         except Exception as e:
             flash('An unexpected error occurred during file processing. Please contact support.', 'error')
             current_app.logger.error(f"Error processing uploaded file: {e}")
+    print("dsfgsfasfasdvdcsdsdjs777")
             
-    return render_template('index.html')
+    return render_template('upload_schedule.html')
