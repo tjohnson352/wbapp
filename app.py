@@ -5,7 +5,7 @@ import sqlite3
 import os
 import pandas as pd
 from io import StringIO
-from blueprints.static.css.account import account_bp
+from blueprints.account import account_bp
 from blueprints.schedule_upload import schedule_upload_bp
 from blueprints.edit_schedule import edit_schedule_blueprint
 from blueprints.dataframe_view import dataframe_view_bp
