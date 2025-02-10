@@ -153,12 +153,22 @@ def setup_database():
         );
         """)
 
-        # Commit changes and close connection
+        # 2) Commit table creations
         conn.commit()
+
+        # 3) Check if user with user_id=1 exists in user_auth
+        cursor.execute("SELECT 1 FROM user_auth WHERE user_id=1")
+        result = cursor.fetchone()
+
+        # 4) Only call create_admin() if no row found
+        if not result:
+            conn.close()   # Close before calling create_admin(), or just pass cursor around
+            create_admin()
+        else:
+            print("Admin user_id=1 already exists. Skipping create_admin().")
+
         conn.close()
         print("Database setup completed successfully.")
-
-        create_admin()
 
     except Exception as e:
         print(f"Error setting up database: {e}")

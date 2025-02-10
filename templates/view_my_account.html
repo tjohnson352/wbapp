@@ -16,223 +16,381 @@
     </ul>
 </div>
 
-
-    <!-- Card 1: Basic user info -->
-    <div class="card">
-        <div class="account-container">
-            <h2>The Schedulizer <span>My account</span></h2>
-        </div>
-        <h3>User Information</h3>
-        <div class="row">
-            <label>Account Created:</label>
-            <p>{{ user.created_at }}</p>
-        </div>
-        <div class="row">
-            <label>Last Updated:</label>
-            <p>{{ user.updated_at }}</p>
-        </div>
-        <div class="row">
-            <label>Name:</label>
-            <p>{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</p>
-        </div>
-        <div class="row">
-            <label>Email:</label>
-            <p>{{ user.login_id }}</p>
-        </div>
-        <button id="editEmailBtn" class="btn-primary-a">
-            <i class="fas fa-envelope"></i> <span>Change Email</span>
-        </button>          <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="email" name="new_email" id="new_email" placeholder="Enter new email" class="file-input" required>
-              <button type="submit" class="btn-primary-b">
-                <i class="fas fa-save"></i> <span>Save Email</span>
-              </button>
-          </form>
+<!-- Card 1: Basic user info -->
+<div class="card">
+    <div class="account-container">
+        <h2>The Schedulizer <span>My account</span></h2>
     </div>
+    <h3>User Information</h3>
+    <div class="row">
+        <label>Account Created:</label>
+        <p>{{ user.created_at }}</p>
+    </div>
+    <div class="row">
+        <label>Last Updated:</label>
+        <p>{{ user.updated_at }}</p>
+    </div>
+    <div class="row">
+        <label>Name:</label>
+        <p>{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</p>
+    </div>
+    <div class="row">
+        <label>Email:</label>
+        <p>{{ user.login_id }}</p>
+    </div>
+    <button id="editEmailBtn" class="btn-primary-a">
+        <i class="fas fa-envelope"></i> <span>Change Email</span>
+    </button>
+    <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input
+            type="email"
+            name="new_email"
+            id="new_email"
+            placeholder="Enter new email"
+            class="file-input"
+            style="margin-bottom: 0.5em"
+        >
+        <button type="submit" class="btn-primary-b">
+            <i class="fas fa-save"></i> <span>Save Email</span>
+        </button>
+    </form>
+</div>
 
-     <!-- Card 2: Workplace info -->
-     <div class="card">
-        <h3>Workplace Information</h3>
-        <div class="row">
-            <label>School/Workplace:</label>
-            <p>{{ user.school_name }}</p>
-        </div>
-        <div class="row">
-            <label>Middle Manager:</label>
-            <p>{{ user.middle_manager }}</p>
-        </div>  
-        <div class="row">
-            <label>Work Percentage:</label>
-            <p>{{ user.work_percent }}</p>
-        </div>
-        
-        <div class="row">
-            <label>Privacy consent:</label>
-            <p>{{ user.consent }}</p>
-        </div>
+<!-- Card 2: Workplace info -->
+<div class="card">
+    <h3>Workplace Information</h3>
+    <div class="row">
+        <label>School/Workplace:</label>
+        <p>{{ user.school_name }}</p>
+    </div>
+    <div class="row">
+        <label>Middle Manager:</label>
+        <p>{{ user.middle_manager }}</p>
+    </div>
+    <div class="row">
+        <label>Work Percentage:</label>
+        <p>{{ user.work_percent }}</p>
     </div>
     
-    <!-- Card 3: Membership/roles -->
-    <div class="card">
-        <h3>Sveriges Lärare Membership and Roles</h3>
-        <table class="roles-table">
-            <thead>
-                <tr>
-                    <th>Role</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Registered Member</td>
-                    <td class="{{ 'status' if user.sl_member == 'Yes' else '' }}">{{ user.sl_member }}</td>
-                </tr>
-                <tr>
-                    <td>Lokalombud</td>
-                    <td class="{{ 'status' if user.lokalombud == 'Yes' else '' }}">{{ user.lokalombud }}</td>
-                </tr>
-                <tr>
-                    <td>Skyddsombud</td>
-                    <td class="{{ 'status' if user.skyddsombud == 'Yes' else '' }}">{{ user.skyddsombud }}</td>
-                </tr>
-                <tr>
-                    <td>Förhandlingsombud</td>
-                    <td class="{{ 'status' if user.forhandlingsombud == 'Yes' else '' }}">{{ user.forhandlingsombud }}</td>
-                </tr>
-                <tr>
-                    <td>Huvudskyddsombud</td>
-                    <td class="{{ 'status' if user.huvudskyddsombud == 'Yes' else '' }}">{{ user.huvudskyddsombud }}</td>
-                </tr>
-                <tr>
-                    <td>Styrelseledamot</td>
-                    <td class="{{ 'status' if user.styrelseledamot == 'Yes' else '' }}">{{ user.styrelseledamot }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="row privacy-row">
+        <label>Privacy consent:</label>
+        <p>
+            <!-- Show "Yes" or "No" in a nicely formatted span -->
+            <span class="consent-status {{ user.consent|lower }}">{{ user.consent }}</span>
+            <!-- Add a separator or space, then the link -->
+            <a href="/privacy_policy" target="_blank" class="privacy-policy-link">View Privacy Policy</a>
+        </p>
     </div>
+</div>
 
-    <!-- Security Settings -->
-    <!-- Card 4: Security Settings -->
-    <div class="card">
-        <h3>Security Settings</h3>
+<!-- Card 3: Membership/roles -->
+<div class="card">
+    <h3>Sveriges Lärare Membership and Roles</h3>
+    <table class="roles-table">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Registered Member</td>
+                <td class="{{ 'status' if user.sl_member == 'Yes' else '' }}">{{ user.sl_member }}</td>
+            </tr>
+            <tr>
+                <td>Lokalombud</td>
+                <td class="{{ 'status' if user.lokalombud == 'Yes' else '' }}">{{ user.lokalombud }}</td>
+            </tr>
+            <tr>
+                <td>Skyddsombud</td>
+                <td class="{{ 'status' if user.skyddsombud == 'Yes' else '' }}">{{ user.skyddsombud }}</td>
+            </tr>
+            <tr>
+                <td>Förhandlingsombud</td>
+                <td class="{{ 'status' if user.forhandlingsombud == 'Yes' else '' }}">{{ user.forhandlingsombud }}</td>
+            </tr>
+            <tr>
+                <td>Huvudskyddsombud</td>
+                <td class="{{ 'status' if user.huvudskyddsombud == 'Yes' else '' }}">{{ user.huvudskyddsombud }}</td>
+            </tr>
+            <tr>
+                <td>Styrelseledamot</td>
+                <td class="{{ 'status' if user.styrelseledamot == 'Yes' else '' }}">{{ user.styrelseledamot }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Card 4: Security Settings -->
+<div class="card" style = "margin-bottom: 5em;">
+    <h3>Security Settings</h3>
+
     <!-- Change Password Section -->
-    <div class="change-password-container style">
+    <div class="change-password-container" style="margin-bottom: 1em;">
         <button id="changePasswordBtn" class="btn-primary-a">
             <i class="fas fa-key"></i> <span>Change Password</span>
         </button>
-
+    
         <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <label for="current_password">Current Password:</label>
-            <input type="password" name="current_password" id="current_password" class="file-input" required>
+            <!-- Current Password -->
+            <input
+              type="password"
+              name="current_password"
+              id="current_password"
+              class="file-input"
+              placeholder="Enter Current Password"
+              style="margin-bottom: 0.5em"
+              required
+            />
 
-            <label for="new_password">New Password:</label>
-            <input type="password" name="new_password" id="new_password" class="file-input" required>
+            <!-- New Password -->
+            <input
+              type="password"
+              name="new_password"
+              id="new_password"
+              class="file-input"
+              placeholder="Enter New Password"
+              style="margin-bottom: 0.5em"
+              required
+              oninput="removeWhitespace(this); validateNewPassword();"
+            />
 
-            <label for="verify_password">Verify New Password:</label>
-            <input type="password" id="verify_password" class="file-input" required>
+            <!-- Confirm New Password -->
+            <input
+              type="password"
+              id="verify_password"
+              class="file-input"
+              placeholder="Re-enter New Password"
+              style="margin-bottom: 0.5em"
+              required
+              oninput="removeWhitespace(this); checkPasswordsMatch();"
+            />
+
+            <!-- Password Requirements Feedback -->
+            <div id="password-feedback" style="font-size: 0.7em; color: gray; margin-bottom: 0.5em;">
+              <span id="length-check" style="margin-right: 0.5em;">✓ 6 characters</span>
+              <span id="alpha-check" style="margin-right: 0.5em;">✓ 1 letter</span>
+              <span id="numeric-check" style="margin-right: 0.5em;">✓ 1 number</span>
+              <span id="special-char-check">✓ 1 special char</span>
+            </div>
+
+            <!-- Match / Mismatch Message -->
+            <div id="password-message" style="margin-bottom: 1em;">
+              <span
+                id="matched-password"
+                style="font-weight: bold; color: green; display: none; margin-right: 1em;"
+              >
+                ✓ PASSWORD CONFIRMED
+              </span>
+              <span
+                id="mismatched-password"
+                style="font-weight: bold; color: red; display: none;"
+              >
+                MISMATCHED PASSWORDS!
+              </span>
 
             <!-- Show Password Checkbox -->
-            <div class="show-password">
-                <input type="checkbox" id="show-password-toggle">
-                <label for="show-password-toggle">Show Passwords</label>
+                <class="inline-toggle" style="display: inline-flex; align-items: center; gap: 0.5em;">
+                <input type="checkbox" id="show-password-toggle" />
+                <label for="show-password-toggle" style="font-size: 0.7em;">Show Passwords</label>
             </div>
 
             <!-- Save Password Button -->
+            <div>
             <button type="submit" class="btn-primary-b">
-                <i class="fas fa-key"></i> <span>Save Password</span>
+              <i class="fas fa-key"></i> <span>Save Password</span>
             </button>
+            </div>  
         </form>
     </div>
 
-
     <!-- Update Security Questions Section -->
-    <div class="security-questions-container">
+    <div class="security-questions-container" style="margin-bottom: 1em;">
         <button id="updateSecurityBtn" class="btn-primary-a">
-            <i class="fas fa-shield-alt"></i> <span>Update Security Questions</span>
+            <i class="fas fa-shield-alt"></i> <span>Update Questions</span>
         </button>
 
         <form id="updateSecurityForm" class="hidden" method="POST" action="/update_security_questions">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <!-- Question 1 & Answer 1 -->
-            <div class="question-answer" style = "margin: .5em">
-                <select name="security_question_1" id="security_question_1" required>
+            <div class="question-answer" style="display: flex; gap: 0.5em; margin: 0.5em; width: 100%;">
+                <select name="security_question_1" id="security_question_1" style="width: 60%;" required>
                     <option value="{{ user.security_question_1 }}" selected>{{ user.security_question_1 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
+                <input
+                    type="text"
+                    name="security_answer_1"
+                    class="file-input"
+                    placeholder="Answer"
+                    style="width: 40%; background-color: #d6d6d644;"
+                    required
+                >
             </div>
-
             <!-- Question 2 & Answer 2 -->
-            <div class="question-answer">
-                <select name="security_question_2" id="security_question_2" required>
+            <div class="question-answer" style="display: flex; gap: 0.5em; margin: 0.5em; width: 100%;">
+                <select name="security_question_2" id="security_question_2" style="width: 60%;" required>
                     <option value="{{ user.security_question_2 }}" selected>{{ user.security_question_2 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
+                <input
+                    type="text"
+                    name="security_answer_2"
+                    class="file-input"
+                    placeholder="Answer"
+                    style="width: 40%; background-color: #d6d6d644;"
+                    required
+                >
             </div>
 
             <!-- Question 3 & Answer 3 -->
-            <div class="question-answer">
-                <select name="security_question_3" id="security_question_3" required>
+            <div class="question-answer" style="display: flex; gap: 0.5em; margin: 0.5em; width: 100%;">
+                <select name="security_question_3" id="security_question_3" style="width: 60%;" required>
                     <option value="{{ user.security_question_3 }}" selected>{{ user.security_question_3 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
                     {% endfor %}
                 </select>
-                <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
+                <input
+                    type="text"
+                    name="security_answer_3"
+                    class="file-input"
+                    placeholder="Answer"
+                    style="width: 40%; background-color: #d6d6d644;"
+                    required
+                >
             </div>
 
             <!-- Save Security Questions Button -->
-            <button type="submit" class="btn-primary-b">
-                <i class="fas fa-shield-alt"></i> <span>Save Security Questions</span>
+            <button type="submit" class="btn-primary-b" style="margin-bottom: 1.5em;">
+                <i class="fas fa-shield-alt"></i> <span>Save Questions</span>
             </button>
         </form>
     </div>
-
-
-    <!-- Footer buttons -->
-        <a href="/logout" class="btn-secondary">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
 </div>
 
+
 <script>
+    // Toggle forms
     document.getElementById("editEmailBtn").addEventListener("click", function() {
         document.getElementById("editEmailForm").classList.toggle("hidden");
     });
-
     document.getElementById("changePasswordBtn").addEventListener("click", function() {
         document.getElementById("changePasswordForm").classList.toggle("hidden");
     });
-
     document.getElementById("updateSecurityBtn").addEventListener("click", function() {
         document.getElementById("updateSecurityForm").classList.toggle("hidden");
     });
 
     // Password visibility toggle
     document.getElementById("show-password-toggle").addEventListener("change", function() {
-        let passwordFields = ["current_password", "new_password", "verify_password"];
+        const passwordFields = ["current_password", "new_password", "verify_password"];
         passwordFields.forEach(id => {
-            let field = document.getElementById(id);
+            const field = document.getElementById(id);
             field.type = this.checked ? "text" : "password";
         });
     });
 
-    
-    // Verify new password match
+    /**
+     * Removes all whitespace from the input field (spaces, tabs, etc.).
+     */
+    function removeWhitespace(input) {
+        input.value = input.value.replace(/\s/g, "");
+    }
+
+    /**
+     * Validates the new password in real-time:
+     * - Minimum 6 characters
+     * - At least one letter
+     * - At least one number
+     * - At least one special character
+     * Also calls checkPasswordsMatch() to confirm with the second password field.
+     */
+    function validateNewPassword() {
+        const password = document.getElementById("new_password").value;
+
+        // Requirement feedback indicators
+        const lengthCheck = document.getElementById("length-check");
+        const alphaCheck = document.getElementById("alpha-check");
+        const numericCheck = document.getElementById("numeric-check");
+        const specialCharCheck = document.getElementById("special-char-check");
+
+        // Check length >= 6
+        lengthCheck.style.color = password.length >= 6 ? "green" : "red";
+
+        // At least one alphabetic character
+        alphaCheck.style.color = /[a-zA-Z]/.test(password) ? "green" : "red";
+
+        // At least one digit
+        numericCheck.style.color = /\d/.test(password) ? "green" : "red";
+
+        // At least one special character
+        specialCharCheck.style.color = /[^a-zA-Z\d]/.test(password) ? "green" : "red";
+
+        // Then check if it matches the confirmation field
+        checkPasswordsMatch();
+    }
+
+    /**
+     * Checks whether the 'new_password' and 'verify_password' fields match.
+     * Displays the appropriate message (green "confirmed" or red "mismatch").
+     */
+    function checkPasswordsMatch() {
+        const newPasswordVal = document.getElementById("new_password").value;
+        const verifyPasswordVal = document.getElementById("verify_password").value;
+
+        const matchedSpan = document.getElementById("matched-password");
+        const mismatchedSpan = document.getElementById("mismatched-password");
+
+        // Hide both messages by default
+        matchedSpan.style.display = "none";
+        mismatchedSpan.style.display = "none";
+
+        // Show a message only if both fields have some input
+        if (newPasswordVal && verifyPasswordVal) {
+            if (newPasswordVal === verifyPasswordVal) {
+                matchedSpan.style.display = "inline";
+            } else {
+                mismatchedSpan.style.display = "inline";
+            }
+        }
+    }
+
+    /**
+     * Final check on form submission to ensure:
+     * - Passwords match
+     * - Password meets complexity requirements
+     * If either fails, prevent form submission and alert the user.
+     */
     document.getElementById("changePasswordForm").addEventListener("submit", function(event) {
-        let newPassword = document.getElementById("new_password").value;
-        let verifyPassword = document.getElementById("verify_password").value;
+        const newPassword = document.getElementById("new_password").value;
+        const verifyPassword = document.getElementById("verify_password").value;
+
+        // Check for mismatch
         if (newPassword !== verifyPassword) {
             alert("New passwords do not match.");
             event.preventDefault();
+            return;
+        }
+
+        // Regex: 6+ chars, at least 1 letter, 1 digit, 1 special char
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            alert(
+                "New Password must be at least 6 characters long, " +
+                "contain at least one letter, one number, and one special character."
+            );
+            event.preventDefault();
+            return;
         }
     });
 </script>
@@ -241,121 +399,61 @@
 
 {% block extra_styles %}
 <style>
+  /* Container */
+  .account-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    text-align: center;
+  }
 
-  
-    /* Container */
-    .account-container {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      text-align: center;
-      
-    }
-  
-    /* Headings */
-    h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color:#2980b9
-    }
-    h2 span {
-      font-weight: 300;
-      color: #666;
-    }
-    h3 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 0.5rem;
-    }
-  
-    /* Cards */
-    .card {
-      background-color: #fff;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-  
-    /* Rows in the card */
-    .row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    .row label {
-      width: 150px;
-      font-weight: 600;
-    }
-    .row p {
-      margin: 0;
-    }
-  
-    /* Buttons */
-    .btn-primary,
-    .btn-secondary,
-    .logout-btn {
-      margin-bottom: 1rem
-    }
-  
-    }
-    .btn-primary:hover {
-      background-color: #025aa5;
-    }
-  
-  
-    .logout-btn {
-      background: #d9534f;
-      color: white;
-    }
-    .logout-btn:hover {
-      background: #c9302c;
-    }
-  
-    /* Hidden class for toggling forms */
-    .hidden {
-      display: none;
-    }
-  
-    /* Tables */
-    .roles-table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid #ddd;
-      background-color: #fff;
-    }
-    .roles-table th {
-      background-color: #0275d8;
-      color: #fff;
-      text-align: left;
-      padding: 0.75rem;
-    }
-    .roles-table td {
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      font-size: 0.95rem;
-    }
-    .roles-table tr:hover {
-      background-color: #f2f2f2;
-    }
-  
-    /* Form styling */
-    form label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 600;
-    }
+  /* Headings */
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #2980b9;
+  }
+  h2 span {
+    font-weight: 300;
+    color: #666;
+  }
+  h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.5rem;
+  }
 
-  
-    /* (Optional) Transition-based hide/show if desired:
-    .hidden {
-      height: 0;
-      overflow: hidden;
-      transition: height 0.3s ease;
-    }
-    */
-  </style>
-  
+  /* Example styling for a more appealing look */
+  .privacy-row {
+    margin-bottom: 1rem;
+  }
+
+  /* Make the consent status stand out */
+  .consent-status {
+    font-weight: bold;
+    margin-right: 0.5rem;
+  }
+  /* Optional color coding if "Yes" or "No" */
+  .consent-status.yes {
+    color: #28a745; /* green */
+  }
+  .consent-status.no {
+    color: #dc3545; /* red */
+  }
+
+  /* Style the link to match your brand or layout */
+  .privacy-policy-link {
+    color: #0275d8;
+    text-decoration: none;
+    margin-left: 0.25rem;
+  }
+  .privacy-policy-link:hover {
+    color: #0256a0;
+    font-weight: 600;
+  }
+
+
+ 
+</style>
 {% endblock %}
-

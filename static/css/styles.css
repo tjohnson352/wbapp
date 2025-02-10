@@ -62,14 +62,16 @@ table td {
 
 /* Dropdown menu styling */
 select {
-    background-color: rgba(255, 255, 0, 0.15); /* Semi-transparent gray */
-    color: rgba(0, 0, 0, 0.5); /* White text */
-    border: .25px solid rgba(0, 0, 0, 0.5); /* Border color */
-    border-radius: 5px; /* Rounded corners */
+    background-color: rgba(255, 255, 0, 0); /* Semi-transparent gray */
+    color: rgb(0, 0, 0); /* White text */
+    border: .1px solid rgba(0, 0, 0, 0.5); /* Border color */
+    border-radius: 0px; /* Rounded corners */
     padding: 5px; /* Inner padding */
     font-size: 0.8em; /* Smaller font size */
-    width: 100%; /* Full width */
+    font-weight: 400;
+    max-width: 100%; /* Full width */
     font-family: Arial, sans-serif; /* Font fallback */
+    margin-bottom: .2em;
 }
 
 select:focus {
@@ -145,19 +147,6 @@ select:focus {
     transition: all 0.3s ease; /* Smooth transition */
 }
 
-/* Primary button styling */
-.btn-primary {
-    background: linear-gradient(to left, #1abc9c, #2980b9); /* Blue-green gradient */
-    color: #ffffff; /* White text */
-    padding: 10px;
-    font-size: 1em; /* Standard font size */
-    font-weight: none; /* Default weight */
-    border: none; /* No border */
-    border-radius: 7px; /* Rounded corners */
-    width: 100%; /* Full width */
-    box-sizing: border-box; /* Include padding/border in width */
-}
-
 .btn-primary-a {
     background: linear-gradient(to left, #434f4d, #434f4ddb); /* Blue-green gradient */
     color: #ffffff; /* White text */
@@ -166,7 +155,7 @@ select:focus {
     font-weight: none; /* Default weight */
     border: none; /* No border */
     border-radius: 5px; /* Rounded corners */
-    max-width: 100%;
+    width: 40%;
     cursor: pointer;
     margin: 5px auto;
 }
@@ -184,12 +173,13 @@ select:focus {
     font-weight: none; /* Default weight */
     border: none; /* No border */
     border-radius: 5px; /* Rounded corners */
-    max-width: 100%;
+    width: 40%;
     cursor: pointer;
 }
 
 .question-answer {
     margin: .5em;
+    background-color: #ffffff;
 }
 
 .btn-primary-b:hover {
@@ -214,16 +204,31 @@ select:focus {
 
 /* Secondary button styling */
 .btn-secondary {
-    background: linear-gradient(to right, #e10d0d, #e10d0ddf); /* Red gradient */
+    background: linear-gradient(to right, #e10d0d, #e10d0dbe); /* Red gradient */
     color: #ffffff; /* White text */
-    padding: 10px 1.2em; /* Larger padding */
-    font-size: .8em; /* Standard size */
+    padding: 10px 1.2em;
+    font-size: .8em; /* Standard font size */
     text-align: center; /* Center-align text */
-    border-radius: 5px; /* Rounded corners */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
     transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
-    max-width: 100%;
-    cursor: pointer;
-    margin: 5px auto;
+    border-radius: 5px; /* Rounded corners */
+    max-width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding/border in width */
+}
+
+.btn-primary {
+    background: linear-gradient(to left, #1abc9c, #2980b9); /* Blue-green gradient */
+    color: #ffffff; /* White text */
+    padding: 10px 1.2em;
+    font-size: .8em; /* Standard font size */
+    text-align: center; /* Center-align text */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding/border in width */
 }
 
 /* Hover effect for secondary button */
@@ -286,7 +291,7 @@ a.btn-primary:hover, a.btn-secondary:hover {
     width: 100%; /* Full width */
     padding: 8px; /* Inner padding */
     border: 1px solid #ccc; /* Gray border */
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 0px; /* Rounded corners */
     font-size: 0.7em; /* Smaller font size */
     box-sizing: border-box; /* Include padding/border in width */
     display: flex; /* Flex layout */
@@ -398,58 +403,147 @@ a.btn-primary:hover, a.btn-secondary:hover {
         margin-right: 5px; /* Add space to the right of the checkbox */
     }
 
-    .dashboard-menu {
-        background-color: transparent; /* Transparent background */
-        margin-bottom: 20px;
-        margin-top: 20px;
-        border-radius: 8px;
-        text-align: center; /* Center-align the menu */
+.dashboard-menu {
+    background-color: transparent; /* Transparent background */
+    margin-bottom: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    text-align: center; /* Center-align the menu */
+}
+
+.menu-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    gap: 15px; /* Space between menu items */
+}
+
+.menu-list li {
+    display: inline-block;
+}
+
+.menu-list a {
+    color: #2980b9; /* Default color for all menu items */
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: normal;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu-list a:hover {
+    background-color: #1abc9c; /* Background color on hover */
+    color: #ffffff; /* Text color on hover */
+    font-weight: bold;
+}
+
+.menu-list a.active {
+    color: #1f5e88; /* Color for the active menu item */
+    pointer-events: none; /* Disable hover and clicking for the active link */
+    font-weight: 2;
+    font-weight: bold;
+}
+
+/* Specific hover effect for the Logout item */
+.menu-list a.logout:hover {
+    background-color: red; /* Hover background color for Logout */
+    color: #ffffff; /* Hover text color for Logout */
+    font-weight: bold; /* Hover font weight for Logout */
+}
+
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none;
     }
-    
-    .menu-list {
-        list-style: none;
-        display: flex;
-        justify-content: center;
-        margin: 0;
-        padding: 0;
-        gap: 15px; /* Space between menu items */
+
+/* Cards */
+.card {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
     }
-    
-    .menu-list li {
-        display: inline-block;
+
+/* Rows in the card */
+.row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.3rem;
+    gap: 1rem;
     }
-    
-    .menu-list a {
-        color: #2980b9; /* Default color for all menu items */
-        text-decoration: none;
-        font-size: 0.9em;
-        font-weight: normal;
-        padding: 5px 10px;
-        border-radius: 5px;
-        transition: background-color 0.3s ease, color 0.3s ease;
+.row label {
+    width: 200px;
+    font-weight: 600;
+    text-align: right;
     }
-    
-    .menu-list a:hover {
-        background-color: #1abc9c; /* Background color on hover */
-        color: #ffffff; /* Text color on hover */
-        font-weight: bold;
+
+.row p {
+    margin: 0;
     }
-    
-    .menu-list a.active {
-        color: #1f5e88; /* Color for the active menu item */
-        pointer-events: none; /* Disable hover and clicking for the active link */
-        font-weight: 2;
-        font-weight: bold;
+
+
+    /* Tables */
+    .roles-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+      background-color: #fff;
     }
-    
-    /* Specific hover effect for the Logout item */
-    .menu-list a.logout:hover {
-        background-color: red; /* Hover background color for Logout */
-        color: #ffffff; /* Hover text color for Logout */
-        font-weight: bold; /* Hover font weight for Logout */
+    .roles-table th {
+      background-color: #0275d8;
+      color: #fff;
+      text-align: center;
+      padding: 0.3rem;
     }
-    
-    .flash-messages {
-        margin-bottom: 20px;
+    .roles-table td {
+      padding: 0.3rem;
+      border: 1px solid #ddd;
+      font-size: 0.75rem;
     }
-    
+    .roles-table tr:hover {
+      background-color: #f2f2f2;
+    }
+  
+    /* Form styling */
+    form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+/* Tables */
+.roles-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    }
+.roles-table th {
+    background-color: #0274d88c;
+    color: #fff;
+    text-align: center;
+    padding: 0.3rem;
+    }
+.roles-table td {
+    padding: 0.3rem;
+    border: 1px solid #ddd;
+    font-size: 0.75rem;
+    }
+.roles-table tr:hover {
+    background-color: #f2f2f2;
+    }
+
+    /* Form styling */
+form label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    }
+      
