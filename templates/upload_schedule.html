@@ -15,8 +15,8 @@
     </ul>
 </div>
 
-<div class="upload-container">
-    <h2 class="upload-title">
+<div class="container-a">
+    <h2>
         The Schedulizer <span>Schedule Upload</span>
     </h2>
     <ol class="instructions-list">
@@ -32,10 +32,10 @@
         <li>Click <strong>Upload Schedule</strong> to proceed.</li>
     </ol>
     
-    <form method="post" enctype="multipart/form-data" class="upload-form">
+    <form method="post" enctype="multipart/form-data" class="form-a">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <div class="input-container">
+        <div class="container-b">
             <input 
                 type="file" 
                 name="schedule_pdf" 
@@ -46,7 +46,7 @@
                 aria-label="Upload your schedule in PDF format">
         </div>
 
-        <div class="input-container">
+        <div class="container-b">
             <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
         </div>
     </form>
@@ -63,201 +63,5 @@
     </div>
   {% endif %}
 {% endwith %}
-
-
-{% endblock %}
-
-{% block extra_styles %}
-<style>
-    body {
-        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
-        font-family: 'Arial', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-
-    .upload-container {
-        max-width: 400px;
-        width: 90%;
-        background: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        text-align: center;
-    }
-
-    .upload-title {
-        color: #2980b9 !important; /* Ensures the color rule is applied */
-        font-size: 1.8em;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    .upload-title span {
-    color: gray;
-    font-weight: normal;
-    font-size: 0.9em; /* Adjust size if needed */
-}
-
-    .description {
-        font-size: 0.8em;
-        line-height: 1.5;
-        color: #555;
-        margin-bottom: 30px;
-        text-align: justify;
-    }
-
-    .instructions-list {
-        line-height: 1.5;
-        color: #555;
-        font-size: 0.9em;
-        text-align: left;
-    }
-
-    .upload-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .input-container {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-
-    .input-container label {
-        font-weight: bold;
-        font-size: 0.9em;
-    }
-
-    .file-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 0.9em;
-        box-sizing: border-box;
-    }
-
-    .btn-primary {
-        background: linear-gradient(to right, #2980b9, #1abc9c);
-        color: #ffffff;
-        padding: 10px;
-        font-size: 0.9em;
-        border: none;
-        border-radius: 5px;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(to right, #1abc9c, #2980b9);
-        transform: scale(1.05);
-    }
-
-    .dashboard-menu {
-    background-color: transparent; /* Transparent background */
-    margin-bottom: 20px;
-    border-radius: 8px;
-    text-align: center; /* Center-align the menu */
-}
-
-.menu-list {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-    gap: 15px; /* Space between menu items */
-}
-
-.menu-list li {
-    display: inline-block;
-}
-
-.menu-list a {
-    color: #2980b9; /* Default color for all menu items */
-    text-decoration: none;
-    font-size: 0.9em;
-    font-weight: normal;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.menu-list a:hover {
-    background-color: #1abc9c; /* Background color on hover */
-    color: #ffffff; /* Text color on hover */
-    font-weight: bold;
-}
-
-.menu-list a.active {
-    color: #1f5e88; /* Color for the active menu item */
-    pointer-events: none; /* Disable hover and clicking for the active link */
-    font-weight: 2;
-    font-weight: bold;
-}
-
-/* Specific hover effect for the Logout item */
-.menu-list a.logout:hover {
-    background-color: red; /* Hover background color for Logout */
-    color: #ffffff; /* Hover text color for Logout */
-    font-weight: bold; /* Hover font weight for Logout */
-}
-
-.flash-messages {
-    margin-bottom: 20px;
-}
-
-.alert {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    line-height: 1.5;
-    border: 1px solid transparent; /* Ensures all alerts have consistent styling */
-}
-
-/* Specific styles for different alert types */
-.alert-success {
-    background-color: #4CAF50; /* Green for success */
-    color: white;
-    border-color: #45a049; /* Darker green border */
-}
-
-.alert-danger {
-    background-color: #f44336; /* Bright red for danger */
-    color: white;
-    border-color: #d32f2f; /* Darker red border */
-}
-
-.alert-warning {
-    background-color: #ff9800; /* Orange for warning */
-    color: white;
-    border-color: #f57c00; /* Darker orange border */
-}
-
-.alert-info {
-    background-color: #2196F3; /* Blue for info */
-    color: white;
-    border-color: #1976D2; /* Darker blue border */
-}
-
-/* Optional icon styling for all alert types */
-.alert .icon {
-    margin-right: 10px;
-    font-size: 1.5rem; /* Icon size */
-    color: inherit; /* Match icon color to text color */
-}
-
-</style>
 
 {% endblock %}

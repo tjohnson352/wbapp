@@ -4,6 +4,8 @@ import pandas as pd
 from flask import session
 from io import StringIO
 import logging
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 def setup_database():
     """
@@ -16,16 +18,14 @@ def setup_database():
         # Create users table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY,  -- user_id will match the user_id in user_auth
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-generate user_id
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL,
-            login_id TEXT UNIQUE NOT NULL,  -- login_id corresponds to the email address
             school_id INTEGER NOT NULL,
             consent BOOLEAN NOT NULL CHECK (consent IN (0, 1)),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (school_id) REFERENCES schools(school_id),
-            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+            FOREIGN KEY (school_id) REFERENCES schools(school_id)
         );
         """)
         
@@ -33,9 +33,10 @@ def setup_database():
         # Create user_auth table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS user_auth (
-            user_id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Autoincrement ID for authentication
-            login_id TEXT UNIQUE NOT NULL,  -- Login ID (email address)
+            user_id INTEGER PRIMARY KEY,  -- Must match `users.user_id`
+            login_id TEXT UNIQUE NOT NULL,  -- Email address
             password_hash TEXT NOT NULL,
+            is_admin INTEGER DEFAULT 0 CHECK (is_admin IN (0,1,2)),  -- 1 = Admin, 0 = Regular User
             security_question_1 TEXT NOT NULL,
             security_answer_1 TEXT NOT NULL,
             security_question_2 TEXT NOT NULL,
@@ -48,7 +49,6 @@ def setup_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-
         );
         """)
 
@@ -69,13 +69,13 @@ def setup_database():
         # Create verify_officer table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS verify_officer (
-            user_id INTEGER PRIMARY KEY,  -- Make user_id the primary key
+            user_id INTEGER PRIMARY KEY,  
             lokalombud INTEGER DEFAULT 0,
             skyddsombud INTEGER DEFAULT 0,
             forhandlingsombud INTEGER DEFAULT 0,
             huvudskyddsombud INTEGER DEFAULT 0,
             styrelseledamot INTEGER DEFAULT 0,
-            verified INTEGER DEFAULT 0,  -- 0 = Not verified, 1 = Verified
+            verified INTEGER DEFAULT 0,  -- 0 = not requested, 1 = requested but not verified, 2 = requested & Verified
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
@@ -100,7 +100,7 @@ def setup_database():
             user_id INTEGER NOT NULL,
             token TEXT NOT NULL UNIQUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(user_id)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );
         """)
 
@@ -157,6 +157,8 @@ def setup_database():
         conn.commit()
         conn.close()
         print("Database setup completed successfully.")
+
+        create_admin()
 
     except Exception as e:
         print(f"Error setting up database: {e}")
@@ -424,3 +426,80 @@ def setup_school_table():
         print(f"An unexpected error occurred: {e}")
 
         print(f"Error setting up schools table: {e}")
+
+import sqlite3
+import hashlib
+from datetime import datetime
+
+def create_admin():
+    """
+    Creates or updates the administrator account in the database.
+    """
+    conn = sqlite3.connect("user_data.db")
+    cursor = conn.cursor()
+
+    # Securely hash the admin password
+    admin_password = "cooler1!"  # Change this before deployment
+    admin_email = "ies@sverigeslarare.se"
+   
+
+    # Convert timestamps to string format
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Ensure admin exists in `users` table
+    cursor.execute("""
+        INSERT OR REPLACE INTO users (user_id, first_name, last_name, school_id, consent, created_at, updated_at)
+        VALUES (1, 'Admin', 'User', 1, 1, ?, ?)
+    """, (now, now))
+
+    # Default security questions and answers for admin
+    default_questions = ["What is your first pet's name?", "What is your mother's maiden name?", "What is your favorite book?"]
+    default_answers = ["AdminPet", "AdminMaiden", "AdminBook"]
+
+    # Ensure admin exists in `user_auth` table
+    cursor.execute("""
+        INSERT INTO user_auth (user_id, login_id, password_hash, is_admin, 
+                                         security_question_1, security_answer_1,
+                                         security_question_2, security_answer_2,
+                                         security_question_3, security_answer_3,
+                                         created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (1, admin_email, generate_password_hash(admin_password), 2,
+          default_questions[0], generate_password_hash(default_answers[0]),
+          default_questions[1], generate_password_hash(default_answers[1]),
+          default_questions[2], generate_password_hash(default_answers[2]),
+          now, now))
+
+    conn.commit()
+    conn.close()
+    
+    print("✅ Admin account created or updated successfully!")
+    view_database()
+
+import sqlite3
+import pandas as pd
+
+def view_database():
+    """Saves the database contents to a file."""
+    conn = sqlite3.connect("user_data.db")
+    cursor = conn.cursor()
+    
+    with open("database_dump.txt", "w", encoding="utf-8") as f:
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = [table[0] for table in cursor.fetchall()]
+
+        for table in tables:
+            f.write(f"\n🔹 **{table.upper()}**\n")
+            query = f"SELECT * FROM {table};"
+            df = pd.read_sql_query(query, conn)
+            f.write(df.to_string() + "\n")
+            f.write("-" * 100 + "\n")
+
+    conn.close()
+    print("✅ Database contents saved in **database_dump.txt**")
+
+# Run function
+view_database()
+
+
+

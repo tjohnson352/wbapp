@@ -1,231 +1,409 @@
-/* GENERAL STYLES */
+/* GLOBAL STYLES */
+
+/* Body styles for overall layout */
 body {
-    font-family: 'Roboto', sans-serif;
-    color: #555;
     background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    min-height: 100vh; /* Ensure the body fills at least the viewport height */
     margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif; /* Global font */
+    color: #555; /* Default text color */
 }
 
-.input-container {
-    display: flex;
-    align-items: center; /* Vertically align label and input */
-    gap: 10px; /* Space between label and input */
-    margin-bottom: 15px; /* Space between input fields */
+/* HEADER AND TITLE STYLES */
+.container-a h2 {
+    color: #2980b9; /* Main title color */
+    font-size: 1.4em; /* Font size for the header */
+    font-weight: bold; /* Emphasized weight */
+    margin-bottom: 10px; /* Space below header */
 }
 
-.input-container label {
-    min-width: 100px; /* Ensure labels are aligned */
-    text-align: right; /* Align label text to the right */
-    font-weight: bold;
-    font-size: 0.9em;
-}
-
-.input-container input {
-    flex: 1; /* Make input fields take up the remaining space */
-    padding: 7px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 0.9em;
-}
-
-button {
-    width: 100%;
-}
-
-
-/* HEADER */
-.page-header {
-    margin-left: 20px;
-    text-align: left;
-    color: #2980b9;
-    font-size: 1.8em;
-    font-weight: 700;
+.container-a h2 span {
+    color: gray; /* Subtitle color */
+    font-weight: normal; /* Normal font weight */
+    font-size: 0.9em; /* Adjusted subtitle size */
 }
 
 /* TABLE STYLES */
+
+/* General table styling */
 table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    border: 1px solid #ddd;
+    border-collapse: collapse; /* Remove cell spacing */
+    font-size: 14px; /* Standard font size */
+    border: 1px solid #ddd; /* Border around the table */
 }
 
+/* Header row styling in tables */
 table th {
-    background-color: #f4f4f4;
-    color: #2c3e50;
-    text-align: center;
-    font-weight: 700;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-bottom: 2px solid black;
-    border-top: 2px solid black;
+    background-color: #f4f4f4; /* Light gray background */
+    color: #2c3e50; /* Dark text color */
+    text-align: center; /* Center-align header text */
+    font-weight: 700; /* Bold header text */
+    padding: 5px; /* Padding in header cells */
+    border: 1px solid #ddd; /* Border for header cells */
+    border-bottom: 2px solid black; /* Emphasized bottom border */
+    border-top: 2px solid black; /* Emphasized top border */
 }
 
+/* Table cell styling */
 table td {
     padding: 2px;
-    border: 1px solid #ddd;
-    text-align: center;
+    border: 1px solid #ddd; /* Cell border */
+    text-align: center; /* Center-align content */
+}
+
+/* DROPDOWN MENU STYLES */
+
+/* Dropdown menu styling */
+select {
+    background-color: rgba(255, 255, 0, 0.15); /* Semi-transparent gray */
+    color: rgba(0, 0, 0, 0.5); /* White text */
+    border: .25px solid rgba(0, 0, 0, 0.5); /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px; /* Inner padding */
+    font-size: 0.8em; /* Smaller font size */
+    width: 100%; /* Full width */
+    font-family: Arial, sans-serif; /* Font fallback */
+}
+
+select:focus {
+    border-color: red; /* Red border on focus */
+    outline: none; /* Remove outline */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Red glow effect */
+}
+
+/* DESCRIPTION SECTION */
+
+/* Descriptive text styling */
+.description {
+    font-size: 0.8em; /* Smaller font size */
+    color: #555; /* Standard text color */
+    line-height: 1.6; /* Line spacing */
+    margin-bottom: 20px; /* Space below */
+}
+
+.instructions-list {
+    line-height: 1.5;
+    color: #555;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+/* Bold text in description */
+.description strong {
+    color: #000; /* Black text */
+}
+
+/* Links within description */
+.description .link {
+    color: #2980b9; /* Blue color */
+    text-decoration: none; /* Remove underline */
+    font-weight: normal; /* Normal weight */
+}
+
+/* Hover state for links */
+.description .link:hover {
+    color: #1abc9c; /* Green color */
+    font-weight: bold; /* Bold on hover */
+}
+
+/* Icons within links */
+.description .link i {
+    margin-right: 5px; /* Space between icon and text */
+    font-size: 0.8em; /* Smaller icon size */
+}
+
+/* Hover effect for icons */
+.description .link:hover i {
+    color: #1abc9c; /* Green color */
+    transition: color 0.3s ease; /* Smooth transition */
+}
+
+/* Separator styling */
+.separator {
+    margin: 0 1px; /* Horizontal space */
+    font-size: 1.2rem; /* Match text size */
+    font-weight: bold;
+    color: #ff0000; /* Light gray */
 }
 
 /* BUTTON STYLES */
+
+/* General button styling */
 .btn {
     padding: 10px 20px;
-    font-size: 14px;
-    border: 1;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 14px; /* Standard font size */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: all 0.3s ease; /* Smooth transition */
 }
 
+/* Primary button styling */
 .btn-primary {
-    padding: 5px 10px;
-    background: linear-gradient(to right, #2980b9, #1abc9c);
-    border-radius: 5px;
-    color: #ffffff;
+    background: linear-gradient(to left, #1abc9c, #2980b9); /* Blue-green gradient */
+    color: #ffffff; /* White text */
+    padding: 10px;
+    font-size: 1em; /* Standard font size */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
+    border-radius: 7px; /* Rounded corners */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding/border in width */
 }
 
+/* Primary and secondary button shadow */
+.btn-primary, .btn-secondary {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+/* Hover effect for primary button */
 .btn-primary:hover {
-    background: linear-gradient(to right, #1abc9c, #2980b9);
-    transform: scale(1.05);
+    background: linear-gradient(to right, #1abc9c, #2980b9); /* Gradient transition */
+    transform: scale(1.05); /* Slight scale up */
 }
 
+/* Secondary button styling */
 .btn-secondary {
-    background-color: #cccccc;
-    color: #2c3e50;
+    background: linear-gradient(to right, #ff6b6b, #fc8282); /* Red gradient */
+    color: #ffffff; /* White text */
+    padding: 12px 20px; /* Larger padding */
+    font-size: 1em; /* Standard size */
+    text-align: center; /* Center-align text */
+    border-radius: 8px; /* Rounded corners */
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
 }
 
+/* Hover effect for secondary button */
 .btn-secondary:hover {
-    background-color: #b3b3b3;
+    background: linear-gradient(to right, #fc8282, #ff6b6b); /* Gradient transition */
+    transform: scale(1.05); /* Slight scale up */
 }
 
-/* FORM ELEMENTS */
-.input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* Icons in buttons */
+.btn-primary i, .btn-secondary i {
+    margin-right: 8px; /* Space between icon and text */
 }
 
-.input-container label {
-    font-weight: bold;
-    font-size: 0.9em;
+/* Hover effect for icons in buttons */
+.btn-primary:hover i, .btn-secondary:hover i {
+    transform: scale(1.2); /* Larger on hover */
+    color: #ffffff; /* White color */
+    transition: transform 0.3s ease, color 0.3s ease; /* Smooth hover effect */
 }
 
+/* Remove underline for all links */
+a {
+    text-decoration: none; /* Ensures no underline by default */
+}
+
+/* Ensure button-like links also don't have underlines */
+a.btn-primary, a.btn-secondary {
+    text-decoration: none; /* Remove underline for buttons */
+    display: inline-block; /* Makes them behave like buttons */
+}
+
+/* Prevent underline on hover for button links */
+a.btn-primary:hover, a.btn-secondary:hover {
+    text-decoration: none; /* Ensures no underline on hover */
+}
+
+
+/* CONTAINER AND FORM STYLES */
+
+/* Form container styling */
+.container-a {
+    max-width: 600px; /* Maximum width */
+    width: 90%; /* Responsive width */
+    background: #fff; /* White background */
+    padding: 30px; /* Inner padding */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+    text-align: center; /* Center-align text */
+}
+
+/* Form alignment and spacing */
+.form-a {
+    display: flex; /* Flexbox layout */
+    flex-direction: column; /* Vertical layout */
+    gap: 5px; /* Spacing between elements */
+}
+
+/* Input field styling */
 .file-input {
-    width: 100%;
-    padding: 7px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 0.9em;
-    box-sizing: border-box;
+    width: 100%; /* Full width */
+    padding: 8px; /* Inner padding */
+    border: 1px solid #ccc; /* Gray border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 0.7em; /* Smaller font size */
+    box-sizing: border-box; /* Include padding/border in width */
+    display: flex; /* Flex layout */
+    font-family: "Courier New", Courier, monospace; /* Monospace font */
 }
 
-/* ALERT MESSAGES */
-.flash-messages {
-    margin-bottom: 20px;
+/* Focus state for input fields */
+.file-input:focus {
+    border-color: red; /* Red border on focus */
+    outline: none; /* Remove outline */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Red glow effect */
 }
 
+/* ALERT STYLES */
+
+/* General alert box styling */
 .alert {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
+    padding: 10px; /* Inner padding */
+    border-radius: 7px; /* Rounded corners */
+    margin-bottom: 15px; /* Space below */
     display: flex;
     align-items: center;
-    font-size: 1rem;
+    font-size: 0.9em; /* Standard font size */
+    word-wrap: break-word; /* Ensure text wraps */
+    max-width: 350px; /* Maximum width */
+    border: 1px solid transparent; 
     line-height: 1.5;
-    border: 1px solid transparent;
 }
 
+/* Success alert styling */
 .alert-success {
-    background-color: #4CAF50;
-    color: white;
-    border-color: #45a049;
+    background-color: #d4edda; /* Green background */
+    color: #155724; /* Dark green text */
+}
+
+/* Error alert styling */
+.alert-error {
+    background-color: #f8d7da; /* Red background */
+    color: #721c24; /* Dark red text */
 }
 
 .alert-danger {
-    background-color: #f44336;
+    background-color: #f44336; /* Bright red for danger */
     color: white;
-    border-color: #d32f2f;
+    border-color: #d32f2f; /* Darker red border */
 }
 
 .alert-warning {
-    background-color: #ff9800;
+    background-color: #ff9800; /* Orange for warning */
     color: white;
-    border-color: #f57c00;
+    border-color: #f57c00; /* Darker orange border */
 }
 
 .alert-info {
-    background-color: #2196F3;
+    background-color: #2196F3; /* Blue for info */
     color: white;
-    border-color: #1976D2;
+    border-color: #1976D2; /* Darker blue border */
 }
 
-/* LOGIN FORM */
-.login-container {
-    max-width: 400px;
-    width: 90%;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    text-align: center;
+/* Optional icon styling for all alert types */
+.alert .icon {
+    margin-right: 10px;
+    font-size: 1.5rem; /* Icon size */
+    color: inherit; /* Match icon color to text color */
 }
 
-.login-title {
-    color: #2980b9;
-    font-size: 1.4em;
+
+/* Description within upload container */
+.upload-container .description {
+    font-size: 1em; /* Standard font size */
+    color: #555; /* Gray text */
+    text-align: left; /* Left-align text */
+    margin-bottom: 10px; /* Space below */
+}
+
+/* BUTTON ALIGNMENT */
+
+/* Action button container */
+.action-buttons {
+    display: flex; /* Flex layout */
+    flex-direction: column; /* Vertical arrangement */
+    gap: 10px; /* Space between buttons */
+}
+
+.container-b { /* login email and password container */
+    display: flex; /* Use flexbox for inline alignment */
+    align-items: center; /* Vertically align label and input */
+    margin-bottom: 5px; /* Space between input groups */
+    gap: 5px;
+}
+
+.container-b label { /* login email and password container */
+    flex: 0; /* Label takes only the space it needs */
+    margin-right: 0px; /* Add space between label and input */
+    font-size: 0.8em; /* Adjust font size for better readability */
     font-weight: bold;
-    margin-bottom: 20px;
+    white-space: nowrap;
+    color: #555; /* Dark gray text color */
+
 }
 
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.container-b input { /* login email and password container */
+    flex: 1; /* Input takes up the remaining available space */
+    padding: 7px; /* Add padding inside the input */
+    font-size: 0.9em; /* Adjust font size for better readability */
 }
 
-/* DASHBOARD MENU */
-.dashboard-menu {
-    background-color: transparent;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
+    #show-password { /* login email and password container */
+        margin-right: 5px; /* Add space to the right of the checkbox */
+    }
 
-.menu-list {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-    gap: 15px;
-}
-
-.menu-list li {
-    display: inline-block;
-}
-
-.menu-list a {
-    color: #2980b9;
-    text-decoration: none;
-    font-size: 0.9em;
-    font-weight: normal;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.menu-list a:hover {
-    background-color: #1abc9c;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-.menu-list a.active {
-    color: #1f5e88;
-    pointer-events: none;
-    font-weight: bold;
-}
+    .dashboard-menu {
+        background-color: transparent; /* Transparent background */
+        margin-bottom: 20px;
+        margin-top: 20px;
+        border-radius: 8px;
+        text-align: center; /* Center-align the menu */
+    }
+    
+    .menu-list {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        gap: 15px; /* Space between menu items */
+    }
+    
+    .menu-list li {
+        display: inline-block;
+    }
+    
+    .menu-list a {
+        color: #2980b9; /* Default color for all menu items */
+        text-decoration: none;
+        font-size: 0.9em;
+        font-weight: normal;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .menu-list a:hover {
+        background-color: #1abc9c; /* Background color on hover */
+        color: #ffffff; /* Text color on hover */
+        font-weight: bold;
+    }
+    
+    .menu-list a.active {
+        color: #1f5e88; /* Color for the active menu item */
+        pointer-events: none; /* Disable hover and clicking for the active link */
+        font-weight: 2;
+        font-weight: bold;
+    }
+    
+    /* Specific hover effect for the Logout item */
+    .menu-list a.logout:hover {
+        background-color: red; /* Hover background color for Logout */
+        color: #ffffff; /* Hover text color for Logout */
+        font-weight: bold; /* Hover font weight for Logout */
+    }
+    
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+    

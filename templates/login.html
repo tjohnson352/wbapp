@@ -7,7 +7,7 @@
 
 {% block content %}
 <div class="container-a">
-    <h2 class="schedulizer-header">
+    <h2>
         The Schedulizer <span>Login</span>
     </h2>   
 
@@ -15,7 +15,7 @@
         <!-- CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <div class="input-container">
+        <div class="container-b">
             <label for="email">Email:</label>
             <input 
                 type="email" 
@@ -28,7 +28,7 @@
                 required>
         </div>
 
-        <div class="input-container">
+        <div class="container-b">
             <label for="password">Password:</label>
             <input 
                 type="password" 
@@ -38,7 +38,7 @@
                 placeholder="Enter your password" 
                 aria-label="Password"
                 required>
-            <div class="input-container">
+            <div class="container-b">
                 <input type="checkbox" id="show-password" onclick="togglePassword()">
                 <label for="show-password">show</label>
             </div>
@@ -51,7 +51,7 @@
             }
         </script>
 
-        <div class="input-container">
+        <div class="container-b">
             <button type="submit" class="btn-primary">Login</button>
         </div>
     </form>
@@ -81,34 +81,3 @@
     
 </div>
 {% endblock %}
-
-{% block extra_styles %}
-<style>
-
-
-
-
-
-
-    .forgot-password-link,
-    .register-link {
-        margin-top: 10px;
-        font-size: 0.8em;
-        text-align: center;
-    }
-
-    .forgot-password-link a,
-    .register-link a {
-        color: #2980b9;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .forgot-password-link a:hover,
-    .register-link a:hover {
-        text-decoration: underline;
-    }
-
-</style>
-{% endblock %}
-suggestion for accomplishing

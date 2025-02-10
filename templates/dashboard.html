@@ -11,7 +11,6 @@
         The Schedulizer <span>Dashboard</span>
     </h2>
 
-
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -30,22 +29,12 @@
         <a href="/contact" class="btn-primary">
             <i class="fas fa-envelope"></i> Contact Us
         </a>
+        <a href="/confirm-elected-officers" class="btn-primary">
+            <i class="fas fa-user-check"></i> Confirm Officers
+        </a>
         <a href="/logout" class="btn-secondary">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
     </div>
-    
 </div>
-{% endblock %}
-
-{% block extra_styles %}
-<style>
-
-
-    .action-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-</style>
 {% endblock %}

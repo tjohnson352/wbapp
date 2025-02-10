@@ -1,0 +1,110 @@
+
+🔹 **USERS**
+   user_id first_name last_name  school_id  consent           created_at           updated_at
+0        1      Admin      User          1        1  2025-02-09 19:15:45  2025-02-09 19:15:45
+----------------------------------------------------------------------------------------------------
+
+🔹 **SQLITE_SEQUENCE**
+      name  seq
+0    users    1
+1  schools   48
+----------------------------------------------------------------------------------------------------
+
+🔹 **USER_AUTH**
+   user_id               login_id                                                                                                                                                       password_hash  is_admin             security_question_1                                                                                                                                                   security_answer_1                 security_question_2                                                                                                                                                   security_answer_2          security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
+0        1  ies@sverigeslarare.se  scrypt:32768:8:1$Shuh5AyHACUPZMdV$92b5df38692a337307c250427ce0b264721650db74ed9b06e4b6a9f0182c85b682e93158302ee0bfade35fec9eb7059d39ff09d9434cdffd36498eec6e6756f2         2  What is your first pet's name?  scrypt:32768:8:1$J6sIkoAAZAgQJHVF$7f72cb871365d0365777a6201e2b2b5415c106a36e24d1cc49116d441f647a1e0a91d99cea5bac9aa981fdb2d787f34b2df51ef4eafe2a182844c92543616992  What is your mother's maiden name?  scrypt:32768:8:1$gpmMoa0nrkaobNb9$236fcd8f73ce4f5bee9ccbd783dc65287e9ed9c31f21c6650b2437b0e6f1b059afaa77c6296c48cbc9e6b21af87d802fa49440ed9fa9a38548721a42a72e5f4e  What is your favorite book?  scrypt:32768:8:1$AbgXV5I2pS4h9xSe$4e868ebbc4d7d9d0bfac84ce91f98c7e9f49af86e8499dce12d0bca32253d46bf371e4ddbecb1956e123d5a987b5822176ec327be1741fb4ec67455366ed1e6b               0               0          None  2025-02-09 19:15:45  2025-02-09 19:15:45
+----------------------------------------------------------------------------------------------------
+
+🔹 **SL_MEMBER_LEVEL**
+Empty DataFrame
+Columns: [user_id, sl_member, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **VERIFY_OFFICER**
+Empty DataFrame
+Columns: [user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **META1**
+Empty DataFrame
+Columns: [user_id, school_name, middle_manager, ft_days, off_days]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **RESET_TOKENS**
+Empty DataFrame
+Columns: [id, user_id, token, created_at]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **META2**
+Empty DataFrame
+Columns: [user_id, work_percent, planning_time, frametime_issue_count, gap_issues_count, breaks_time, general_time, contract_teachtime, assigned_teachtime, contract_frametime, assigned_frametime, over_teachtime, over_frametime, total_overtime]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **SCHEDULE**
+Empty DataFrame
+Columns: [user_id, schedule_string]
+Index: []
+----------------------------------------------------------------------------------------------------
+
+🔹 **SCHOOLS**
+    school_id               school_name
+0           1                IES Älvsjö
+1           2                 IES Årsta
+2           3                 IES Borås
+3           4                IES Bromma
+4           5               IES Enskede
+5           6            IES Eskilstuna
+6           7                 IES Falun
+7           8                 IES Gävle
+8           9  IES Göteborg Johanneberg
+9          10              IES Halmstad
+10         11              IES Hässelby
+11         12            IES Hässleholm
+12         13           IES Helsingborg
+13         14              IES Huddinge
+14         15              IES Järfälla
+15         16             IES Jönköping
+16         17              IES Karlstad
+17         18                 IES Kista
+18         19            IES Kungsbacka
+19         20            IES Landskrona
+20         21                 IES Länna
+21         22           IES Liljeholmen
+22         23             IES Linköping
+23         24                  IES Lund
+24         25                 IES Nacka
+25         26             IES Norrtälje
+26         27                IES Örebro
+27         28             IES Österåker
+28         29             IES Östersund
+29         30               IES Sigtuna
+30         31            IES Skärholmen
+31         32            IES Skellefteå
+32         33             IES Södermalm
+33         34            IES Södertälje
+34         35       IES Södra Änggården
+35         36                 IES Solna
+36         37          IES Staffanstorp
+37         38            IES Sundbyberg
+38         39             IES Sundsvall
+39         40                  IES Täby
+40         41            IES Trelleborg
+41         42                IES Tyresö
+42         43                  IES Umeå
+43         44        IES Upplands Väsby
+44         45               IES Uppsala
+45         46                IES Värmdö
+46         47              IES Västerås
+47         48                 IES Växjö
+----------------------------------------------------------------------------------------------------
+
+🔹 **SURVEY_RESPONSES**
+Empty DataFrame
+Columns: [user_id, review_q1, review_q2, review_q3]
+Index: []
+----------------------------------------------------------------------------------------------------

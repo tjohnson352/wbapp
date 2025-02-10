@@ -1,13 +1,11 @@
 # auth.py
-import os
 import re
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, g
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers.auth_functions import get_db_connection
 from helpers.database_functions import setup_database, view_database, setup_school_table
 import secrets
 import sqlite3
-from datetime import timedelta
 import random
 import string
 import datetime
@@ -24,6 +22,7 @@ def generate_temp_password(length=6):
 def login():
     setup_database()
     setup_school_table()
+    view_database()
 
     if request.method == 'POST':
         email = request.form.get('email').strip()
@@ -100,6 +99,7 @@ def login():
 
             conn.close()
             return redirect(url_for('auth_bp.login'))
+        
 
     return render_template('login.html')
     
@@ -126,119 +126,115 @@ def get_random_security_questions():
         print(f"Error: {e}")
         return []
 
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     setup_database()
     setup_school_table()
+    insert_debug_data()
 
-    # Fetch the school names from the database
+    # Fetch available schools
     schools = []
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT school_name FROM schools")
+        cursor.execute("SELECT school_name FROM schools ORDER BY school_name")
         schools = [row[0] for row in cursor.fetchall()]
         conn.close()
     except Exception as e:
-        flash("An error occurred while retrieving the school list. Please try again later.", "error")
+        flash("An error occurred while retrieving the school list.", "error")
 
-    # Fetch random security questions
+    # Fetch security questions
     security_questions = get_random_security_questions()
     
     if request.method == 'POST':
-        # Safely retrieve form inputs with default values
+        # Retrieve form data
         first_name = request.form.get('first_name', '').strip()
         last_name = request.form.get('last_name', '').strip()
         email = request.form.get('email', '').strip()
         school = request.form.get('school', '').strip()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
-
-        # Privacy consent
         privacy_consent = request.form.get('privacy_consent', None)
 
-        # Check if privacy consent was provided
+        # Validate Privacy Consent
         if not privacy_consent:
             flash("You must agree to the Privacy Policy to create an account.", "error")
             return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
-        
-        # Security questions and answers
-        question1 = request.form.get('security_question_1', '').strip()
-        answer1 = request.form.get('security_answer_1', '').strip()
-        question2 = request.form.get('security_question_2', '').strip()
-        answer2 = request.form.get('security_answer_2', '').strip()
-        question3 = request.form.get('security_question_3', '').strip()
-        answer3 = request.form.get('security_answer_3', '').strip()
-
-        # Sveriges Lärare Membership & Roles
-        sl_member = 0  # Default value for Sveriges Lärare membership
-        lokalombud = 0  # Default value for Lokalombud
-        skyddsombud = 0  # Default value for Skyddsombud
-        forhandlingsombud = 0  # Default value for Förhandlingsombud
-        huvudskyddsombud = 0  # Default value for Huvudskyddsombud
-        styrelseledamot = 0  # Default value for Styrelseledamot
-
-        # Update variables based on form inputs
-        if request.form.get('sl_member', '0') == '1':  
-            sl_member = 1
-
-        selected_roles = request.form.getlist('sl_roles')
-
-        if 'Lokalombud' in selected_roles:
-            lokalombud = 1
-        if 'Skyddsombud' in selected_roles:
-            skyddsombud = 1
-        if 'Förhandlingsombud' in selected_roles:
-            forhandlingsombud = 1
-        if 'Huvudskyddsombud' in selected_roles:
-            huvudskyddsombud = 1
-        if 'Styrelseledamot' in selected_roles:
-            styrelseledamot = 1
 
         # Validate required fields
-        if not all([first_name, last_name, email, school, password, confirm_password, question1, answer1, question2, answer2, question3, answer3]):
-            flash("Please complete all fields.", "error")
+        if not all([first_name, last_name, email, school, password, confirm_password]):
+            flash("All fields are required.", "error")
             return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
         # Password validation
         password_regex = re.compile(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{6,}$')
         if not password_regex.match(password):
-            flash("Password must be at least 6 characters long, with letters, numbers, and a special character.", "error")
+            flash("Password must be at least 6 characters long with letters, numbers, and a special character.", "error")
             return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
-        # Check password match
+        # Check if passwords match
         if password != confirm_password:
-            flash("Passwords do not match. Please try again.", "error")
+            flash("Passwords do not match.", "error")
             return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
-        # Save user data to the database
+        # Security questions & answers
+        question1, answer1 = request.form.get('security_question_1', '').strip(), request.form.get('security_answer_1', '').strip()
+        question2, answer2 = request.form.get('security_question_2', '').strip(), request.form.get('security_answer_2', '').strip()
+        question3, answer3 = request.form.get('security_question_3', '').strip(), request.form.get('security_answer_3', '').strip()
+
+        if not all([question1, answer1, question2, answer2, question3, answer3]):
+            flash("Security questions must be answered.", "error")
+            return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
+
+        # Sveriges Lärare Membership & Roles (default 0)
+        sl_roles = {
+            'sl_member': 0,
+            'lokalombud': 0,
+            'skyddsombud': 0,
+            'forhandlingsombud': 0,
+            'huvudskyddsombud': 0,
+            'styrelseledamot': 0
+        }
+
+        # Update based on user selection
+        if request.form.get('sl_member', '0') == '1':  
+            sl_roles['sl_member'] = 1
+
+        selected_roles = request.form.getlist('sl_roles')
+        for role in selected_roles:
+            if role in sl_roles:
+                sl_roles[role] = 1
+
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # Check if email already exists
-            cursor.execute("SELECT user_id FROM users WHERE login_id = ?", (email,))
+            # ✅ Ensure the email does not already exist
+            cursor.execute("SELECT user_id FROM user_auth WHERE login_id = ?", (email,))
             if cursor.fetchone():
-                flash(f"An account for {email} exists. Click 'Reset' if you forgot the password.", "error")
-                return render_template('login.html', schools=schools, form_data=request.form)
+                flash(f"An account for {email} already exists.", "error")
+                return render_template('register.html', schools=schools, form_data=request.form)
 
-            # Insert into `users` table with privacy_consent
+            # ✅ Ensure the school exists in the database
+            cursor.execute("SELECT school_id FROM schools WHERE school_name = ?", (school,))
+            school_data = cursor.fetchone()
+            if not school_data:
+                flash("Invalid school selection.", "error")
+                return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
+            
+            school_id = school_data[0]
+
+            # ✅ Insert into `users` table FIRST to generate `user_id`
             cursor.execute("""
-                INSERT INTO users (first_name, last_name, login_id, school_id, consent)
-                VALUES (?, ?, ?, (SELECT school_id FROM schools WHERE school_name = ?), ?)
-            """, (first_name, last_name, email, school, privacy_consent == 'on'))
-
+                INSERT INTO users (first_name, last_name, school_id, consent)
+                VALUES (?, ?, ?, ?)
+            """, (first_name, last_name, school_id, 1))
+            
             user_id = cursor.lastrowid  # Get the generated user_id
 
-            # Insert into `sl_member_level` table
-            cursor.execute("""
-                INSERT INTO sl_member_level (user_id, sl_member, lokalombud, skyddsombud, 
-                                            forhandlingsombud, huvudskyddsombud, styrelseledamot)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (user_id, sl_member, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot))
-
-
-            # Insert into `user_auth` table
+            # ✅ Insert into `user_auth`
             cursor.execute("""
                 INSERT INTO user_auth (user_id, login_id, password_hash, security_question_1, security_answer_1, 
                                        security_question_2, security_answer_2, security_question_3, security_answer_3)
@@ -250,23 +246,32 @@ def register():
                 question3, generate_password_hash(answer3),
             ))
 
-            # Check if the user has any officer roles
-            if any([lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot]):
+            # ✅ Insert into `sl_member_level`
+            cursor.execute("""
+                INSERT INTO sl_member_level (user_id, sl_member, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (user_id, sl_roles['sl_member'], sl_roles['lokalombud'], sl_roles['skyddsombud'],
+                  sl_roles['forhandlingsombud'], sl_roles['huvudskyddsombud'], sl_roles['styrelseledamot']))
+
+            # ✅ Insert into `verify_officer` if any officer role is requested
+            if any(sl_roles.values()):
                 cursor.execute("""
                     INSERT INTO verify_officer (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot))
+                """, (user_id, sl_roles['lokalombud'], sl_roles['skyddsombud'], sl_roles['forhandlingsombud'],
+                      sl_roles['huvudskyddsombud'], sl_roles['styrelseledamot']))
 
             conn.commit()
             conn.close()
 
-            # Store user_id in session
+            # ✅ Store `user_id` in session
             session['user_id'] = user_id
 
             flash("Account created! Please log in.", "success")
             return redirect(url_for('auth_bp.login'))
+
         except Exception as e:
-            flash("An error occurred during registration. Please try again later.", "error")
+            flash("An error occurred during registration.", "error")
 
     return render_template('register.html', schools=schools, security_questions=security_questions, form_data=request.form)
 
@@ -280,7 +285,7 @@ def reset_password():
         cursor = conn.cursor()
 
         try: 
-            cursor.execute("SELECT user_id FROM users WHERE login_id = ?", (email,))
+            cursor.execute("SELECT user_id FROM user_auth WHERE login_id = ?", (email,))
             user = cursor.fetchone()
 
             if user:
@@ -424,7 +429,7 @@ def reset_password_security_questions(token):
                     # Clear session variables related to the reset process
                     session.pop('question_index', None)
 
-                    flash("Password reset successful! You can now log in with your new password.", "success")
+                    flash("Password reset was successfully!", "success")
                     return redirect(url_for('auth_bp.login'))
             else:
                 # Incorrect answer: increment question index
@@ -449,4 +454,156 @@ def reset_password_security_questions(token):
     except Exception as e:
         flash(f"An error occurred: {e}", "error")
         return redirect(url_for('auth_bp.reset_password'))
+
+@auth_bp.route("/confirm-elected-officers", methods=["GET", "POST"])
+def confirm_elected_officers():
+
+    # Insert test data (only for debugging)
+    insert_debug_data()
+
+        # Step 1: Get user_id from session and connect to the database
+    user_id = session.get("user_id")  # Retrieve user_id from the session
+    if not user_id:
+        flash("You must be logged in to access this page.", "error")
+        return redirect(url_for("auth_bp.login"))
+
+    # Establish a database connection
+    conn = get_db_connection()
+
+    # Step 2: Retrieve users who have requested verification (value == 1)
+    query = """
+        SELECT u.user_id, u.first_name, u.last_name, s.school_name,
+               v.lokalombud, v.skyddsombud, v.forhandlingsombud, v.huvudskyddsombud, v.styrelseledamot
+        FROM users u
+        JOIN schools s ON u.school_id = s.school_id  -- Corrected JOIN to retrieve school_name
+        JOIN verify_officer v ON u.user_id = v.user_id
+        WHERE v.lokalombud = 1 OR v.skyddsombud = 1 OR v.forhandlingsombud = 1 OR v.huvudskyddsombud = 1 OR v.styrelseledamot = 1
+        ORDER BY s.school_name ASC, u.last_name ASC, u.first_name ASC
+    """
+
+    # Execute the query and fetch all rows
+    cursor = conn.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    conn.close()  # Close the database connection
+    
+
+    # Create a DataFrame from the rows
+    import pandas as pd
+    df_verify = pd.DataFrame(rows, columns=[
+        "user_id", "first_name", "last_name", "school_name", 
+        "lokalombud", "skyddsombud", "forhandlingsombud", "huvudskyddsombud", "styrelseledamot"
+    ])
+
+    session['df_verify'] = df_verify.to_json()
+
+    # Convert DataFrame to a list of dictionaries for rendering in HTML
+    officers_list = df_verify.to_dict(orient="records")
+
+    # Return a valid response by rendering the template
+    return render_template("confirm-elected-officers.html", officers=officers_list)
+
+
+import datetime
+import random
+
+def insert_debug_data():
+    """Inserts test data into users and verify_officer tables for debugging purposes."""
+    conn = sqlite3.connect("user_data.db")
+    cursor = conn.cursor()
+
+    try:
+        # Generate current timestamp
+        current_time = datetime.datetime.now()
+
+        # Insert 20 test users with school_id ranging from 1 to 48
+        users_data = [
+            (2, 'John', 'Doe', 'john.doe@example.com', 1, 1, current_time, current_time),
+            (3, 'Jane', 'Smith', 'jane.smith@example.com', 5, 1, current_time, current_time),
+            (4, 'Alice', 'Johnson', 'alice.johnson@example.com', 10, 1, current_time, current_time),
+            (5, 'Bob', 'Williams', 'bob.williams@example.com', 15, 1, current_time, current_time),
+            (6, 'Charlie', 'Brown', 'charlie.brown@example.com', 20, 1, current_time, current_time),
+            (7, 'David', 'Taylor', 'david.taylor@example.com', 25, 1, current_time, current_time),
+            (8, 'Emma', 'White', 'emma.white@example.com', 30, 1, current_time, current_time),
+            (9, 'Frank', 'Harris', 'frank.harris@example.com', 35, 1, current_time, current_time),
+            (10, 'Grace', 'Martin', 'grace.martin@example.com', 40, 1, current_time, current_time),
+            (11, 'Henry', 'Thompson', 'henry.thompson@example.com', 45, 1, current_time, current_time),
+            (12, 'Ivy', 'Garcia', 'ivy.garcia@example.com', 3, 1, current_time, current_time),
+            (13, 'Jack', 'Martinez', 'jack.martinez@example.com', 8, 1, current_time, current_time),
+            (14, 'Katie', 'Lopez', 'katie.lopez@example.com', 12, 1, current_time, current_time),
+            (15, 'Leo', 'Gonzalez', 'leo.gonzalez@example.com', 18, 1, current_time, current_time),
+            (16, 'Mia', 'Clark', 'mia.clark@example.com', 22, 1, current_time, current_time),
+            (17, 'Nathan', 'Lewis', 'nathan.lewis@example.com', 28, 1, current_time, current_time),
+            (18, 'Olivia', 'Walker', 'olivia.walker@example.com', 33, 1, current_time, current_time),
+            (19, 'Paul', 'Hall', 'paul.hall@example.com', 38, 1, current_time, current_time),
+            (20, 'Quinn', 'Allen', 'quinn.allen@example.com', 42, 1, current_time, current_time),
+            (21, 'Rachel', 'Young', 'rachel.young@example.com', 48, 1, current_time, current_time),
+
+            # Additional 10 users with 0 in all officer roles
+            (22, 'Steve', 'Adams', 'steve.adams@example.com', 6, 1, current_time, current_time),
+            (23, 'Hannah', 'Baker', 'hannah.baker@example.com', 11, 1, current_time, current_time),
+            (24, 'Lucas', 'Carter', 'lucas.carter@example.com', 16, 1, current_time, current_time),
+            (25, 'Sophia', 'Davis', 'sophia.davis@example.com', 21, 1, current_time, current_time),
+            (26, 'Ryan', 'Evans', 'ryan.evans@example.com', 26, 1, current_time, current_time),
+            (27, 'Zoe', 'Foster', 'zoe.foster@example.com', 31, 1, current_time, current_time),
+            (28, 'Tyler', 'Gibson', 'tyler.gibson@example.com', 36, 1, current_time, current_time),
+            (29, 'Amelia', 'Henderson', 'amelia.henderson@example.com', 41, 1, current_time, current_time),
+            (30, 'Ethan', 'Jackson', 'ethan.jackson@example.com', 46, 1, current_time, current_time),
+            (31, 'Lily', 'King', 'lily.king@example.com', 47, 1, current_time, current_time),
+        ]
+
+        cursor.executemany("""
+            INSERT OR IGNORE INTO users (user_id, first_name, last_name, school_id, consent, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, users_data)
+
+        # Insert verification requests for officer roles (20 with officer roles, 10 with all zeros)
+        officer_data = [
+            (2, 1, 0, 0, 0, 1, 0),
+            (3, 0, 1, 1, 0, 0, 0),
+            (4, 1, 1, 0, 0, 0, 0),
+            (5, 0, 0, 1, 1, 0, 0),
+            (6, 1, 0, 0, 1, 0, 0),
+            (7, 0, 1, 1, 0, 0, 0),
+            (8, 0, 0, 0, 1, 1, 0),
+            (9, 1, 1, 0, 0, 0, 0),
+            (10, 0, 0, 1, 1, 1, 0),
+            (11, 1, 0, 0, 0, 0, 0),
+            (12, 0, 1, 0, 1, 0, 0),
+            (13, 0, 0, 1, 1, 0, 0),
+            (14, 1, 1, 1, 0, 0, 0),
+            (15, 0, 0, 0, 1, 1, 0),
+            (16, 1, 0, 1, 0, 0, 0),
+            (17, 0, 1, 0, 1, 1, 0),
+            (18, 1, 1, 1, 0, 0, 0),
+            (19, 0, 0, 1, 1, 0, 0),
+            (20, 1, 0, 0, 1, 1, 0),
+            (21, 0, 1, 1, 0, 0, 0),
+
+            # Additional 10 users with 0 in all officer roles
+            (22, 0, 0, 0, 0, 0, 0),
+            (23, 0, 0, 0, 0, 0, 0),
+            (24, 0, 0, 0, 0, 0, 0),
+            (25, 0, 0, 0, 0, 0, 0),
+            (26, 0, 0, 0, 0, 0, 0),
+            (27, 0, 0, 0, 0, 0, 0),
+            (28, 0, 0, 0, 0, 0, 0),
+            (29, 0, 0, 0, 0, 0, 0),
+            (30, 0, 0, 0, 0, 0, 0),
+            (31, 0, 0, 0, 0, 0, 0),
+        ]
+
+        cursor.executemany("""
+            INSERT OR IGNORE INTO verify_officer (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, officer_data)
+
+        conn.commit()
+        print("Debug data inserted successfully.")
+
+    except Exception as e:
+        print(f"Error inserting debug data: {e}")
+
+    finally:
+        conn.close()
 

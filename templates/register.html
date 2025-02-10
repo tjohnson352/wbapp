@@ -8,7 +8,7 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <div class="container-a">
-    <h2 class="schedulizer-header">
+    <h2>
         The Schedulizer <span>Registration</span>
     </h2>   
     <p class="description">
@@ -39,16 +39,16 @@
         <!-- First/Last Name Row -->
         <div style="display: flex;">
             <!-- First Name -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="first_name" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="first_name">
                     First name:
                 </label>
-                <input type="text" name="first_name" id="first_name" class="file-input" placeholder="Enter first name" value="{{ form_data.get('first_name', '') }}" style="flex: 1;" required>
+                <input type="text" name="first_name" id="first_name" class="file-input" placeholder="Enter first name" value="{{ form_data.get('first_name', '') }}" required>
             </div>
 
             <!-- Last Name -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="last_name" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="last_name">
                     Last name:
                 </label>
                 <input type="text" name="last_name" id="last_name" class="file-input" placeholder="Enter last name" style="flex: 1;" required>
@@ -58,16 +58,16 @@
         <!-- Email/School Row -->
         <div style="display: flex;">
             <!-- Email -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="email" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="email">
                     Email:
                 </label>
                 <input type="email" name="email" id="email" class="file-input" placeholder="Enter email" style="flex: 1;" required>
             </div>
 
             <!-- School -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="school" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="school">
                     School:
                 </label>
                 <select name="school" id="school" style="flex: 1;" required>
@@ -82,27 +82,21 @@
         <!-- Password/Confirm Password Row -->
         <div style="display: flex;">
             <!-- Password Field -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="password" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="password">
                     Password:
                 </label>
                 <input type="password" name="password" id="password" class="file-input" placeholder="Enter password" required oninput="removeWhitespace(this); validatePassword();" style="flex: 1;">
             </div>
             <!-- Confirm Password Field -->
-            <div class="input-container" style="display: flex; align-items: center; gap: 0.5em; width: 50%;">
-                <label for="confirm_password" style="font-weight: bold; font-size: 0.8em; width: 80px; text-align: right;">
+            <div class="container-b">
+                <label for="confirm_password">
                     Confirm:
                 </label>
                 <input type="password" name="confirm_password" id="confirm_password" class="file-input" placeholder="Re-enter password" required oninput="checkPasswordsMatch()" style="flex: 1;">
             </div>
         </div>
-
-        <div style="display: flex; justify-content: center; width: 100%;">
-
-
-
-        </div>
-        <!-- Password Requirements / Feedback (optional) -->
+        <!-- Password Requirements / Feedback -->
         <div style="display: flex; justify-content: left; align-items: center; font-size: 0.7em; width: 100%; gap: 0.5em;">
             <div style="display: flex; align-items: center; gap: 0.2em;">
                 <input type="checkbox" id="show_password" onclick="togglePasswords()" oninput="checkPasswordsMatch()">
@@ -127,8 +121,6 @@
             </div>
         </div>
         
-
-
         <script>
         /**
          * Whenever the user types, remove any whitespace characters.
@@ -205,7 +197,7 @@
         }
         </script>
         <!-- Security Questions -->
-        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             <select name="security_question_1" id="security_question_1" required onchange="preventDuplicateQuestions()">
                 <option value="">Select Security Question 1</option>
                 {% for question in security_questions %}
@@ -215,7 +207,7 @@
             <input type="text" name="security_answer_1" class="file-input custom-width" placeholder="Answer" required>
         </div>
 
-        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             <select name="security_question_2" id="security_question_2" required onchange="preventDuplicateQuestions()">
                 <option value="">Select Security Question 2</option>
                 {% for question in security_questions %}
@@ -225,7 +217,7 @@
             <input type="text" name="security_answer_2" class="file-input custom-width" placeholder="Answer" required>
         </div>
 
-        <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             <select name="security_question_3" id="security_question_3" required onchange="preventDuplicateQuestions()">
                 <option value="">Select Security Question 3</option>
                 {% for question in security_questions %}
@@ -236,22 +228,22 @@
         </div>
 
         <!-- Membership Question (Yes/No Radio Buttons) -->
-        <div class="input-container" style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; font-weight: bold; font-size: 0.8em;">
             <!-- Question -->
-            <p style="font-weight: bold; font-size: 0.8em;">
+            <p>
                 Member of Sveriges Lärare?
             </p>
         
             <!-- Yes/No Radio Buttons (on a new line) -->
             <div>
                 <!-- No -->
-                <label style="margin-left: 1em; font-size: 0.8em;">
+                <label style = "font-weight: normal;">
                     <input type="radio" name="sl_member" value="0" checked>
                   No
                 </label>
               
                 <!-- Yes -->
-                <label style="margin-left: 1em; font-size: 0.8em;">
+                <label style = "font-weight: normal;">
                     <input type="radio" name="sl_member" value="1" required>
                   Yes
                 </label>
@@ -259,7 +251,7 @@
         </div>
         
         <!-- 2. Are you an elected officer? (Initially Hidden) -->
-        <div id="is_elected_officer_container" style="display: none;">
+        <div id="is_elected_officer_container" style="display: none; align-self: flex-start; ">
             <!-- Question with options on the same line -->
             <p style="font-weight: bold; font-size: 0.8em; display: inline; margin-right: 1em;">
                 Are you an elected officer?
@@ -276,35 +268,44 @@
             </label>
         </div>
 
-            <!-- 3. Local or Central or Both? (Initially Hidden) -->
-            <div id="officer_type_container" style="display: none; font-size: 0.8em;">
-                <span style="font-weight: bold;">Select relevant level(s):</span>
-                <label style="font-weight: normal; margin-left: 1em;">
-                    <input type="checkbox" id="local_officer_checkbox"> Local Officer
-                </label>
-                <label style="font-weight: normal; margin-left: 1em;">
-                    <input type="checkbox" id="central_officer_checkbox"> Central Officer
-                </label>
-            </div>
+        <!-- 3. Local or Central or Both? (Initially Hidden) -->
+        <div id="officer_type_container" style="display: none; font-size: 0.8em; align-self: flex-start;">
+            <span style="font-weight: bold;">Select relevant level(s):</span>
+            <label style="font-weight: normal; margin-left: 1em;">
+                <input type="checkbox" id="local_officer_checkbox"> Local Officer
+            </label>
+            <label style="font-weight: normal; margin-left: 1em;">
+                <input type="checkbox" id="central_officer_checkbox"> Central Officer
+            </label>
+        </div>
 
-        <!-- 4. Central Roles (Initially Hidden) -->
-        <div id="central_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7;">
-            <label style="font-weight: bold; font-size: 0.8em;">Central Roles:</label>
+        <!-- Central Roles -->
+        <div id="central_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7; text-align: left;">
+            <label style="font-weight: bold; font-size: 0.8em; display: block; margin-bottom: 0.5em;">Central Roles:</label>
             <div style="font-size: 0.8em; font-weight: normal;">
-                <input type="checkbox" name="sl_roles" value="Förhandlingsombud"> Förhandlingsombud (Negotiations Officer)<br>
-                <input type="checkbox" name="sl_roles" value="Huvudskyddsombud"> Huvudskyddsombud (Main Safety Officer)<br>
-                <input type="checkbox" name="sl_roles" value="Styrelseledamot"> Styrelseledamot (Board Member)<br>
+                <label style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                    <input type="checkbox" name="sl_roles" value="Förhandlingsombud" style="margin-right: 0.5em;"> Förhandlingsombud (Negotiations Officer)
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                    <input type="checkbox" name="sl_roles" value="Huvudskyddsombud" style="margin-right: 0.5em;"> Huvudskyddsombud (Main Safety Officer)
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                    <input type="checkbox" name="sl_roles" value="Styrelseledamot" style="margin-right: 0.5em;"> Styrelseledamot (Board Member)
+                </label>
             </div>
         </div>
 
-        <!-- 5. Local Roles (Initially Hidden) -->
-        <div id="local_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7;">
-            <label style="font-weight: bold; font-size: 0.8em;">Local Roles:</label>
+        <!-- Local Roles -->
+        <div id="local_officer_container" style="display: none; margin-top: 1em; margin-left: 1em; color: #754302d7; text-align: left;">
+            <label style="font-weight: bold; font-size: 0.8em; display: block; margin-bottom: 0.5em;">Local Roles:</label>
             <div style="font-size: 0.8em; font-weight: normal;">
-                <input type="checkbox" name="sl_roles" value="Lokalombud"> Lokalombud (Local Representative)<br>
-                <input type="checkbox" name="sl_roles" value="Skyddsombud"> Lokal Skyddsombud (Local Safety Officer)<br>
+                <label style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                    <input type="checkbox" name="sl_roles" value="Lokalombud" style="margin-right: 0.5em;"> Lokalombud (Local Representative)
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.5em;">
+                    <input type="checkbox" name="sl_roles" value="Skyddsombud" style="margin-right: 0.5em;"> Lokal Skyddsombud (Local Safety Officer)
+                </label>
             </div>
-            </p>
         </div>
 
 
@@ -411,15 +412,23 @@
 
 {% block extra_styles %}
 <style>
-
     .custom-width {
         width: 50%; /* Customize the width */
     }
 
+    /* Add spacing around container for better layout */
+    .container-b {
+        width: 50%;
+        gap: 0.5em;
+        margin-right: 10px;
+        white-space: nowrap;
+    }
 
-
-
-
+    /* Styling for the label */
+    .container-b label {
+        width: 80px; 
+        text-align: right;
+    }
 </style>
 {% endblock %}
 
@@ -462,3 +471,6 @@
     }
 </script>
 {% endblock %}
+
+
+

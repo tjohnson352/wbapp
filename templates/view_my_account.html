@@ -6,64 +6,72 @@
 {% endblock %}
 
 {% block content %}
-<div class="account-container">
-    <h2 class="account-title">
-        The Schedulizer <span>My account</span>
-    </h2>
 
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Name:</label>
-        <p style="margin: 0;">{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</p>
-    </div>
+<div class="dashboard-menu">
+    <ul class="menu-list">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/">Upload Schedule</a></li>
+        <li><a href="/account" class="active">My Account</a></li>
+        <li><a href="/logout" class="logout">Logout</a></li>
+    </ul>
+</div>
 
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Email:</label>
-        <p style="margin: 0;">{{ user.login_id }}</p>
-    </div>
 
-    <div class="input-container">
+    <!-- Card 1: Basic user info -->
+    <div class="card">
+        <div class="account-container">
+            <h2>The Schedulizer <span>My account</span></h2>
+        </div>
+        <h3>User Information</h3>
+        <div class="row">
+            <label>Account Created:</label>
+            <p>{{ user.created_at }}</p>
+        </div>
+        <div class="row">
+            <label>Last Updated:</label>
+            <p>{{ user.updated_at }}</p>
+        </div>
+        <div class="row">
+            <label>Name:</label>
+            <p>{{ user.first_name|capitalize }} {{ user.last_name|capitalize }}</p>
+        </div>
+        <div class="row">
+            <label>Email:</label>
+            <p>{{ user.login_id }}</p>
+        </div>
         <button id="editEmailBtn" class="btn-secondary">Change email</button>
-        <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="email" name="new_email" id="new_email" placeholder="Enter new email" class="file-input" required>
-            <button type="submit" class="btn-primary">Save Email</button>
-        </form>
+          <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="email" name="new_email" id="new_email" placeholder="Enter new email" class="file-input" required>
+              <button type="submit" class="btn-primary">Save Email</button>
+          </form>
     </div>
 
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">School/Workplace:</label>
-        <p style="margin: 0;">{{ user.school_name }}</p>
+     <!-- Card 2: Workplace info -->
+     <div class="card">
+        <h3>Workplace Information</h3>
+        <div class="row">
+            <label>School/Workplace:</label>
+            <p>{{ user.school_name }}</p>
+        </div>
+        <div class="row">
+            <label>Middle Manager:</label>
+            <p>{{ user.middle_manager }}</p>
+        </div>  
+        <div class="row">
+            <label>Work Percentage:</label>
+            <p>{{ user.work_percent }}</p>
+        </div>
+        
+        <div class="row">
+            <label>Privacy consent:</label>
+            <p>{{ user.consent }}</p>
+        </div>
     </div>
     
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Middle Manager:</label>
-        <p style="margin: 0;">{{ user.middle_manager }}</p>
-    </div>
-    
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Account Created:</label>
-        <p style="margin: 0;">{{ user.created_at }}</p>
-    </div>
-    
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Last Updated:</label>
-        <p style="margin: 0;">{{ user.updated_at }}</p>
-    </div>
-    
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Work Percentage:</label>
-        <p style="margin: 0;">{{ user.work_percent }}</p>
-    </div>
-    
-    <div class="input-container" style="display: flex; align-items: center; gap: 10px;">
-        <label style="font-weight: bold; margin-right: 10px;">Privacy consent:</label>
-        <p style="margin: 0;">{{ user.consent }}</p>
-    </div>
-    
-
-    <!-- Leadership Roles Section -->
-    <div class="input-container">
-        <label><strong>Sveriges Lärare membership and roles:</strong></label>
+    <!-- Card 3: Membership/roles -->
+    <div class="card">
+        <h3>Sveriges Lärare Membership and Roles</h3>
         <table class="roles-table">
             <thead>
                 <tr>
@@ -74,85 +82,67 @@
             <tbody>
                 <tr>
                     <td>Registered Member</td>
-                    <td style="color: {{ 'green' if user.sl_member == 'Yes' else 'red' }};">
-                        {{ user.sl_member }}
-                    </td>
+                    <td class="{{ 'status' if user.sl_member == 'Yes' else '' }}">{{ user.sl_member }}</td>
                 </tr>
                 <tr>
                     <td>Lokalombud</td>
-                    <td style="color: {{ 'green' if user.lokalombud == 'Yes' else 'red' }};">
-                        {{ user.lokalombud }}
-                    </td>
+                    <td class="{{ 'status' if user.lokalombud == 'Yes' else '' }}">{{ user.lokalombud }}</td>
                 </tr>
                 <tr>
                     <td>Skyddsombud</td>
-                    <td style="color: {{ 'green' if user.skyddsombud == 'Yes' else 'red' }};">
-                        {{ user.skyddsombud }}
-                    </td>
+                    <td class="{{ 'status' if user.skyddsombud == 'Yes' else '' }}">{{ user.skyddsombud }}</td>
                 </tr>
                 <tr>
                     <td>Förhandlingsombud</td>
-                    <td style="color: {{ 'green' if user.forhandlingsombud == 'Yes' else 'red' }};">
-                        {{ user.forhandlingsombud }}
-                    </td>
+                    <td class="{{ 'status' if user.forhandlingsombud == 'Yes' else '' }}">{{ user.forhandlingsombud }}</td>
                 </tr>
                 <tr>
                     <td>Huvudskyddsombud</td>
-                    <td style="color: {{ 'green' if user.huvudskyddsombud == 'Yes' else 'red' }};">
-                        {{ user.huvudskyddsombud }}
-                    </td>
+                    <td class="{{ 'status' if user.huvudskyddsombud == 'Yes' else '' }}">{{ user.huvudskyddsombud }}</td>
                 </tr>
                 <tr>
                     <td>Styrelseledamot</td>
-                    <td style="color: {{ 'green' if user.styrelseledamot == 'Yes' else 'red' }};">
-                        {{ user.styrelseledamot }}
-                    </td>
+                    <td class="{{ 'status' if user.styrelseledamot == 'Yes' else '' }}">{{ user.styrelseledamot }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-    
 
+    <!-- Security Settings -->
+    <!-- Card 4: Security Settings -->
+    <div class="card">
+        <h3>Security Settings</h3>
+    <!-- Change Password Section -->
+    <div class="row">
+        <button id="changePasswordBtn" class="btn-secondary">Change password</button>
+        <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Current Password:</label>
+            <input type="password" name="current_password" id="current_password" class="file-input" required>
 
+            <label>New Password:</label>
+            <input type="password" name="new_password" id="new_password" class="file-input" required>
 
+            <label>Verify New Password:</label>
+            <input type="password" id="verify_password" class="file-input" required>
 
-        <!-- Security Settings -->
-        <div class="input-container">
-            <label><strong>Security Settings:</strong></label>
-        </div>
+            <div class="row">
+                <input type="checkbox" id="show-password-toggle">
+                <label for="show-password-toggle">Show Passwords</label>
+            </div>
 
-
-        <!-- Change Password Section -->
-        <div class="input-container">
-            <button id="changePasswordBtn" class="btn-secondary">Change password</button>
-            <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <label>Current Password:</label>
-                <input type="password" name="current_password" id="current_password" class="file-input" required>
-
-                <label>New Password:</label>
-                <input type="password" name="new_password" id="new_password" class="file-input" required>
-
-                <label>Verify New Password:</label>
-                <input type="password" id="verify_password" class="file-input" required>
-
-                <div class="input-container">
-                    <input type="checkbox" id="show-password-toggle">
-                    <label for="show-password-toggle">Show Passwords</label>
-                </div>
-
-                <button type="submit" class="btn-primary">Save Password</button>
-            </form>
-        </div>
+            <button type="submit" class="btn-primary">Save Password</button>
+        </form>
+    </div>
 
     <!-- Update Security Questions Section -->
-    <div class="input-container">
+    <div class="row">
         <button id="updateSecurityBtn" class="btn-secondary">Update security questions</button>
         <form id="updateSecurityForm" class="hidden" method="POST" action="/update_security_questions">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
-                <select name="security_question_1" id="security_question_1" required onchange="preventDuplicateQuestions()">
+            <div class="row">
+                <select name="security_question_1" id="security_question_1" required>
                     <option value="{{ user.security_question_1 }}" selected>{{ user.security_question_1 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
@@ -161,8 +151,8 @@
                 <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
             </div>
     
-            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
-                <select name="security_question_2" id="security_question_2" required onchange="preventDuplicateQuestions()">
+            <div class="row">
+                <select name="security_question_2" id="security_question_2" required>
                     <option value="{{ user.security_question_2 }}" selected>{{ user.security_question_2 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
@@ -171,8 +161,8 @@
                 <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
             </div>
     
-            <div class="input-container"  style="display: flex; align-items: center; gap: 10px;">
-                <select name="security_question_3" id="security_question_3" required onchange="preventDuplicateQuestions()">
+            <div class="row">
+                <select name="security_question_3" id="security_question_3" required>
                     <option value="{{ user.security_question_3 }}" selected>{{ user.security_question_3 }}</option>
                     {% for question in security_questions %}
                         <option value="{{ question }}">{{ question }}</option>
@@ -184,6 +174,7 @@
         </form>
     </div>
 
+    <!-- Footer buttons -->
     <div class="button-container">
         <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
         <a href="/logout" class="btn-secondary logout-btn">Logout</a>
@@ -228,170 +219,141 @@
 
 {% block extra_styles %}
 <style>
-    body {
-        background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0;
-        padding: 60px;
 
-    }
-    
-
+  
+    /* Container */
     .account-container {
-    max-width: 800px; /* Increase max width */
-    width: 90%; /* Allow it to stretch while keeping margins */
-    min-width: 600px; /* Prevent it from being too small */
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    text-align: left;
-    display: block;
-    margin: 0 auto; /* Center the container */
-}
-
-    .account-title {
-        color: #2980b9;
-        font-size: 1.4em;
-        font-weight: bold;
-        margin-bottom: 15px;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      text-align: center;
+      
     }
-
-    .account-title span {
-        color: gray;
-        font-weight: normal;
+  
+    /* Headings */
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
-
-    
-    .input-container {
-        margin-bottom: 15px;
+    h2 span {
+      font-weight: 300;
+      color: #666;
     }
-
-    .input-container label {
-        font-weight: bold;
-        font-size: 0.9em;
-        display: block;
-        margin-bottom: 5px;
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.5rem;
     }
-
-    .input-container p {
-        font-family: 'Courier New', Courier, monospace; 
-        font-size: 0.9em; 
-        margin: 0;
+  
+    /* Cards */
+    .card {
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
     }
-
-    .file-input {
-        width: 100%;
-        padding: 10px;
-        border: .9px solid #ccc;
-        border-radius: 8px;
-        font-size: 1em;
-        box-sizing: border-box;
+  
+    /* Rows in the card */
+    .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
     }
-
-    .user-data {
-        font-family: 'Courier New', Courier, monospace; /* Apply Courier font */
-        font-size: .9em; 
-        color: #333; /* Optional: Add color if needed */
-        margin-left: 10px;
+    .row label {
+      width: 150px;
+      font-weight: 600;
     }
-
-    .btn-primary {
-        background-color: #2980b9;
-        color: #ffffff;
-        padding: 10px;
-        font-size: 0.9em;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        text-decoration: none; /* Removes underline */
-
+    .row p {
+      margin: 0;
     }
-
-    .btn-primary:hover {
-        background: linear-gradient(to right, #1abc9c, #2980b9);
-        transform: scale(1.05);
-        text-decoration: none; /* Removes underline */
-
-    }
-
-    .btn-secondary {
-        background: #ddd;
-        color: #333;
-        padding: 5px;
-        font-size: 0.9em;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-        background: #bbb;
-    }
-
+  
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary,
     .logout-btn {
-        background: #d9534f;
-        color: white;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.3s ease;
+      margin-right: 0.5rem;
+      margin-bottom: 1rem
     }
-
+  
+    .btn-primary {
+      background-color: #0275d8;
+      color: #fff;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #025aa5;
+    }
+  
+    .btn-secondary {
+      background: #ddd;
+      color: #333;
+      border: none;
+    }
+    .btn-secondary:hover {
+      background: #bbb;
+    }
+  
+    .logout-btn {
+      background: #d9534f;
+      color: white;
+    }
     .logout-btn:hover {
-        background: #c9302c;
+      background: #c9302c;
     }
-
+  
+    /* Hidden class for toggling forms */
     .hidden {
-        display: none;
+      display: none;
     }
-
+  
+    /* Tables */
     .roles-table {
-        width: 75%;
-        margin-top: 10px;
-        border-collapse: collapse;
-        border: 1px solid #ddd;
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+      background-color: #fff;
     }
-
     .roles-table th {
-        background-color: #b8cedd;
-        color: white;
-        text-align: center;
-        padding: 5px;
-        font-size: 0.9em;
+      background-color: #0275d8;
+      color: #fff;
+      text-align: left;
+      padding: 0.75rem;
     }
-
     .roles-table td {
-        padding: 5px 10px;
-        border: 1px solid #ddd;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.9em;
-        text-align: center;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      font-size: 0.95rem;
     }
-
     .roles-table tr:hover {
-        background-color: #f2f2f2;
+      background-color: #f2f2f2;
+    }
+  
+    /* Form styling */
+    form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
     }
 
-    .roles-table .status {
-        font-weight: bold;
+  
+    /* (Optional) Transition-based hide/show if desired:
+    .hidden {
+      height: 0;
+      overflow: hidden;
+      transition: height 0.3s ease;
     }
-
-    .roles-table .status::before {
-        content: attr(data-status);
-        display: none;
-    }
-
-    .roles-table .status {
-        color: #333;
-    }
-
-    /* Specific Colors for Yes and No */
-    .roles-table .status:contains("Yes") {
-        color: green;
-    }
-
-    .status-answer-in-table
-
-</style>.
-
+    */
+  </style>
+  
 {% endblock %}
+

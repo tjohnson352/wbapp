@@ -10,22 +10,25 @@ def get_user(user_id):
     conn = sqlite3.connect("user_data.db")
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT u.user_id, u.first_name, u.last_name, u.login_id, 
-               s.school_name, u.consent, u.created_at, u.updated_at, 
-               sl.sl_member, sl.lokalombud, sl.skyddsombud, sl.forhandlingsombud, 
-               sl.huvudskyddsombud, sl.styrelseledamot,
-               m.middle_manager, 
-               m2.work_percent,
-               auth.security_question_1, auth.security_answer_1, 
-               auth.security_question_2, auth.security_answer_2, 
-               auth.security_question_3, auth.security_answer_3
+        SELECT 
+            u.user_id, u.first_name, u.last_name, 
+            auth.login_id,  -- Fetch login_id from user_auth instead of users
+            s.school_name, u.consent, u.created_at, u.updated_at, 
+            sl.sl_member, sl.lokalombud, sl.skyddsombud, sl.forhandlingsombud, 
+            sl.huvudskyddsombud, sl.styrelseledamot,
+            m.middle_manager, 
+            m2.work_percent,
+            auth.security_question_1, auth.security_answer_1, 
+            auth.security_question_2, auth.security_answer_2, 
+            auth.security_question_3, auth.security_answer_3
         FROM users u
+        LEFT JOIN user_auth auth ON u.user_id = auth.user_id  -- Corrected login_id source
         LEFT JOIN schools s ON u.school_id = s.school_id
         LEFT JOIN sl_member_level sl ON u.user_id = sl.user_id
         LEFT JOIN meta1 m ON u.user_id = m.user_id  -- Middle Manager data
         LEFT JOIN meta2 m2 ON u.user_id = m2.user_id  -- Work Percentage data
-        LEFT JOIN user_auth auth ON u.user_id = auth.user_id
         WHERE u.user_id = ?
+
     """, (user_id,))
     
     user = cursor.fetchone()

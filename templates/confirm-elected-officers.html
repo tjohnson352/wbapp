@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm officers access{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-menu" style="margin-top: 20px">
+    <ul class="menu-list style = margin-top: 50px">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/">Upload Schedule</a></li>
+        <li><a href="/account">My Account</a></li>
+        <li><a href="/logout" class="logout">Logout</a></li>
+    </ul>
+</div>
+
+<div class="container-a">
+    <h2>
+        The Schedulizer <span>Confirm Elected Officers</span>
+    </h2>
+    <p class="description" style="text-align: left; margin-bottom: 0px;">
+        Below are the steps to verify users who have requested clearance as elected officers:
+    </p>
+    <ul class="description" style="text-align: left; margin-top: 0px;">
+        <li>Review the list of users and their requested roles.</li>
+        <li>Check the corresponding boxes for the roles they have claimed.</li>
+        <li>Click the "Submit" button to confirm the verification process.</li>
+    </ul>
+    
+
+<!-- Code Match Legend -->
+<div class="description" style="text-align: left; margin-top: 20px;">
+    <div style="
+        background-color: #f4f4f433;
+        border: 1px solid #dddddd75;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.205);
+        margin-top: 10px;
+        width: 50%;
+    ">
+        <strong style="font-size: 1em; color: #2c3e50;">Code Match Key:</strong>
+        <ul style="margin: 10px 0 0; padding-left: 15px; list-style-type: disc; font-size: 0.9em; line-height: 1.6; color: #555;">
+            <li><strong>LO</strong>: Lokalombud</li>
+            <li><strong>LSO</strong>: Lokal Skyddsombud</li>
+            <li><strong>FO</strong>: Förhandlingsombud</li>
+            <li><strong>HSO</strong>: Huvudskyddsombud</li>
+            <li><strong>SLM</strong>: Styrelseledamot</li>
+        </ul>
+    </div>
+</div>
+
+
+    <form action="/confirm-elected-officers" method="POST" class="form-a">
+        <table>
+            <thead>
+                <tr>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>School Name</th>
+                    <th>LO</th>
+                    <th>LSO</th>
+                    <th>FO</th>
+                    <th>HSO</th>
+                    <th>SLM</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for officer in officers %}
+                <tr>
+                    <td>{{ officer.last_name }}</td>
+                    <td>{{ officer.first_name }}</td>
+                    <td>{{ officer.school_name }}</td>
+                    <td>
+                        {% if officer.lokalombud == 1 %}
+                            <input type="checkbox" name="lokalombud_{{ officer.user_id }}">
+                        {% elif officer.lokalombud == 2 %}
+                            <span>Verified</span>
+                        {% else %}
+                            <span>N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if officer.skyddsombud == 1 %}
+                            <input type="checkbox" name="skyddsombud_{{ officer.user_id }}">
+                        {% elif officer.skyddsombud == 2 %}
+                            <span>Verified</span>
+                        {% else %}
+                            <span>N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if officer.forhandlingsombud == 1 %}
+                            <input type="checkbox" name="forhandlingsombud_{{ officer.user_id }}">
+                        {% elif officer.forhandlingsombud == 2 %}
+                            <span>Verified</span>
+                        {% else %}
+                            <span>N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if officer.huvudskyddsombud == 1 %}
+                            <input type="checkbox" name="huvudskyddsombud_{{ officer.user_id }}">
+                        {% elif officer.huvudskyddsombud == 2 %}
+                            <span>Verified</span>
+                        {% else %}
+                            <span>N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if officer.styrelseledamot == 1 %}
+                            <input type="checkbox" name="styrelseledamot_{{ officer.user_id }}">
+                        {% elif officer.styrelseledamot == 2 %}
+                            <span>Verified</span>
+                        {% else %}
+                            <span>N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="action-buttons">
+            <button type="submit" class="btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
