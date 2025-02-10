@@ -18,6 +18,7 @@ def generate_temp_password(length=6):
     characters = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(characters) for _ in range(length))
 
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     setup_database()
@@ -25,83 +26,74 @@ def login():
     view_database()
 
     if request.method == 'POST':
-        email = request.form.get('email').strip()
+        email = request.form.get('email', '').strip()
         password = request.form.get('password')
 
-        conn = get_db_connection()
-        conn.row_factory = sqlite3.Row  # Enable dictionary-like access for rows
-        cursor = conn.cursor()
+        try:
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row  # Enables dictionary-like access for rows
+            cursor = conn.cursor()
 
-        # Fetch user details from the database
-        cursor.execute("SELECT * FROM user_auth WHERE login_id = ?", (email,))
-        user = cursor.fetchone()
+            # Fetch user details from the database
+            cursor.execute("SELECT * FROM user_auth WHERE login_id = ?", (email,))
+            user = cursor.fetchone()
 
-        if user is None:
-            flash("Email not found. Try again or register an account.", "error")
-            conn.close()
-            return redirect(url_for('auth_bp.login'))
+            if user is None:
+                flash("Email not found. Try again or register an account.", "error")
+                return redirect(url_for('auth_bp.login'))
 
-        # Check if the user_id exists in the database
-        cursor.execute("SELECT user_id FROM user_auth WHERE user_id = ?", (user['user_id'],))
-        result = cursor.fetchone()
+            login_attempts = user['login_attempts']
+            stored_password_hash = user['password_hash']
+            temp_password_hash = user['temp_password']  # Read temp_password from the database
 
-        if not result:
-            flash("Account not found. Check 'Email Address' or 'Register' an account.", "error")
-            conn.close()
-            return redirect(url_for('auth_bp.login'))
+            # Decide which password hash to use for authentication
+            password_hash_to_use = temp_password_hash if temp_password_hash else stored_password_hash
 
-        login_attempts = user['login_attempts']
-        stored_password_hash = user['password_hash']
-        temp_password_hash = user['temp_password']  # Read temp_password from the database
-
-        # Decide which password hash to use for authentication
-        if temp_password_hash:  # Temporary password exists
-            password_hash_to_use = temp_password_hash
-            print("[INFO] Using temporary password for authentication.")
-        else:  # Use stored password
-            password_hash_to_use = stored_password_hash
-            print("[INFO] Using stored password for authentication.")
-
-        # Check if the account is locked
-        if login_attempts >= 3:
-            flash("Your account is locked. Please reset your password to regain access.", "error")
-            conn.close()
-            return redirect(url_for('auth_bp.reset_password'))  # Redirect to reset-password page
-
-        # Authenticate the user
-        if check_password_hash(password_hash_to_use, password):
-            flash("Login successful!", "success")
-            print("Login successful!")
-
-            # Reset login attempts and clear temp_password if it was used
-            cursor.execute("UPDATE user_auth SET login_attempts = 0, temp_password = NULL WHERE user_id = ?", (user['user_id'],))
-            conn.commit()
-
-            # Save user session and redirect to the dashboard
-            session['user_id'] = user['user_id']
-            session.permanent = True  # Enable session timeout
-            conn.close()
-            return redirect(url_for('auth_bp.dashboard'))
-
-        else:
-            # Increment login attempts after failed login
-            login_attempts += 1
-            cursor.execute("UPDATE user_auth SET login_attempts = ? WHERE user_id = ?", (login_attempts, user['user_id']))
-            conn.commit()
-
-            remaining_attempts = 3 - login_attempts
-            if remaining_attempts > 0:
-                flash(f"Invalid email or password. {remaining_attempts} login attempts remaining.", "error")
-            else:
+            # Check if the account is locked
+            if login_attempts >= 3:
                 flash("Your account is locked. Please reset your password to regain access.", "error")
-                conn.close()
                 return redirect(url_for('auth_bp.reset_password'))  # Redirect to reset-password page
 
-            conn.close()
+            # Authenticate the user
+            if check_password_hash(password_hash_to_use, password):
+                flash("Login successful!", "success")
+
+                # Reset login attempts and clear temp_password if it was used
+                cursor.execute("UPDATE user_auth SET login_attempts = 0, temp_password = NULL WHERE user_id = ?", (user['user_id'],))
+                conn.commit()
+
+                # Save user session and redirect to the dashboard
+                session['user_id'] = user['user_id']
+                session.permanent = True  # Enable session timeout
+                return redirect(url_for('auth_bp.dashboard'))
+
+            else:
+                # Increment login attempts after failed login
+                login_attempts += 1
+                cursor.execute("UPDATE user_auth SET login_attempts = ? WHERE user_id = ?", (login_attempts, user['user_id']))
+                conn.commit()
+
+                remaining_attempts = 3 - login_attempts
+                if remaining_attempts > 0:
+                    flash(f"Invalid email or password. {remaining_attempts} login attempts remaining.", "error")
+                else:
+                    flash("Your account is locked. Please reset your password.", "error")
+                    return redirect(url_for('auth_bp.reset_password'))
+
+                return redirect(url_for('auth_bp.login'))
+
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                flash("The server is being updated, please try again in a moment.", "error")
+            else:
+                flash("An unexpected error occurred. Please try again.", "error")
             return redirect(url_for('auth_bp.login'))
-        
+
+        finally:
+            conn.close()  # Ensure the database connection closes
 
     return render_template('login.html')
+
     
 # Function to get random security questions
 def get_random_security_questions():

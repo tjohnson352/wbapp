@@ -158,8 +158,51 @@ select:focus {
     box-sizing: border-box; /* Include padding/border in width */
 }
 
+.btn-primary-a {
+    background: linear-gradient(to left, #434f4d, #434f4ddb); /* Blue-green gradient */
+    color: #ffffff; /* White text */
+    padding: 10px 1.2em; /* 0.5em space inside the button */
+    font-size: .8em; /* Standard font size */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    max-width: 100%;
+    cursor: pointer;
+    margin: 5px auto;
+}
+
+.btn-primary-a:hover {
+    background: linear-gradient(to right, #434f4d, #434f4ddb); /* Blue-green gradient */
+    transform: scale(1.05); /* Slight scale up */
+}
+
+.btn-primary-b {
+    background: linear-gradient(to left, #026c20, #026c20d3); /* Blue-green gradient */
+    color: #ffffff; /* White text */
+    padding: 10px 1.2em; /* 0.5em space inside the button */
+    font-size: .8em; /* Standard font size */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.question-answer {
+    margin: .5em;
+}
+
+.btn-primary-b:hover {
+    background: linear-gradient(to right, #026c20, #026c20d3); /* Blue-green gradient */
+    transform: scale(1.05); /* Slight scale up */
+}
+
+.btn-primary-a i {
+    font-size: 1.2em; /* Adjust icon size */
+}
+
 /* Primary and secondary button shadow */
-.btn-primary, .btn-secondary {
+.btn-primary, .btn-primary-a, .btn-primary-b, .btn-secondary {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
@@ -171,28 +214,31 @@ select:focus {
 
 /* Secondary button styling */
 .btn-secondary {
-    background: linear-gradient(to right, #ff6b6b, #fc8282); /* Red gradient */
+    background: linear-gradient(to right, #e10d0d, #e10d0ddf); /* Red gradient */
     color: #ffffff; /* White text */
-    padding: 12px 20px; /* Larger padding */
-    font-size: 1em; /* Standard size */
+    padding: 10px 1.2em; /* Larger padding */
+    font-size: .8em; /* Standard size */
     text-align: center; /* Center-align text */
-    border-radius: 8px; /* Rounded corners */
+    border-radius: 5px; /* Rounded corners */
     transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+    max-width: 100%;
+    cursor: pointer;
+    margin: 5px auto;
 }
 
 /* Hover effect for secondary button */
 .btn-secondary:hover {
-    background: linear-gradient(to right, #fc8282, #ff6b6b); /* Gradient transition */
+    background: linear-gradient(to left, #e10d0d, #e10d0ddf); /* Red gradient */
     transform: scale(1.05); /* Slight scale up */
 }
 
 /* Icons in buttons */
-.btn-primary i, .btn-secondary i {
+.btn-primary i, .btn-secondary i, .btn-primary-a i, .btn-primary-b i {
     margin-right: 8px; /* Space between icon and text */
 }
 
 /* Hover effect for icons in buttons */
-.btn-primary:hover i, .btn-secondary:hover i {
+.btn-primary:hover i, .btn-secondary:hover i, .btn-primary-a:hover i, .btn-primary-b:hover i {
     transform: scale(1.2); /* Larger on hover */
     color: #ffffff; /* White color */
     transition: transform 0.3s ease, color 0.3s ease; /* Smooth hover effect */

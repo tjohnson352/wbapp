@@ -39,11 +39,14 @@
             <label>Email:</label>
             <p>{{ user.login_id }}</p>
         </div>
-        <button id="editEmailBtn" class="btn-secondary">Change email</button>
-          <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
+        <button id="editEmailBtn" class="btn-primary-a">
+            <i class="fas fa-envelope"></i> <span>Change Email</span>
+        </button>          <form id="editEmailForm" class="hidden" method="POST" action="/update_email">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="email" name="new_email" id="new_email" placeholder="Enter new email" class="file-input" required>
-              <button type="submit" class="btn-primary">Save Email</button>
+              <button type="submit" class="btn-primary-b">
+                <i class="fas fa-save"></i> <span>Save Email</span>
+              </button>
           </form>
     </div>
 
@@ -113,35 +116,48 @@
     <div class="card">
         <h3>Security Settings</h3>
     <!-- Change Password Section -->
-    <div class="row">
-        <button id="changePasswordBtn" class="btn-secondary">Change password</button>
+    <div class="change-password-container style">
+        <button id="changePasswordBtn" class="btn-primary-a">
+            <i class="fas fa-key"></i> <span>Change Password</span>
+        </button>
+
         <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <label>Current Password:</label>
+
+            <label for="current_password">Current Password:</label>
             <input type="password" name="current_password" id="current_password" class="file-input" required>
 
-            <label>New Password:</label>
+            <label for="new_password">New Password:</label>
             <input type="password" name="new_password" id="new_password" class="file-input" required>
 
-            <label>Verify New Password:</label>
+            <label for="verify_password">Verify New Password:</label>
             <input type="password" id="verify_password" class="file-input" required>
 
-            <div class="row">
+            <!-- Show Password Checkbox -->
+            <div class="show-password">
                 <input type="checkbox" id="show-password-toggle">
                 <label for="show-password-toggle">Show Passwords</label>
             </div>
 
-            <button type="submit" class="btn-primary">Save Password</button>
+            <!-- Save Password Button -->
+            <button type="submit" class="btn-primary-b">
+                <i class="fas fa-key"></i> <span>Save Password</span>
+            </button>
         </form>
     </div>
 
+
     <!-- Update Security Questions Section -->
-    <div class="row">
-        <button id="updateSecurityBtn" class="btn-secondary">Update security questions</button>
+    <div class="security-questions-container">
+        <button id="updateSecurityBtn" class="btn-primary-a">
+            <i class="fas fa-shield-alt"></i> <span>Update Security Questions</span>
+        </button>
+
         <form id="updateSecurityForm" class="hidden" method="POST" action="/update_security_questions">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <div class="row">
+            <!-- Question 1 & Answer 1 -->
+            <div class="question-answer" style = "margin: .5em">
                 <select name="security_question_1" id="security_question_1" required>
                     <option value="{{ user.security_question_1 }}" selected>{{ user.security_question_1 }}</option>
                     {% for question in security_questions %}
@@ -150,8 +166,9 @@
                 </select>
                 <input type="text" name="security_answer_1" class="file-input" placeholder="Answer" required>
             </div>
-    
-            <div class="row">
+
+            <!-- Question 2 & Answer 2 -->
+            <div class="question-answer">
                 <select name="security_question_2" id="security_question_2" required>
                     <option value="{{ user.security_question_2 }}" selected>{{ user.security_question_2 }}</option>
                     {% for question in security_questions %}
@@ -160,8 +177,9 @@
                 </select>
                 <input type="text" name="security_answer_2" class="file-input" placeholder="Answer" required>
             </div>
-    
-            <div class="row">
+
+            <!-- Question 3 & Answer 3 -->
+            <div class="question-answer">
                 <select name="security_question_3" id="security_question_3" required>
                     <option value="{{ user.security_question_3 }}" selected>{{ user.security_question_3 }}</option>
                     {% for question in security_questions %}
@@ -170,15 +188,19 @@
                 </select>
                 <input type="text" name="security_answer_3" class="file-input" placeholder="Answer" required>
             </div>
-            <button type="submit" class="btn-primary">Save Security Questions</button>
+
+            <!-- Save Security Questions Button -->
+            <button type="submit" class="btn-primary-b">
+                <i class="fas fa-shield-alt"></i> <span>Save Security Questions</span>
+            </button>
         </form>
     </div>
 
+
     <!-- Footer buttons -->
-    <div class="button-container">
-        <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
-        <a href="/logout" class="btn-secondary logout-btn">Logout</a>
-    </div>
+        <a href="/logout" class="btn-secondary">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
 </div>
 
 <script>
@@ -234,6 +256,7 @@
     h2 {
       font-size: 1.5rem;
       margin-bottom: 1rem;
+      color:#2980b9
     }
     h2 span {
       font-weight: 300;
@@ -273,35 +296,14 @@
     .btn-primary,
     .btn-secondary,
     .logout-btn {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      font-size: 0.95rem;
-      border-radius: 4px;
-      text-decoration: none;
-      cursor: pointer;
-      text-align: center;
-      transition: background 0.3s ease;
-      margin-right: 0.5rem;
       margin-bottom: 1rem
     }
   
-    .btn-primary {
-      background-color: #0275d8;
-      color: #fff;
-      border: none;
     }
     .btn-primary:hover {
       background-color: #025aa5;
     }
   
-    .btn-secondary {
-      background: #ddd;
-      color: #333;
-      border: none;
-    }
-    .btn-secondary:hover {
-      background: #bbb;
-    }
   
     .logout-btn {
       background: #d9534f;
