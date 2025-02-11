@@ -79,7 +79,7 @@
             <!-- Show "Yes" or "No" in a nicely formatted span -->
             <span class="consent-status {{ user.consent|lower }}">{{ user.consent }}</span>
             <!-- Add a separator or space, then the link -->
-            <a href="/privacy_policy" target="_blank" class="privacy-policy-link">View Privacy Policy</a>
+            <a href="/privacy_policy" target="_blank" class="privacy-policy-link" style = "font-size: .8em">Clich here for Privacy Policy</a>
         </p>
     </div>
 </div>
@@ -133,7 +133,7 @@
             <i class="fas fa-key"></i> <span>Change Password</span>
         </button>
     
-        <form id="changePasswordForm" class="hidden" method="POST" action="/update_password">
+        <form id="changePasswordForm" class="hidden" method="POST" style = "width: 50%" action="/update_password">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <!-- Current Password -->
@@ -172,7 +172,7 @@
 
             <!-- Password Requirements Feedback -->
             <div id="password-feedback" style="font-size: 0.7em; color: gray; margin-bottom: 0.5em;">
-              <span id="length-check" style="margin-right: 0.5em;">✓ 6 characters</span>
+              <span id="length-check" style="margin-right: 0.5em;">✓ 6 chars</span>
               <span id="alpha-check" style="margin-right: 0.5em;">✓ 1 letter</span>
               <span id="numeric-check" style="margin-right: 0.5em;">✓ 1 number</span>
               <span id="special-char-check">✓ 1 special char</span>
@@ -194,14 +194,14 @@
               </span>
 
             <!-- Show Password Checkbox -->
-                <class="inline-toggle" style="display: inline-flex; align-items: center; gap: 0.5em;">
+                <class="inline-toggle" style="display: inline-flex; align-items: center; gap: 0.2em;">
                 <input type="checkbox" id="show-password-toggle" />
                 <label for="show-password-toggle" style="font-size: 0.7em;">Show Passwords</label>
             </div>
 
             <!-- Save Password Button -->
             <div>
-            <button type="submit" class="btn-primary-b">
+            <button type="submit" class="btn-primary-b" style = "width: 80%">
               <i class="fas fa-key"></i> <span>Save Password</span>
             </button>
             </div>  

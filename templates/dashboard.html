@@ -20,6 +20,14 @@
     {% endwith %}
 
     <div class="action-buttons">
+        {# Show Confirm Officers only if is_admin = 1 or 0 #}
+        {% if session.get('is_admin') in [1, 2] %}
+        <a href="/confirm-elected-officers" class="btn-primary-c">
+            <i class="fas fa-user-check"></i> Confirm Officers
+        </a>
+        {% endif %}
+
+        {# These buttons are shown to all users #}
         <a href="/" class="btn-primary">
             <i class="fas fa-calendar-alt"></i> Analyze Schedule
         </a>
@@ -28,9 +36,6 @@
         </a>
         <a href="/contact" class="btn-primary">
             <i class="fas fa-envelope"></i> Contact Us
-        </a>
-        <a href="/confirm-elected-officers" class="btn-primary">
-            <i class="fas fa-user-check"></i> Confirm Officers
         </a>
         <a href="/logout" class="btn-secondary">
             <i class="fas fa-sign-out-alt"></i> Logout

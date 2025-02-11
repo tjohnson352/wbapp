@@ -64,6 +64,7 @@ def login():
 
                 # Save user session and redirect to the dashboard
                 session['user_id'] = user['user_id']
+                session['is_admin'] = user['is_admin']
                 session.permanent = True  # Enable session timeout
                 return redirect(url_for('auth_bp.dashboard'))
 

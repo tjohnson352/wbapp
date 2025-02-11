@@ -192,13 +192,19 @@ select:focus {
 }
 
 /* Primary and secondary button shadow */
-.btn-primary, .btn-primary-a, .btn-primary-b, .btn-secondary {
+.btn-primary, .btn-primary-a, .btn-primary-b, .btn-primary-c, .btn-secondary {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
 /* Hover effect for primary button */
 .btn-primary:hover {
     background: linear-gradient(to right, #1abc9c, #2980b9); /* Gradient transition */
+    transform: scale(1.05); /* Slight scale up */
+}
+
+/* Hover effect for primary button */
+.btn-primary-c:hover {
+    background: linear-gradient(to right, #101214e4, #101214); /* Gradient transition */
     transform: scale(1.05); /* Slight scale up */
 }
 
@@ -231,6 +237,20 @@ select:focus {
     box-sizing: border-box; /* Include padding/border in width */
 }
 
+.btn-primary-c {
+    background: linear-gradient(to left, #101214e4, #101214); /* Blue-green gradient */
+    color: #ffffff; /* White text */
+    padding: 10px 1.2em;
+    font-size: .8em; /* Standard font size */
+    text-align: center; /* Center-align text */
+    font-weight: none; /* Default weight */
+    border: none; /* No border */
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding/border in width */
+}
+
 /* Hover effect for secondary button */
 .btn-secondary:hover {
     background: linear-gradient(to left, #e10d0d, #e10d0ddf); /* Red gradient */
@@ -238,12 +258,12 @@ select:focus {
 }
 
 /* Icons in buttons */
-.btn-primary i, .btn-secondary i, .btn-primary-a i, .btn-primary-b i {
+.btn-primary i, .btn-secondary i, .btn-primary-a i, .btn-primary-b i, .btn-primary-c i {
     margin-right: 8px; /* Space between icon and text */
 }
 
 /* Hover effect for icons in buttons */
-.btn-primary:hover i, .btn-secondary:hover i, .btn-primary-a:hover i, .btn-primary-b:hover i {
+.btn-primary:hover i, .btn-secondary:hover i, .btn-primary-a:hover i, .btn-primary-b:hover i, .btn-primary-c:hover i {
     transform: scale(1.2); /* Larger on hover */
     color: #ffffff; /* White color */
     transition: transform 0.3s ease, color 0.3s ease; /* Smooth hover effect */
@@ -396,7 +416,7 @@ a.btn-primary:hover, a.btn-secondary:hover {
 .container-b input { /* login email and password container */
     flex: 1; /* Input takes up the remaining available space */
     padding: 7px; /* Add padding inside the input */
-    font-size: 0.9em; /* Adjust font size for better readability */
+    font-size: 0.7em; /* Adjust font size for better readability */
 }
 
     #show-password { /* login email and password container */
@@ -472,20 +492,27 @@ a.btn-primary:hover, a.btn-secondary:hover {
     }
 
 /* Rows in the card */
+.row privacy-row,
 .row {
     display: flex;
     align-items: center;
     margin-bottom: 0.3rem;
     gap: 1rem;
     }
+.row privacy-row label,
 .row label {
     width: 200px;
     font-weight: 600;
     text-align: right;
+    font-size: 0.8em;
     }
 
-.row p {
+.row privacy-row p,
+.row p,
+.consent-status {
     margin: 0;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.8em;
     }
 
 

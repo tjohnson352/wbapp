@@ -2,29 +2,29 @@
 🔹 **USERS**
    user_id first_name last_name  school_id  consent           created_at           updated_at
 0        1      Admin      User          1        1  2025-02-09 19:15:45  2025-02-09 19:15:45
+1        2   Theodore   Johnson         40        1  2025-02-11 11:07:52  2025-02-11 11:07:52
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SQLITE_SEQUENCE**
       name  seq
-0    users    1
+0    users    2
 1  schools   48
 ----------------------------------------------------------------------------------------------------
 
 🔹 **USER_AUTH**
-   user_id               login_id                                                                                                                                                       password_hash  is_admin             security_question_1                                                                                                                                                   security_answer_1                 security_question_2                                                                                                                                                   security_answer_2          security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
-0        1  ies@sverigeslarare.se  scrypt:32768:8:1$25dc8CCg4RtoDqk9$f23403c7b4f2f77fed534d4acfe4d11bfcf0c7ddf8ec224f524e793ad36e0d551f496ff9bc45205d9cc614f703f6758298fb2b15338ba9c902482fdf83334bd3         2  What is your first pet's name?  scrypt:32768:8:1$J6sIkoAAZAgQJHVF$7f72cb871365d0365777a6201e2b2b5415c106a36e24d1cc49116d441f647a1e0a91d99cea5bac9aa981fdb2d787f34b2df51ef4eafe2a182844c92543616992  What is your mother's maiden name?  scrypt:32768:8:1$gpmMoa0nrkaobNb9$236fcd8f73ce4f5bee9ccbd783dc65287e9ed9c31f21c6650b2437b0e6f1b059afaa77c6296c48cbc9e6b21af87d802fa49440ed9fa9a38548721a42a72e5f4e  What is your favorite book?  scrypt:32768:8:1$AbgXV5I2pS4h9xSe$4e868ebbc4d7d9d0bfac84ce91f98c7e9f49af86e8499dce12d0bca32253d46bf371e4ddbecb1956e123d5a987b5822176ec327be1741fb4ec67455366ed1e6b               0               0          None  2025-02-09 19:15:45  2025-02-10 20:40:21
+   user_id               login_id                                                                                                                                                       password_hash  is_admin                             security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                       security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
+0        1  ies@sverigeslarare.se  scrypt:32768:8:1$25dc8CCg4RtoDqk9$f23403c7b4f2f77fed534d4acfe4d11bfcf0c7ddf8ec224f524e793ad36e0d551f496ff9bc45205d9cc614f703f6758298fb2b15338ba9c902482fdf83334bd3         2                  What is your first pet's name?  scrypt:32768:8:1$J6sIkoAAZAgQJHVF$7f72cb871365d0365777a6201e2b2b5415c106a36e24d1cc49116d441f647a1e0a91d99cea5bac9aa981fdb2d787f34b2df51ef4eafe2a182844c92543616992              What is your mother's maiden name?  scrypt:32768:8:1$gpmMoa0nrkaobNb9$236fcd8f73ce4f5bee9ccbd783dc65287e9ed9c31f21c6650b2437b0e6f1b059afaa77c6296c48cbc9e6b21af87d802fa49440ed9fa9a38548721a42a72e5f4e               What is your favorite book?  scrypt:32768:8:1$AbgXV5I2pS4h9xSe$4e868ebbc4d7d9d0bfac84ce91f98c7e9f49af86e8499dce12d0bca32253d46bf371e4ddbecb1956e123d5a987b5822176ec327be1741fb4ec67455366ed1e6b               0               0          None  2025-02-09 19:15:45  2025-02-10 20:40:21
+1        2  tjohnson352@gmail.com  scrypt:32768:8:1$emLRqhi4oz3VYDMc$4b05a0f6d95126ba75ebd214f52bf8efdd57a47bdb2be2d631524931455b9b438fbc738773ac38314f415b5f5a64c7633afa8f82227ba85f0aa6ba891a8c95d7         0  What was the make and model of your first car?  scrypt:32768:8:1$QsidqFml1sCWag0q$1905caf00aeffbb79e283118889090f620396044c16dd3869615e2895ce78061f7599ef10e8ad692f7a0800abf6918fefdd8f3221544d35945c5baab26715ba3  What is the name of the street you grew up on?  scrypt:32768:8:1$342ZakqGa2HpVX3v$a7ac21ff6c0efe148346f77b67dd8593384c1b225079a6976d6c4a402699c6a99cce179db28ebe7b7a67486308a174e28b564f1b1c26310212417fbde6f8c3bc  What was your favorite family tradition?  scrypt:32768:8:1$RINhalVpEfkGhVZ3$4026cd7987790bb5cf7570e303e05349e669657b9afea860fec4b48ee201ef4239eda8ad7c1062b986aa261d3882bcded4d4e6e03406ceb86e1f8c04eb95c8ec               0               0          None  2025-02-11 11:07:52  2025-02-11 11:07:52
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SL_MEMBER_LEVEL**
-Empty DataFrame
-Columns: [user_id, sl_member, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot]
-Index: []
+   user_id  sl_member  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot
+0        2          1           0            0                  0                 0                0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **VERIFY_OFFICER**
-Empty DataFrame
-Columns: [user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified]
-Index: []
+   user_id  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot  verified
+0        2           0            0                  0                 0                0         0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **META1**
