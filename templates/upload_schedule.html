@@ -50,16 +50,16 @@
             <button type="submit" class="btn-primary upload-button">Upload Schedule</button>
         </div>
     </form>
-</div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="flash-messages">
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-          <span class="icon">⚠️</span> <!-- Add an icon for clarity -->
-          {{ message | safe }}
-        </div>
-      {% endfor %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages-a">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span class="icon">⚠️</span> <!-- Add an icon for clarity -->
+            {{ message | safe }}
+          </div>
+        {% endfor %}
     </div>
   {% endif %}
 {% endwith %}

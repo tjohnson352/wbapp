@@ -478,6 +478,33 @@ a.btn-primary:hover, a.btn-secondary:hover {
     margin-bottom: 20px;
 }
 
+.flash-messages-a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; /* Make it 90% of .container-a */
+    background-color: rgba(255, 0, 0, .6); /* Semi-transparent red */
+    padding: 15px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .flash-messages-a .alert {
+    background: none; /* Ensure inner alerts are also transparent */
+    border: none;
+  }
+  
+  .flash-messages-a .icon {
+    margin-right: 0px;
+  }
+  
+
 .hidden {
     display: none;
     }
