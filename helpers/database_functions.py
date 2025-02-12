@@ -36,7 +36,7 @@ def setup_database():
             user_id INTEGER PRIMARY KEY,  -- Must match `users.user_id`
             login_id TEXT UNIQUE NOT NULL,  -- Email address
             password_hash TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0 CHECK (is_admin IN (0,1,2)),  -- 1 = Admin, 0 = Regular User
+            is_admin INTEGER DEFAULT 0 CHECK (is_admin IN (0,1,2,3,4)),  -- 4 = central officer, 3 = local officer, 2 = unverified officer, 1 = member, 0 = Regular User
             security_question_1 TEXT NOT NULL,
             security_answer_1 TEXT NOT NULL,
             security_question_2 TEXT NOT NULL,

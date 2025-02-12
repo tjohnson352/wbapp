@@ -1,30 +1,90 @@
 
 🔹 **USERS**
-   user_id first_name last_name  school_id  consent           created_at           updated_at
-0        1      Admin      User          1        1  2025-02-09 19:15:45  2025-02-09 19:15:45
-1        2   Theodore   Johnson         40        1  2025-02-11 11:07:52  2025-02-11 11:07:52
+    user_id first_name  last_name  school_id  consent                  created_at                  updated_at
+0         1      Admin       User          1        1         2025-02-12 14:52:43         2025-02-12 14:52:43
+1         2       John        Doe          1        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+2         3       Jane      Smith          5        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+3         4      Alice    Johnson         10        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+4         5        Bob   Williams         15        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+5         6    Charlie      Brown         20        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+6         7      David     Taylor         25        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+7         8       Emma      White         30        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+8         9      Frank     Harris         35        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+9        10      Grace     Martin         40        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+10       11      Henry   Thompson         45        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+11       12        Ivy     Garcia          3        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+12       13       Jack   Martinez          8        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+13       14      Katie      Lopez         12        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+14       15        Leo   Gonzalez         18        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+15       16        Mia      Clark         22        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+16       17     Nathan      Lewis         28        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+17       18     Olivia     Walker         33        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+18       19       Paul       Hall         38        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+19       20      Quinn      Allen         42        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+20       21     Rachel      Young         48        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+21       22      Steve      Adams          6        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+22       23     Hannah      Baker         11        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+23       24      Lucas     Carter         16        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+24       25     Sophia      Davis         21        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+25       26       Ryan      Evans         26        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+26       27        Zoe     Foster         31        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+27       28      Tyler     Gibson         36        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+28       29     Amelia  Henderson         41        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+29       30      Ethan    Jackson         46        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+30       31       Lily       King         47        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
+31       32   Theodore    Johnson          3        1         2025-02-12 14:54:19         2025-02-12 14:54:19
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SQLITE_SEQUENCE**
       name  seq
-0    users    2
+0    users   32
 1  schools   48
 ----------------------------------------------------------------------------------------------------
 
 🔹 **USER_AUTH**
-   user_id               login_id                                                                                                                                                       password_hash  is_admin                             security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                       security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
-0        1  ies@sverigeslarare.se  scrypt:32768:8:1$25dc8CCg4RtoDqk9$f23403c7b4f2f77fed534d4acfe4d11bfcf0c7ddf8ec224f524e793ad36e0d551f496ff9bc45205d9cc614f703f6758298fb2b15338ba9c902482fdf83334bd3         2                  What is your first pet's name?  scrypt:32768:8:1$J6sIkoAAZAgQJHVF$7f72cb871365d0365777a6201e2b2b5415c106a36e24d1cc49116d441f647a1e0a91d99cea5bac9aa981fdb2d787f34b2df51ef4eafe2a182844c92543616992              What is your mother's maiden name?  scrypt:32768:8:1$gpmMoa0nrkaobNb9$236fcd8f73ce4f5bee9ccbd783dc65287e9ed9c31f21c6650b2437b0e6f1b059afaa77c6296c48cbc9e6b21af87d802fa49440ed9fa9a38548721a42a72e5f4e               What is your favorite book?  scrypt:32768:8:1$AbgXV5I2pS4h9xSe$4e868ebbc4d7d9d0bfac84ce91f98c7e9f49af86e8499dce12d0bca32253d46bf371e4ddbecb1956e123d5a987b5822176ec327be1741fb4ec67455366ed1e6b               0               0          None  2025-02-09 19:15:45  2025-02-10 20:40:21
-1        2  tjohnson352@gmail.com  scrypt:32768:8:1$emLRqhi4oz3VYDMc$4b05a0f6d95126ba75ebd214f52bf8efdd57a47bdb2be2d631524931455b9b438fbc738773ac38314f415b5f5a64c7633afa8f82227ba85f0aa6ba891a8c95d7         0  What was the make and model of your first car?  scrypt:32768:8:1$QsidqFml1sCWag0q$1905caf00aeffbb79e283118889090f620396044c16dd3869615e2895ce78061f7599ef10e8ad692f7a0800abf6918fefdd8f3221544d35945c5baab26715ba3  What is the name of the street you grew up on?  scrypt:32768:8:1$342ZakqGa2HpVX3v$a7ac21ff6c0efe148346f77b67dd8593384c1b225079a6976d6c4a402699c6a99cce179db28ebe7b7a67486308a174e28b564f1b1c26310212417fbde6f8c3bc  What was your favorite family tradition?  scrypt:32768:8:1$RINhalVpEfkGhVZ3$4026cd7987790bb5cf7570e303e05349e669657b9afea860fec4b48ee201ef4239eda8ad7c1062b986aa261d3882bcded4d4e6e03406ceb86e1f8c04eb95c8ec               0               0          None  2025-02-11 11:07:52  2025-02-11 11:07:52
+   user_id               login_id                                                                                                                                                       password_hash  is_admin                      security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                 security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
+0        1  ies@sverigeslarare.se  scrypt:32768:8:1$v4OEoNHRd4tii077$dadc16c18f7d166261a1021d60c26534c994422d68eb956668ec7e4f99233cc8bdc746af387c3de709f4f9fc4a3df203a6d1110f4c203cde7bda5ee6645b6aa0         2           What is your first pet's name?  scrypt:32768:8:1$p9YXYXZNgeK1KN2D$41c4b38680a2befb113d3d3f1dd43c9f8c6f463d3bea4c94709fe9d5590dd0f24f7c240b5b3e757b32493b16fbc2ac739fab52730f5bf0da5d5aa8cdb1707330              What is your mother's maiden name?  scrypt:32768:8:1$SX452K4lDFDTETrr$a23c38e5a20640d0d6abece3d041793f482b528fefd7c9d4e87cce74418be6d613855d2ca58cd0e56fad373024e6157fad321d35406cfbfe954fd47f97570f36         What is your favorite book?  scrypt:32768:8:1$nkK7Ckv1obWIJCi3$4528351e2dc311ec8890c888cc4435c38d1854b5282ab221a7673fcc750f3b49c94762159570e4dc2576aa826aa7cc104d83657f653b669b0f0e3fb1711ae18f               0               0          None  2025-02-12 14:52:43  2025-02-12 14:52:43
+1       32  tjohnson352@gmail.com  scrypt:32768:8:1$gxIplwrVqO9J1WE3$3aac73709bb2a9b6a060cc77a10f600d22d69e1f6fd9e8fefe41b612d0de07d8d9cc052b358d81521aff3a705c278b949d1420a1e8bc14d6795de6ea64731657         1  What was the name of your first school?  scrypt:32768:8:1$XhJsRNM6na0p6Kvb$e7282db1a6ffae93bddc3dc1ec761bb48f7019cd695ce741cd75f07924cc6225b97f75f33e0f63b65295dcbb6fbbf13795cb272a9df5bf4869040000fa602b25  What is the name of the street you grew up on?  scrypt:32768:8:1$N5F7vrloAQhw9MOd$6333408b220fa4008a9db55d8dde9560d106481db3e11dec8ed1050cf37b5decf4220ba96829cf1603f1371955a53ee93864ed6f7a33fe73ac85c5922611a28a  Who taught you how to ride a bike?  scrypt:32768:8:1$fIKIhxzfZWr7MuKX$6fde462d9911c375b99a1b3477251622b5d4674ba4e104aef3e187e87628eb2e69ca798502e079cb91757d0d50eba2ea7292e75f0592dd6d43611647f0fd1c98               0               0          None  2025-02-12 14:54:19  2025-02-12 14:54:19
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SL_MEMBER_LEVEL**
    user_id  sl_member  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot
-0        2          1           0            0                  0                 0                0
+0       32          1           0            0                  0                 0                0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **VERIFY_OFFICER**
-   user_id  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot  verified
-0        2           0            0                  0                 0                0         0
+    user_id  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot  verified
+0         2           1            0                  0                 0                1         0
+1         3           0            1                  1                 0                0         0
+2         4           1            1                  0                 0                0         0
+3         5           0            0                  1                 1                0         0
+4         6           1            0                  0                 1                0         0
+5         7           0            1                  1                 0                0         0
+6         8           0            0                  0                 1                1         0
+7         9           1            1                  0                 0                0         0
+8        10           0            0                  1                 1                1         0
+9        11           1            0                  0                 0                0         0
+10       12           0            1                  0                 1                0         0
+11       13           0            0                  1                 1                0         0
+12       14           1            1                  1                 0                0         0
+13       15           0            0                  0                 1                1         0
+14       16           1            0                  1                 0                0         0
+15       17           0            1                  0                 1                1         0
+16       18           1            1                  1                 0                0         0
+17       19           0            0                  1                 1                0         0
+18       20           1            0                  0                 1                1         0
+19       21           0            1                  1                 0                0         0
+20       22           0            0                  0                 0                0         0
+21       23           0            0                  0                 0                0         0
+22       24           0            0                  0                 0                0         0
+23       25           0            0                  0                 0                0         0
+24       26           0            0                  0                 0                0         0
+25       27           0            0                  0                 0                0         0
+26       28           0            0                  0                 0                0         0
+27       29           0            0                  0                 0                0         0
+28       30           0            0                  0                 0                0         0
+29       31           0            0                  0                 0                0         0
+30       32           0            0                  0                 0                0         0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **META1**

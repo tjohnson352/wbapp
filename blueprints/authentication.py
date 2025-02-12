@@ -200,6 +200,19 @@ def register():
             if role in sl_roles:
                 sl_roles[role] = 1
 
+        # Determine is_admin value based on roles
+        is_admin = 0  # Default to regular user
+
+        if sl_roles['sl_member'] == 1:
+            is_admin = 1  # Set to member
+            print("is_admin=",is_admin)
+
+
+        # Check if any officer role is selected
+        officer_roles = ['lokalombud', 'skyddsombud', 'forhandlingsombud', 'huvudskyddsombud', 'styrelseledamot']
+        if any(sl_roles[role] == 1 for role in officer_roles):
+            is_admin = 2  # Set to unverified officer
+            print("is_admin=",is_admin)
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -230,13 +243,14 @@ def register():
             # ✅ Insert into `user_auth`
             cursor.execute("""
                 INSERT INTO user_auth (user_id, login_id, password_hash, security_question_1, security_answer_1, 
-                                       security_question_2, security_answer_2, security_question_3, security_answer_3)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    security_question_2, security_answer_2, security_question_3, security_answer_3, is_admin)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 user_id, email, generate_password_hash(password),
                 question1, generate_password_hash(answer1),
                 question2, generate_password_hash(answer2),
                 question3, generate_password_hash(answer3),
+                is_admin  # Include is_admin value
             ))
 
             # ✅ Insert into `sl_member_level`
@@ -511,44 +525,45 @@ def insert_debug_data():
 
         # Insert 20 test users with school_id ranging from 1 to 48
         users_data = [
-            (2, 'John', 'Doe', 'john.doe@example.com', 1, 1, current_time, current_time),
-            (3, 'Jane', 'Smith', 'jane.smith@example.com', 5, 1, current_time, current_time),
-            (4, 'Alice', 'Johnson', 'alice.johnson@example.com', 10, 1, current_time, current_time),
-            (5, 'Bob', 'Williams', 'bob.williams@example.com', 15, 1, current_time, current_time),
-            (6, 'Charlie', 'Brown', 'charlie.brown@example.com', 20, 1, current_time, current_time),
-            (7, 'David', 'Taylor', 'david.taylor@example.com', 25, 1, current_time, current_time),
-            (8, 'Emma', 'White', 'emma.white@example.com', 30, 1, current_time, current_time),
-            (9, 'Frank', 'Harris', 'frank.harris@example.com', 35, 1, current_time, current_time),
-            (10, 'Grace', 'Martin', 'grace.martin@example.com', 40, 1, current_time, current_time),
-            (11, 'Henry', 'Thompson', 'henry.thompson@example.com', 45, 1, current_time, current_time),
-            (12, 'Ivy', 'Garcia', 'ivy.garcia@example.com', 3, 1, current_time, current_time),
-            (13, 'Jack', 'Martinez', 'jack.martinez@example.com', 8, 1, current_time, current_time),
-            (14, 'Katie', 'Lopez', 'katie.lopez@example.com', 12, 1, current_time, current_time),
-            (15, 'Leo', 'Gonzalez', 'leo.gonzalez@example.com', 18, 1, current_time, current_time),
-            (16, 'Mia', 'Clark', 'mia.clark@example.com', 22, 1, current_time, current_time),
-            (17, 'Nathan', 'Lewis', 'nathan.lewis@example.com', 28, 1, current_time, current_time),
-            (18, 'Olivia', 'Walker', 'olivia.walker@example.com', 33, 1, current_time, current_time),
-            (19, 'Paul', 'Hall', 'paul.hall@example.com', 38, 1, current_time, current_time),
-            (20, 'Quinn', 'Allen', 'quinn.allen@example.com', 42, 1, current_time, current_time),
-            (21, 'Rachel', 'Young', 'rachel.young@example.com', 48, 1, current_time, current_time),
+            (2, 'John', 'Doe', 1, 1, current_time, current_time),
+            (3, 'Jane', 'Smith', 5, 1, current_time, current_time),
+            (4, 'Alice', 'Johnson', 10, 1, current_time, current_time),
+            (5, 'Bob', 'Williams', 15, 1, current_time, current_time),
+            (6, 'Charlie', 'Brown', 20, 1, current_time, current_time),
+            (7, 'David', 'Taylor', 25, 1, current_time, current_time),
+            (8, 'Emma', 'White', 30, 1, current_time, current_time),
+            (9, 'Frank', 'Harris', 35, 1, current_time, current_time),
+            (10, 'Grace', 'Martin', 40, 1, current_time, current_time),
+            (11, 'Henry', 'Thompson', 45, 1, current_time, current_time),
+            (12, 'Ivy', 'Garcia', 3, 1, current_time, current_time),
+            (13, 'Jack', 'Martinez', 8, 1, current_time, current_time),
+            (14, 'Katie', 'Lopez', 12, 1, current_time, current_time),
+            (15, 'Leo', 'Gonzalez', 18, 1, current_time, current_time),
+            (16, 'Mia', 'Clark', 22, 1, current_time, current_time),
+            (17, 'Nathan', 'Lewis', 28, 1, current_time, current_time),
+            (18, 'Olivia', 'Walker', 33, 1, current_time, current_time),
+            (19, 'Paul', 'Hall', 38, 1, current_time, current_time),
+            (20, 'Quinn', 'Allen', 42, 1, current_time, current_time),
+            (21, 'Rachel', 'Young', 48, 1, current_time, current_time),
 
             # Additional 10 users with 0 in all officer roles
-            (22, 'Steve', 'Adams', 'steve.adams@example.com', 6, 1, current_time, current_time),
-            (23, 'Hannah', 'Baker', 'hannah.baker@example.com', 11, 1, current_time, current_time),
-            (24, 'Lucas', 'Carter', 'lucas.carter@example.com', 16, 1, current_time, current_time),
-            (25, 'Sophia', 'Davis', 'sophia.davis@example.com', 21, 1, current_time, current_time),
-            (26, 'Ryan', 'Evans', 'ryan.evans@example.com', 26, 1, current_time, current_time),
-            (27, 'Zoe', 'Foster', 'zoe.foster@example.com', 31, 1, current_time, current_time),
-            (28, 'Tyler', 'Gibson', 'tyler.gibson@example.com', 36, 1, current_time, current_time),
-            (29, 'Amelia', 'Henderson', 'amelia.henderson@example.com', 41, 1, current_time, current_time),
-            (30, 'Ethan', 'Jackson', 'ethan.jackson@example.com', 46, 1, current_time, current_time),
-            (31, 'Lily', 'King', 'lily.king@example.com', 47, 1, current_time, current_time),
+            (22, 'Steve', 'Adams', 6, 1, current_time, current_time),
+            (23, 'Hannah', 'Baker', 11, 1, current_time, current_time),
+            (24, 'Lucas', 'Carter', 16, 1, current_time, current_time),
+            (25, 'Sophia', 'Davis', 21, 1, current_time, current_time),
+            (26, 'Ryan', 'Evans', 26, 1, current_time, current_time),
+            (27, 'Zoe', 'Foster', 31, 1, current_time, current_time),
+            (28, 'Tyler', 'Gibson', 36, 1, current_time, current_time),
+            (29, 'Amelia', 'Henderson', 41, 1, current_time, current_time),
+            (30, 'Ethan', 'Jackson', 46, 1, current_time, current_time),
+            (31, 'Lily', 'King', 47, 1, current_time, current_time),
         ]
 
         cursor.executemany("""
             INSERT OR IGNORE INTO users (user_id, first_name, last_name, school_id, consent, created_at, updated_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, users_data)
+
 
         # Insert verification requests for officer roles (20 with officer roles, 10 with all zeros)
         officer_data = [
