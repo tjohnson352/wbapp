@@ -466,7 +466,7 @@ def create_admin():
     default_questions = ["What is your first pet's name?", "What is your mother's maiden name?", "What is your favorite book?"]
     default_answers = ["AdminPet", "AdminMaiden", "AdminBook"]
 
-    # Ensure admin exists in `user_auth` table
+    # Ensure admin exists in `user_auth` table (is_admin = 5 is the highest level)
     cursor.execute("""
         INSERT INTO user_auth (user_id, login_id, password_hash, is_admin, 
                                          security_question_1, security_answer_1,
@@ -474,7 +474,7 @@ def create_admin():
                                          security_question_3, security_answer_3,
                                          created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (1, admin_email, generate_password_hash(admin_password), 2,
+    """, (1, admin_email, generate_password_hash(admin_password), 5,
           default_questions[0], generate_password_hash(default_answers[0]),
           default_questions[1], generate_password_hash(default_answers[1]),
           default_questions[2], generate_password_hash(default_answers[2]),

@@ -1,38 +1,38 @@
 
 🔹 **USERS**
     user_id first_name  last_name  school_id  consent                  created_at                  updated_at
-0         1      Admin       User          1        1         2025-02-12 14:52:43         2025-02-12 14:52:43
-1         2       John        Doe          1        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-2         3       Jane      Smith          5        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-3         4      Alice    Johnson         10        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-4         5        Bob   Williams         15        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-5         6    Charlie      Brown         20        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-6         7      David     Taylor         25        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-7         8       Emma      White         30        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-8         9      Frank     Harris         35        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-9        10      Grace     Martin         40        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-10       11      Henry   Thompson         45        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-11       12        Ivy     Garcia          3        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-12       13       Jack   Martinez          8        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-13       14      Katie      Lopez         12        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-14       15        Leo   Gonzalez         18        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-15       16        Mia      Clark         22        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-16       17     Nathan      Lewis         28        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-17       18     Olivia     Walker         33        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-18       19       Paul       Hall         38        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-19       20      Quinn      Allen         42        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-20       21     Rachel      Young         48        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-21       22      Steve      Adams          6        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-22       23     Hannah      Baker         11        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-23       24      Lucas     Carter         16        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-24       25     Sophia      Davis         21        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-25       26       Ryan      Evans         26        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-26       27        Zoe     Foster         31        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-27       28      Tyler     Gibson         36        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-28       29     Amelia  Henderson         41        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-29       30      Ethan    Jackson         46        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-30       31       Lily       King         47        1  2025-02-12 14:53:25.523226  2025-02-12 14:53:25.523226
-31       32   Theodore    Johnson          3        1         2025-02-12 14:54:19         2025-02-12 14:54:19
+0         1      Admin       User          1        1         2025-02-14 06:50:10         2025-02-14 06:50:10
+1         2       John        Doe          1        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+2         3       Jane      Smith          5        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+3         4      Alice    Johnson         10        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+4         5        Bob   Williams         15        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+5         6    Charlie      Brown         20        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+6         7      David     Taylor         25        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+7         8       Emma      White         30        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+8         9      Frank     Harris         35        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+9        10      Grace     Martin         40        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+10       11      Henry   Thompson         45        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+11       12        Ivy     Garcia          3        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+12       13       Jack   Martinez          8        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+13       14      Katie      Lopez         12        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+14       15        Leo   Gonzalez         18        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+15       16        Mia      Clark         22        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+16       17     Nathan      Lewis         28        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+17       18     Olivia     Walker         33        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+18       19       Paul       Hall         38        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+19       20      Quinn      Allen         42        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+20       21     Rachel      Young         48        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+21       22      Steve      Adams          6        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+22       23     Hannah      Baker         11        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+23       24      Lucas     Carter         16        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+24       25     Sophia      Davis         21        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+25       26       Ryan      Evans         26        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+26       27        Zoe     Foster         31        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+27       28      Tyler     Gibson         36        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+28       29     Amelia  Henderson         41        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+29       30      Ethan    Jackson         46        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+30       31       Lily       King         47        1  2025-02-14 06:51:04.209904  2025-02-14 06:51:04.209904
+31       32   Theodore    Johnson          5        1         2025-02-14 05:52:50         2025-02-14 05:52:50
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SQLITE_SEQUENCE**
@@ -42,14 +42,14 @@
 ----------------------------------------------------------------------------------------------------
 
 🔹 **USER_AUTH**
-   user_id               login_id                                                                                                                                                       password_hash  is_admin                      security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                 security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
-0        1  ies@sverigeslarare.se  scrypt:32768:8:1$v4OEoNHRd4tii077$dadc16c18f7d166261a1021d60c26534c994422d68eb956668ec7e4f99233cc8bdc746af387c3de709f4f9fc4a3df203a6d1110f4c203cde7bda5ee6645b6aa0         2           What is your first pet's name?  scrypt:32768:8:1$p9YXYXZNgeK1KN2D$41c4b38680a2befb113d3d3f1dd43c9f8c6f463d3bea4c94709fe9d5590dd0f24f7c240b5b3e757b32493b16fbc2ac739fab52730f5bf0da5d5aa8cdb1707330              What is your mother's maiden name?  scrypt:32768:8:1$SX452K4lDFDTETrr$a23c38e5a20640d0d6abece3d041793f482b528fefd7c9d4e87cce74418be6d613855d2ca58cd0e56fad373024e6157fad321d35406cfbfe954fd47f97570f36         What is your favorite book?  scrypt:32768:8:1$nkK7Ckv1obWIJCi3$4528351e2dc311ec8890c888cc4435c38d1854b5282ab221a7673fcc750f3b49c94762159570e4dc2576aa826aa7cc104d83657f653b669b0f0e3fb1711ae18f               0               0          None  2025-02-12 14:52:43  2025-02-12 14:52:43
-1       32  tjohnson352@gmail.com  scrypt:32768:8:1$gxIplwrVqO9J1WE3$3aac73709bb2a9b6a060cc77a10f600d22d69e1f6fd9e8fefe41b612d0de07d8d9cc052b358d81521aff3a705c278b949d1420a1e8bc14d6795de6ea64731657         1  What was the name of your first school?  scrypt:32768:8:1$XhJsRNM6na0p6Kvb$e7282db1a6ffae93bddc3dc1ec761bb48f7019cd695ce741cd75f07924cc6225b97f75f33e0f63b65295dcbb6fbbf13795cb272a9df5bf4869040000fa602b25  What is the name of the street you grew up on?  scrypt:32768:8:1$N5F7vrloAQhw9MOd$6333408b220fa4008a9db55d8dde9560d106481db3e11dec8ed1050cf37b5decf4220ba96829cf1603f1371955a53ee93864ed6f7a33fe73ac85c5922611a28a  Who taught you how to ride a bike?  scrypt:32768:8:1$fIKIhxzfZWr7MuKX$6fde462d9911c375b99a1b3477251622b5d4674ba4e104aef3e187e87628eb2e69ca798502e079cb91757d0d50eba2ea7292e75f0592dd6d43611647f0fd1c98               0               0          None  2025-02-12 14:54:19  2025-02-12 14:54:19
+   user_id               login_id                                                                                                                                                       password_hash  is_admin                             security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                               security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
+0        1  ies@sverigeslarare.se  scrypt:32768:8:1$It8Tr7TYR2Q01kfM$0f2aea4292d850a4567cf25c29bd37c7ca1048d257acd4b8079d418bca288b949f34f387c2d34b17c083ab3308544c1ddba6b506935784e74d18102552f940ae         2                  What is your first pet's name?  scrypt:32768:8:1$Wq9335EoMIZn8F7B$dba16e8a4a54b418556a181f11dd5c08e9903f77675abdf75768d8c14ae8f4bbe4aa0e3df5706ba082a433bef2a822b5d36e45f77b8d49f42879b8badcfb62ab              What is your mother's maiden name?  scrypt:32768:8:1$rAwhIgkN2YIo1BKk$3a2b3e8317d8202e139b5dfcb10b1620401c4f2c3c5a6fb3eeadf36ab103cf52b71114154505b9b307ba06e2f08df5013ba1d38a28c90fdd336110b8b80fd1d6                       What is your favorite book?  scrypt:32768:8:1$UDdRPJOiwbn6pZKr$479af2a8534a94214f26fd52f1974f2e852751a0bf22ec9bbcf873461547371cee710905c50cfd0ef514dbc86368417ae1bdc25d3b8cf9e3113725c4c1dfd622               0               0          None  2025-02-14 06:50:10  2025-02-14 06:50:10
+1       32  tjohnson352@gmail.com  scrypt:32768:8:1$e1e0ZaW0ichVSGEa$f2ffe70522922bbc5a99186c32907e688e224a448312f2e1784ef2b7102a41146c4abfcd81a36af20ef2b28867a461361b5c1a2873151976c30d1afcfcbb65bf         2  What was the make and model of your first car?  scrypt:32768:8:1$rP5xDrdBUrsb0Bmw$29ef605f2a39b32d2a2253f65c1ef82367ad3909c6b225a74a371a9a9fb46f21b6c3027878cb55a6a72ebd7aed43c7a7e58a20b2d41b6b11dfde757b3c8ecdad  What is the name of the street you grew up on?  scrypt:32768:8:1$5LiC7a069SbATRQk$85819e86d0e9187541aeeb16ac0044b7830df3d530843a02aa399ca9c5a339491c5b29590dce84e0c9da71d8d9f1c18c756c3145ed51a29b010070d360cdcd30  What was your favorite birthday gift as a child?  scrypt:32768:8:1$K8zuD3ikBPSxO40v$a9c085f01fbcb5e5fa66a48b645a7386eee1154b64e3722fe89fc028f73f73031adc9880011bd2bf71ca241d40ed60bdc27001e5bb2691440f4b74998b237c21               0               0          None  2025-02-14 05:52:51  2025-02-14 05:52:51
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SL_MEMBER_LEVEL**
    user_id  sl_member  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot
-0       32          1           0            0                  0                 0                0
+0       32          1           1            0                  1                 1                0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **VERIFY_OFFICER**
@@ -84,7 +84,7 @@
 27       29           0            0                  0                 0                0         0
 28       30           0            0                  0                 0                0         0
 29       31           0            0                  0                 0                0         0
-30       32           0            0                  0                 0                0         0
+30       32           1            0                  1                 1                0         0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **META1**

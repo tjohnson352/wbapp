@@ -79,7 +79,7 @@
             <!-- Show "Yes" or "No" in a nicely formatted span -->
             <span class="consent-status {{ user.consent|lower }}">{{ user.consent }}</span>
             <!-- Add a separator or space, then the link -->
-            <a href="/privacy_policy" target="_blank" class="privacy-policy-link" style = "font-size: .8em">Clich here for Privacy Policy</a>
+            <a href="/privacy_policy" target="_blank" class="privacy-policy-link" style = "font-size: .8em">Click here for our Privacy Policy</a>
         </p>
     </div>
 </div>
@@ -170,12 +170,19 @@
               oninput="removeWhitespace(this); checkPasswordsMatch();"
             />
 
-            <!-- Password Requirements Feedback -->
-            <div id="password-feedback" style="font-size: 0.7em; color: gray; margin-bottom: 0.5em;">
-              <span id="length-check" style="margin-right: 0.5em;">✓ 6 chars</span>
-              <span id="alpha-check" style="margin-right: 0.5em;">✓ 1 letter</span>
-              <span id="numeric-check" style="margin-right: 0.5em;">✓ 1 number</span>
-              <span id="special-char-check">✓ 1 special char</span>
+            <!-- Show Password Checkbox -->
+            <div>
+                <class="inline-toggle" style="display: inline-flex; align-items: center; gap: 0.2em;">
+                    <input type="checkbox" id="show-password-toggle" />
+                    <label for="show-password-toggle" style="font-size: 1em;">Show Passwords</label>
+            </div>
+
+            <!-- Password Validation Feedback -->
+            <div id="password-feedback" style="font-size: 1em; margin-top: 0.5em;">
+                <div id="length-check">⭕ <span>At least 6 characters</span></div>
+                <div id="alpha-check">⭕ <span>At least 1 letter</span></div>
+                <div id="numeric-check">⭕ <span>At least 1 number</span></div>
+                <div id="special-char-check">⭕ <span>At least 1 special (!@#$%^&*)</span></div>
             </div>
 
             <!-- Match / Mismatch Message -->
@@ -192,11 +199,6 @@
               >
                 MISMATCHED PASSWORDS!
               </span>
-
-            <!-- Show Password Checkbox -->
-                <class="inline-toggle" style="display: inline-flex; align-items: center; gap: 0.2em;">
-                <input type="checkbox" id="show-password-toggle" />
-                <label for="show-password-toggle" style="font-size: 0.7em;">Show Passwords</label>
             </div>
 
             <!-- Save Password Button -->
@@ -313,32 +315,39 @@
      * - At least one letter
      * - At least one number
      * - At least one special character
-     * Also calls checkPasswordsMatch() to confirm with the second password field.
+     * Updates UI with checkmarks and color changes.
      */
-    function validateNewPassword() {
+        function validateNewPassword() {
         const password = document.getElementById("new_password").value;
 
-        // Requirement feedback indicators
+        // Get validation elements
         const lengthCheck = document.getElementById("length-check");
         const alphaCheck = document.getElementById("alpha-check");
         const numericCheck = document.getElementById("numeric-check");
         const specialCharCheck = document.getElementById("special-char-check");
 
-        // Check length >= 6
-        lengthCheck.style.color = password.length >= 6 ? "green" : "red";
+        // Validation rules
+        const lengthValid = password.length >= 6;
+        const alphaValid = /[a-zA-Z]/.test(password);
+        const numericValid = /\d/.test(password);
+        const specialValid = /[!@#$%^&*]/.test(password);
 
-        // At least one alphabetic character
-        alphaCheck.style.color = /[a-zA-Z]/.test(password) ? "green" : "red";
-
-        // At least one digit
-        numericCheck.style.color = /\d/.test(password) ? "green" : "red";
-
-        // At least one special character
-        specialCharCheck.style.color = /[^a-zA-Z\d]/.test(password) ? "green" : "red";
-
-        // Then check if it matches the confirmation field
-        checkPasswordsMatch();
+        // Update UI
+        updateValidationUI(lengthCheck, lengthValid, "At least 6 characters");
+        updateValidationUI(alphaCheck, alphaValid, "At least 1 letter");
+        updateValidationUI(numericCheck, numericValid, "At least 1 number");
+        updateValidationUI(specialCharCheck, specialValid, "At least 1 special (!@#$%^&*)");
     }
+
+// Function to update validation icons without adding new elements
+function updateValidationUI(element, isValid, text) {
+    const successColor = "#0dc10d";  // Dark Green
+    const errorColor = "#fa0000";    // Muted Red
+
+    element.innerHTML = (isValid ? "🟢" : "⭕") + 
+        ` <span style='color: ${isValid ? successColor : errorColor}; font-weight: ${isValid ? "normal" : "normal"};'>${text}</span>`;
+}
+
 
     /**
      * Checks whether the 'new_password' and 'verify_password' fields match.
@@ -424,23 +433,7 @@
     padding-bottom: 0.5rem;
   }
 
-  /* Example styling for a more appealing look */
-  .privacy-row {
-    margin-bottom: 1rem;
-  }
 
-  /* Make the consent status stand out */
-  .consent-status {
-    font-weight: bold;
-    margin-right: 0.5rem;
-  }
-  /* Optional color coding if "Yes" or "No" */
-  .consent-status.yes {
-    color: #28a745; /* green */
-  }
-  .consent-status.no {
-    color: #dc3545; /* red */
-  }
 
   /* Style the link to match your brand or layout */
   .privacy-policy-link {

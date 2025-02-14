@@ -312,7 +312,7 @@ a.btn-primary:hover, a.btn-secondary:hover {
     padding: 8px; /* Inner padding */
     border: 1px solid #ccc; /* Gray border */
     border-radius: 0px; /* Rounded corners */
-    font-size: 0.7em; /* Smaller font size */
+    font-size: 0.9em; /* Smaller font size */
     box-sizing: border-box; /* Include padding/border in width */
     display: flex; /* Flex layout */
     font-family: "Courier New", Courier, monospace; /* Monospace font */
@@ -320,9 +320,9 @@ a.btn-primary:hover, a.btn-secondary:hover {
 
 /* Focus state for input fields */
 .file-input:focus {
-    border-color: red; /* Red border on focus */
+    border-color: rgba(255, 0, 0, 0.664); /* Red border on focus */
     outline: none; /* Remove outline */
-    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Red glow effect */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2); /* Red glow effect */
 }
 
 /* ALERT STYLES */
@@ -419,9 +419,9 @@ a.btn-primary:hover, a.btn-secondary:hover {
     font-size: 0.7em; /* Adjust font size for better readability */
 }
 
-    #show-password { /* login email and password container */
-        margin-right: 5px; /* Add space to the right of the checkbox */
-    }
+#show-password { /* login email and password container */
+    margin-right: 5px; /* Add space to the right of the checkbox */
+}
 
 .dashboard-menu {
     background-color: transparent; /* Transparent background */
@@ -526,12 +526,14 @@ a.btn-primary:hover, a.btn-secondary:hover {
     margin-bottom: 0.3rem;
     gap: 1rem;
     }
+
 .row privacy-row label,
+
 .row label {
     width: 200px;
     font-weight: 600;
     text-align: right;
-    font-size: 0.8em;
+    font-size: 1em;
     }
 
 .row privacy-row p,
@@ -539,38 +541,45 @@ a.btn-primary:hover, a.btn-secondary:hover {
 .consent-status {
     margin: 0;
     font-family: "Courier New", Courier, monospace;
-    font-size: 0.8em;
+    font-size: 1em;
     }
 
+.consent-status.yes {
+    color: #28a745; /* green */
+    }
 
-    /* Tables */
-    .roles-table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid #ddd;
-      background-color: #fff;
+.consent-status.no {
+    color: #dc3545; /* red */
     }
-    .roles-table th {
-      background-color: #0275d8;
-      color: #fff;
-      text-align: center;
-      padding: 0.3rem;
-    }
-    .roles-table td {
-      padding: 0.3rem;
-      border: 1px solid #ddd;
-      font-size: 0.75rem;
-    }
-    .roles-table tr:hover {
-      background-color: #f2f2f2;
-    }
-  
-    /* Form styling */
-    form label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 600;
-    }
+
+/* Tables */
+.roles-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+.roles-table th {
+    background-color: #0275d8;
+    color: #fff;
+    text-align: center;
+    padding: 0.3rem;
+}
+.roles-table td {
+    padding: 0.3rem;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+.roles-table tr:hover {
+    background-color: #f2f2f2;
+}
+
+/* Form styling */
+form label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
 
 /* Tables */
 .roles-table {
@@ -585,19 +594,10 @@ a.btn-primary:hover, a.btn-secondary:hover {
     text-align: center;
     padding: 0.3rem;
     }
-.roles-table td {
-    padding: 0.3rem;
-    border: 1px solid #ddd;
-    font-size: 0.75rem;
-    }
+
 .roles-table tr:hover {
     background-color: #f2f2f2;
     }
 
-    /* Form styling */
-form label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-    }
+
       
