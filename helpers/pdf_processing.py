@@ -2,10 +2,9 @@ import fitz
 import pandas as pd
 import re
 from flask import session
-from helpers.time_adjuster import time1, time4, time5, time6, time7
+from helpers.time_adjuster import time1, time4, time5
 from helpers.assign_activity_type import assign_activity_type
 from helpers.names_coding import get_names
-from helpers.report_generator import display_dataframes
 from io import StringIO
 
 def extract_text_from_pdf(filepath):

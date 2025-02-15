@@ -2,7 +2,7 @@
 
 /* Body styles for overall layout */
 body {
-    background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+    background: linear-gradient(to bottom, #f5f7fa, #8393a894);
     display: flex;
     justify-content: center;
     align-items: center;

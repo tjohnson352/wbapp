@@ -23,6 +23,7 @@ def generate_temp_password(length=6):
 def login():
     setup_database()
     setup_school_table()
+    insert_debug_data()
     view_database()
 
     if request.method == 'POST':
@@ -125,7 +126,6 @@ def get_random_security_questions():
 def register():
     setup_database()
     setup_school_table()
-    insert_debug_data()
 
     # Fetch available schools
     schools = []

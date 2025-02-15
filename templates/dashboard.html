@@ -21,7 +21,7 @@
 
     <div class="action-buttons">
         {# Show Confirm Officers only if is_admin = 1 or 0 #}
-        {% if session.get('is_admin') in [1, 2] %}
+        {% if session.get('is_admin') in [3,4,5] %}
         <a href="/confirm-elected-officers" class="btn-primary-c">
             <i class="fas fa-user-check"></i> Confirm Officers
         </a>

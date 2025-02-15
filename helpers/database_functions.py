@@ -36,7 +36,7 @@ def setup_database():
             user_id INTEGER PRIMARY KEY,  -- Must match `users.user_id`
             login_id TEXT UNIQUE NOT NULL,  -- Email address
             password_hash TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0 CHECK (is_admin IN (0,1,2,3,4)),  -- 4 = central officer, 3 = local officer, 2 = unverified officer, 1 = member, 0 = Regular User
+            is_admin INTEGER DEFAULT 0 CHECK (is_admin IN (0,1,2,3,4,5)),  -- 4 = central officer, 3 = local officer, 2 = unverified officer, 1 = member, 0 = Regular User
             security_question_1 TEXT NOT NULL,
             security_answer_1 TEXT NOT NULL,
             security_question_2 TEXT NOT NULL,
@@ -85,7 +85,6 @@ def setup_database():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS meta1 (
             user_id INTEGER PRIMARY KEY,  -- user_id matches user_auth.user_id
-            school_name TEXT,
             middle_manager TEXT,
             ft_days TEXT,
             off_days TEXT,
@@ -183,6 +182,12 @@ def save_user_data():
         if not user_id:
             raise ValueError("Session user_id is missing or invalid.")
 
+        # Ensure this is the user's own schedule before saving
+        is_own_schedule = session.get('is_own_schedule', 0)  # Default to 0 (fail)
+        if is_own_schedule != 1:
+            print("❌ Data not saved: User is not processing their own schedule.")
+            return  # Exit function without saving
+
         # Connect to the database
         conn = sqlite3.connect("user_data.db")
         cursor = conn.cursor()
@@ -190,7 +195,7 @@ def save_user_data():
         # Save meta1 data
         cursor.execute("""
         INSERT OR REPLACE INTO meta1 (user_id, school_name, middle_manager, ft_days, off_days)
-        VALUES (?, ?, ?, ?, ?);
+        VALUES (?, ?, ?, ?);
         """, (
             user_id,
             session.get('school_name', 'Unknown'),
@@ -441,6 +446,14 @@ import sqlite3
 import hashlib
 from datetime import datetime
 
+import sqlite3
+from datetime import datetime
+from werkzeug.security import generate_password_hash
+
+import sqlite3
+from datetime import datetime
+from werkzeug.security import generate_password_hash
+
 def create_admin():
     """
     Creates or updates the administrator account in the database.
@@ -451,7 +464,6 @@ def create_admin():
     # Securely hash the admin password
     admin_password = "cooler1!"  # Change this before deployment
     admin_email = "ies@sverigeslarare.se"
-   
 
     # Convert timestamps to string format
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -463,28 +475,53 @@ def create_admin():
     """, (now, now))
 
     # Default security questions and answers for admin
-    default_questions = ["What is your first pet's name?", "What is your mother's maiden name?", "What is your favorite book?"]
+    default_questions = [
+        "What is your first pet's name?",
+        "What is your mother's maiden name?",
+        "What is your favorite book?"
+    ]
     default_answers = ["AdminPet", "AdminMaiden", "AdminBook"]
 
-    # Ensure admin exists in `user_auth` table (is_admin = 5 is the highest level)
-    cursor.execute("""
-        INSERT INTO user_auth (user_id, login_id, password_hash, is_admin, 
-                                         security_question_1, security_answer_1,
-                                         security_question_2, security_answer_2,
-                                         security_question_3, security_answer_3,
-                                         created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (1, admin_email, generate_password_hash(admin_password), 5,
-          default_questions[0], generate_password_hash(default_answers[0]),
-          default_questions[1], generate_password_hash(default_answers[1]),
-          default_questions[2], generate_password_hash(default_answers[2]),
-          now, now))
+    # Check if admin already exists in `user_auth`
+    cursor.execute("SELECT COUNT(*) FROM user_auth WHERE user_id = 1")
+    exists = cursor.fetchone()[0]
+
+    if exists:
+        # Update existing admin credentials
+        cursor.execute("""
+            UPDATE user_auth
+            SET login_id = ?, password_hash = ?, is_admin = ?,
+                security_question_1 = ?, security_answer_1 = ?,
+                security_question_2 = ?, security_answer_2 = ?,
+                security_question_3 = ?, security_answer_3 = ?,
+                updated_at = ?
+            WHERE user_id = 1
+        """, (admin_email, generate_password_hash(admin_password), 5,
+              default_questions[0], generate_password_hash(default_answers[0]),
+              default_questions[1], generate_password_hash(default_answers[1]),
+              default_questions[2], generate_password_hash(default_answers[2]),
+              now))
+    else:
+        # Insert new admin credentials
+        cursor.execute("""
+            INSERT INTO user_auth (user_id, login_id, password_hash, is_admin, 
+                                   security_question_1, security_answer_1, 
+                                   security_question_2, security_answer_2, 
+                                   security_question_3, security_answer_3, 
+                                   created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (1, admin_email, generate_password_hash(admin_password), 5,
+              default_questions[0], generate_password_hash(default_answers[0]),
+              default_questions[1], generate_password_hash(default_answers[1]),
+              default_questions[2], generate_password_hash(default_answers[2]),
+              now, now))
 
     conn.commit()
     conn.close()
-    
+
     print("✅ Admin account created or updated successfully!")
     view_database()
+
 
 import sqlite3
 import pandas as pd

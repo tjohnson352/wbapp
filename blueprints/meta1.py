@@ -4,6 +4,11 @@ meta1_blueprint = Blueprint('meta1', __name__)
 
 @meta1_blueprint.route('/meta1', methods=['GET', 'POST'])
 def meta1():
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to access this page.", "error")
+        return redirect(url_for("auth_bp.login"))
+
     """Handle additional metadata inputs."""
     if request.method == 'POST':
         try:

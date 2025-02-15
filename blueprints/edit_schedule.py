@@ -10,6 +10,11 @@ edit_schedule_blueprint = Blueprint('edit_schedule', __name__)
 
 @edit_schedule_blueprint.route('/days', methods=['GET', 'POST'])
 def display_schedule():
+    user_id = session.get("user_id")
+    if not user_id:
+        flash("You must be logged in to access this page.", "error")
+        return redirect(url_for("auth_bp.login"))
+    
     try:
         # Get the user_id from the session
         user_id = session.get('user_id')
@@ -20,20 +25,16 @@ def display_schedule():
         flash("An error occurred: " + str(e), 'error')
         return redirect(url_for('auth_bp.login'))  # Redirect to login in case of an unexpected error
 
-    print("kkkkkkkkkkk1")
     try:
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
         current_day_index = session.get('day_index', 0)
-        print("kkkkkkkkkkk2")
 
         if request.method == 'POST':
             data = request.get_json()
             current_app.logger.info(f"Received payload: {data}")  # Debugging
-            print("kkkkkkkkkkk3")
             print(data)
 
             if not data:
-                print("kkkkkkkkkkk31")
                 return jsonify({'error': 'No data received.'}), 400
                 
 
@@ -110,7 +111,6 @@ def display_schedule():
         # GET request: Display the schedule for the current day
         current_day = days[current_day_index]
         df2b = pd.read_json(StringIO(session.get('df2b', '{}')))
-        print("kkkkkkkkkkk4")
 
         return render_template('edit_schedule.html', table=df2b, current_day=current_day)
 
