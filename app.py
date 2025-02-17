@@ -116,6 +116,11 @@ def schedule_summary():
 from flask import render_template, request, session, make_response, redirect, url_for
 import pdfkit
 
+from flask import render_template, request, session, make_response, redirect, url_for
+import pdfkit
+import pandas as pd
+from io import StringIO
+
 @app.route("/survey", methods=["GET", "POST"])
 def survey():
     if request.method == "POST":
@@ -145,55 +150,63 @@ def survey():
     )
 
 
-from flask import render_template, request, session, make_response
-import pdfkit
-
 @app.route("/download_pdf")
 def download_pdf():
     # Retrieve full name from the session
-    full_name = session.get('full_name', 'User')  # Default to "User" if not in session
-
-    # Clean up the full name for the filename (e.g., replace spaces with underscores)
+    full_name = session.get('full_name', 'User')
     sanitized_name = full_name.replace(" ", "_")
-
-    # Generate the dynamic filename
     file_name = f"{sanitized_name}_schedule_report.pdf"
 
-    # Use the same context as `schedule_summary()` to generate the PDF
-    ft_days = session.get('ft_days', [])
-    off_days = session.get('off_days', [])
-    df_names = session.get('df_names', [])
+    # Retrieve DataFrames
     raw_dataframes = session.get('dataframes', {})
-
-    # Convert JSON strings back to DataFrames and then to JSON-like structures
     dataframes = {}
     for key, value in raw_dataframes.items():
-        if value:  # Check if value is not None
+        if value:
             try:
                 df = pd.read_json(StringIO(value))
-                dataframes[key] = df.to_dict(orient='records')  # Convert to list of dictionaries
+                dataframes[key] = df.to_dict(orient='records')
             except Exception as e:
                 print(f"Error loading DataFrame {key}: {e}")
 
-    # Render the `schedule_summary.html` template with the context
+    # Render the `schedule_summary.html` template
     rendered = render_template(
         'schedule_summary.html',
-        ft_days=ft_days,
-        off_days=off_days,
-        df_names=df_names,
+        ft_days=session.get('ft_days', []),
+        off_days=session.get('off_days', []),
+        df_names=session.get('df_names', []),
         dataframes=dataframes,
         plain_text_report=session.get('plain_text_report', "No report available."),
         plain_text_schedule=session.get('plain_text_schedule', "No schedule available.")
     )
+    return redirect(url_for('auth_bp.dashboard'))
+
+    # Configure pdfkit with a valid path
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+
+    # PDF options
+    options = {
+        'enable-local-file-access': '',  # Allow local resource access
+        'page-size': 'A4',
+        'margin-top': '0.5in',
+        'margin-right': '0.5in',
+        'margin-bottom': '0.5in',
+        'margin-left': '0.5in',
+        'encoding': 'UTF-8',
+        'load-error-handling': 'ignore'
+    }
 
     # Generate the PDF
-    pdf = pdfkit.from_string(rendered, False)
+    try:
+        pdf = pdfkit.from_string(rendered, False, configuration=config, options=options)
+    except OSError as e:
+        return f"PDF generation failed: {e}"
 
-    # Send the PDF to the user for download with the dynamic filename
+    # Send the PDF as a downloadable file
     response = make_response(pdf)
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
     return response
+
 
 
 if __name__ == '__main__':

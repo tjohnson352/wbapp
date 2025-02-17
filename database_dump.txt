@@ -1,38 +1,38 @@
 
 🔹 **USERS**
     user_id first_name  last_name  school_id  consent                  created_at                  updated_at
-0         1      Admin       User          1        1         2025-02-14 16:59:16         2025-02-14 16:59:16
-1         2       John        Doe          1        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-2         3       Jane      Smith          5        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-3         4      Alice    Johnson         10        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-4         5        Bob   Williams         15        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-5         6    Charlie      Brown         20        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-6         7      David     Taylor         25        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-7         8       Emma      White         30        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-8         9      Frank     Harris         35        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-9        10      Grace     Martin         40        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-10       11      Henry   Thompson         45        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-11       12        Ivy     Garcia          3        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-12       13       Jack   Martinez          8        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-13       14      Katie      Lopez         12        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-14       15        Leo   Gonzalez         18        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-15       16        Mia      Clark         22        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-16       17     Nathan      Lewis         28        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-17       18     Olivia     Walker         33        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-18       19       Paul       Hall         38        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-19       20      Quinn      Allen         42        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-20       21     Rachel      Young         48        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-21       22      Steve      Adams          6        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-22       23     Hannah      Baker         11        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-23       24      Lucas     Carter         16        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-24       25     Sophia      Davis         21        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-25       26       Ryan      Evans         26        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-26       27        Zoe     Foster         31        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-27       28      Tyler     Gibson         36        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-28       29     Amelia  Henderson         41        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-29       30      Ethan    Jackson         46        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-30       31       Lily       King         47        1  2025-02-14 16:59:16.939901  2025-02-14 16:59:16.939901
-31       32   Theodore    Johnson         40        1         2025-02-15 11:00:55         2025-02-15 11:00:55
+0         1      Admin       User          1        1         2025-02-16 10:12:10         2025-02-16 10:12:10
+1         2       John        Doe          1        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+2         3       Jane      Smith          5        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+3         4      Alice    Johnson         10        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+4         5        Bob   Williams         15        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+5         6    Charlie      Brown         20        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+6         7      David     Taylor         25        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+7         8       Emma      White         30        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+8         9      Frank     Harris         35        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+9        10      Grace     Martin         40        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+10       11      Henry   Thompson         45        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+11       12        Ivy     Garcia          3        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+12       13       Jack   Martinez          8        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+13       14      Katie      Lopez         12        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+14       15        Leo   Gonzalez         18        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+15       16        Mia      Clark         22        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+16       17     Nathan      Lewis         28        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+17       18     Olivia     Walker         33        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+18       19       Paul       Hall         38        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+19       20      Quinn      Allen         42        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+20       21     Rachel      Young         48        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+21       22      Steve      Adams          6        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+22       23     Hannah      Baker         11        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+23       24      Lucas     Carter         16        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+24       25     Sophia      Davis         21        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+25       26       Ryan      Evans         26        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+26       27        Zoe     Foster         31        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+27       28      Tyler     Gibson         36        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+28       29     Amelia  Henderson         41        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+29       30      Ethan    Jackson         46        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+30       31       Lily       King         47        1  2025-02-16 10:12:11.256575  2025-02-16 10:12:11.256575
+31       32   Theodore    Johnson         40        1         2025-02-16 09:13:02         2025-02-16 09:13:02
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SQLITE_SEQUENCE**
@@ -42,14 +42,14 @@
 ----------------------------------------------------------------------------------------------------
 
 🔹 **USER_AUTH**
-   user_id               login_id                                                                                                                                                       password_hash  is_admin                      security_question_1                                                                                                                                                   security_answer_1                 security_question_2                                                                                                                                                   security_answer_2                                security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
-0        1  ies@sverigeslarare.se  scrypt:32768:8:1$XrHaUqUtpOY9klGl$c3a4d88bf809733843c6eeceffb2b0376f58cc72dfbe5a9268c24c1d6886dd74b6faca67a5b64deb5fe554a0109a0b32802a320f303823702b2c4c8c86ec9d36         5           What is your first pet's name?  scrypt:32768:8:1$5QN0tDrbpft3V2HB$898902d153b41c5963736c9ff3773356c950d4622879f28edeb5c7d427cdeb0555be9ff196c24510f7b9913e8317e0ea1c671627e51c181a80f695d46d5b6531  What is your mother's maiden name?  scrypt:32768:8:1$jG4kGIgGSUjCwki0$c7747f7298034124c145a45a2f7fd398fbff7496144a62ba5381f8484a30f5df9d75d5774625e2226b75c54a15b434c5c1bc916a9a2e7dc75bbd221f02fe4914                        What is your favorite book?  scrypt:32768:8:1$AZMcybmKNdHLA3T1$20df46c74ca398ce5dd920a8fa7c3f4c3ce1b429d3ecf4c46e7b5e7d2637a698ab44f2c68c4356f56a22021b8df930230b99600352f6421b8e2b52fc563e4762               0               0          None  2025-02-14 16:59:16  2025-02-14 16:59:16
-1       32  tjohnson352@gmail.com  scrypt:32768:8:1$R5uslzNH4dfOGBob$9eb6efc15183a4e2b923fa73366d5cb6faeee17fbf530c24cc20040f07c59a3e10974576a4150abc0d0f8de2ed88d3249c30f576d50663980281b7709e07f4bf         1  What was the name of your first school?  scrypt:32768:8:1$HjrIi5BZf2lfcFhI$e00d8ebe9e5f4ec31b7eb029ed08a993f8af07ace53150eb2f2604cb5db7b212a617ecba1eba78f9570e376c0cb96dc5e55565288c58cafd22c6100e49851f2f   What was your childhood nickname?  scrypt:32768:8:1$kfCO0iw74EvyVoIz$c6aa5492db932ff3bdb539cf95128fe103cc008c16e83a672e062af1c3e9b77ceaab1ef3f39c79898eba318ba1e3642a53edfde9f1d64d9d56983cb9703aabd5  What was the name of the first beach you visited?  scrypt:32768:8:1$UHk5HdBugQNBtZfa$7bc5571ddca1abea896d6a302539f093188eaf6be3f5b037a1634bd41da42f64e7c24a412782efa5975ddffec299df7685a0b879f40f8709394bdade659586e9               0               0          None  2025-02-15 11:00:55  2025-02-15 11:00:55
+   user_id               login_id                                                                                                                                                       password_hash  is_admin                   security_question_1                                                                                                                                                   security_answer_1                             security_question_2                                                                                                                                                   security_answer_2                      security_question_3                                                                                                                                                   security_answer_3  question_index  login_attempts temp_password           created_at           updated_at
+0        1  ies@sverigeslarare.se  scrypt:32768:8:1$cyPS3vr4ZS8mhDCr$b2928f5f1b1d7ca3e6d5afaa95657c04e75a9048df8fb048a1de6517508b2df746cd86c1a7145b649cc4df49948c4cf1dee5a02108ddad45f8ee22e207d04338         5        What is your first pet's name?  scrypt:32768:8:1$2A8tjCQqUaBbNwHZ$6923f8ea30a0ceb304b57ce8675446771222d58255bc777cb789f66f991dae08a9a89521f4fae8f20ff6575b4e822e581b8dbbcbbbd0c81ce67de441d76ccb91              What is your mother's maiden name?  scrypt:32768:8:1$5uEvccnY2slNp6VW$d91ada8fc4d5c3e9a9e04446c70809dff1bd6c0e6275ec08b32a522ce318a71072aa53a0e3d4ac35e12f9ba1409f91ad20fc1f8bd8d54792562b137a175950ef              What is your favorite book?  scrypt:32768:8:1$L8OvnQRSPc1QJuKk$e4ad97ac71b0ad4234e1d07d5e461f42e679c86734d562707e573ef68e9b7f6185ef690826063c627320bc2ca661b9817503843c87074b529c14f126c9d66770               0               0          None  2025-02-16 10:12:10  2025-02-16 10:12:10
+1       32  tjohnson352@gmail.com  scrypt:32768:8:1$WWyrW3VIDPbMbapS$e032df93d0ea16b5a4b4a6bfd60775520a88dfc08494e621cc6b48d240b777959645d647d6ea2d86624ffc2eef15213a34952261a180c620dc9c9c800b131fce         2  What was the name of your first pet?  scrypt:32768:8:1$ILlYP3JQpserWXgS$f5b5e89f61b526baf9f23456023479e680bf9185a909ad885e8e198a04306012747d2ae03496e132a5b84e4bd4c56d6bf2f8a0fa4ac2042f8e6581317e76d852  What was the make and model of your first car?  scrypt:32768:8:1$9KYUd5cQ3qqgalVF$545320353993fcea314ade294858ae5f13835373ac96394e64ba18c71c3cc4b3b568503afbc89d120cd7f2baeaaab730512eb0d498b60fbf26162f2d0ec10bbf  What was the name of your first school?  scrypt:32768:8:1$9CsuYJlVLaepP93L$a625df04fda7a504c8df01b5638fe40d54a5052d577b2a9c542787ff05f03582c455bb16648e76abcbbcc09ca5f4dd31c88186b12e488f2def53f40d240c8b21               0               0          None  2025-02-16 09:13:02  2025-02-16 09:13:02
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SL_MEMBER_LEVEL**
    user_id  sl_member  lokalombud  skyddsombud  forhandlingsombud  huvudskyddsombud  styrelseledamot
-0       32          1           0            0                  0                 0                0
+0       32          1           1            0                  0                 0                1
 ----------------------------------------------------------------------------------------------------
 
 🔹 **VERIFY_OFFICER**
@@ -84,13 +84,12 @@
 27       29           0            0                  0                 0                0         0
 28       30           0            0                  0                 0                0         0
 29       31           0            0                  0                 0                0         0
-30       32           0            0                  0                 0                0         0
+30       32           1            0                  0                 0                1         0
 ----------------------------------------------------------------------------------------------------
 
 🔹 **META1**
-Empty DataFrame
-Columns: [user_id, school_name, middle_manager, ft_days, off_days]
-Index: []
+   user_id middle_manager                     ft_days          off_days
+0       32             no  Tuesday, Wednesday, Friday  Monday, Thursday
 ----------------------------------------------------------------------------------------------------
 
 🔹 **RESET_TOKENS**
@@ -100,15 +99,13 @@ Index: []
 ----------------------------------------------------------------------------------------------------
 
 🔹 **META2**
-Empty DataFrame
-Columns: [user_id, work_percent, planning_time, frametime_issue_count, gap_issues_count, breaks_time, general_time, contract_teachtime, assigned_teachtime, contract_frametime, assigned_frametime, over_teachtime, over_frametime, total_overtime]
-Index: []
+   user_id  work_percent  planning_time  frametime_issue_count  gap_issues_count  breaks_time  general_time  contract_teachtime  assigned_teachtime  contract_frametime  assigned_frametime over_teachtime over_frametime total_overtime
+0       32           100           17.0                      1                 0          0.5           0.3                18.0                 5.0                34.5                24.0  -13.0 (under)  -10.5 (under)  -23.5 (under)
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SCHEDULE**
-Empty DataFrame
-Columns: [user_id, schedule_string]
-Index: []
+   user_id                                                                                                                                                                                                                                                                                                                                               schedule_string
+0       32  Tuesday*08:00 - 09:00*7g_2 Science Lab*Teaching*60||Tuesday*09:10 - 09:40* Break*Break*30||Tuesday*11:45 - 12:05* Hallway Duty*General*20||Tuesday*12:20 - 13:15*7G Science (D504)*Teaching*55||Wednesday*11:05 - 12:05*7g_1 Science Lab*Teaching*60||Wednesday*12:30 - 13:35*7G Science (D504)*Teaching*65||Friday*14:40 - 15:40*9A Science Lab*Teaching*60
 ----------------------------------------------------------------------------------------------------
 
 🔹 **SCHOOLS**

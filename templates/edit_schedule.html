@@ -1,100 +1,125 @@
 {% extends "base.html" %}
 
-{% block title %}Assign Activities to {{ current_day }}{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block header %}
-<h1 class="page-header">The Schedulizer Web App</h1>
 {% endblock %}
 
 {% block content %}
-<div class="upload-container">
-    <h2>Assign Activities to {{ current_day }}</h2>
-    <p class="description">
-        Assign activities to <strong>{{ current_day }}</strong>. Use the checkboxes to select the activities you want to assign to this day, then click <strong>Save and Continue</strong>.
-    </p>
-    <h3>Add Frametime for {{ current_day }}</h3>
-    <div class="frametime-input-container">
-        <div class="frametime-group">
-            <label for="isOff" class="frametime-label">OFF work day?</label>
-            <select id="isOff" class="frametime-input">
-                <option value="No" selected>No</option>
-                <option value="Yes" style="background-color: red; color: white; font-weight: bold;">Yes</option>
-            </select>
-        </div>
-        <div class="frametime-group">
-            <label for="startTime" class="frametime-label">Start Time:</label>
-            <input type="time" id="startTime" name="start_time" value="08:00" class="frametime-input">
-        </div>
-        <div class="frametime-group">
-            <label for="endTime" class="frametime-label">End Time:</label>
-            <input type="time" id="endTime" name="end_time" value="16:00" class="frametime-input">
-        </div>
-    </div>
-    {% if table is not none %}
-    <form id="scheduleForm" class="schedule-form">
-        <!-- CSRF Token -->
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Select</th>
-                    <th>Day</th>
-                    <th>Timespan</th> <!-- Corrected label -->
-                    <th>Activities</th>
-                    <th>Type</th>
-                    <th>Minutes</th> <!-- Corrected label -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for _, row in table.iterrows() %}
-                    {% set is_unassigned = (row['day'] == 'Unassigned') %}
-                    <tr class="{% if row['day'] == 'Monday' %}day-monday
-                               {% elif row['day'] == 'Tuesday' %}day-tuesday
-                               {% elif row['day'] == 'Wednesday' %}day-wednesday
-                               {% elif row['day'] == 'Thursday' %}day-thursday
-                               {% elif row['day'] == 'Friday' %}day-friday
-                               {% elif is_unassigned %}{% if loop.index is even %}bg-gray{% else %}bg-white{% endif %}{% endif %}">
-                        <td>
-                            {% if is_unassigned %}
-                                <input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}">
-                            {% else %}
-                                <!-- Empty cell when not unassigned -->
-                            {% endif %}
-                        </td>
-                        {% for col, value in row.items() %}
-                            <td class="{% if value == 'undefined' %}undefined-value{% endif %}">{{ value }}</td>
-                        {% endfor %}
-                    </tr>
+<div class="container-a">
+    <h2>
+        The Schedulizer <span>Confirm Schedule</span>
+    </h2>   
+
+    <div class="frametime-group">
+        <div class="weekdays">
+            <ul class="day-list">
+                {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                {% for day in days %}
+                    <li class="day {% if day == current_day %}current-day{% endif %}">
+                        {{ day }}
+                    </li>
                 {% endfor %}
-            </tbody>            
-        </table>
-        <div class="button-container">
-            <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
+            </ul>
         </div>
-    </form>
-    
-    {% else %}
-    <p>No data to display. Please upload a schedule first.</p>
-    {% endif %}
-</div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="isOff" name="isOff" class="frametime-input">
+            <label for="isOff" class="frametime-label">
+                I do not work on <strong>{{ current_day }}</strong>
+            </label>
+        </div>
+        <!-- Time Input Fields -->
+        <div id="timeInputs">
+            <div class="time-input-row">
+                <label for="startTime" class="frametime-label">
+                    Frametime <strong>BEGINS</strong> at
+                </label>
+                <input type="time" id="startTime" name="start_time" value="08:00" class="frametime-input">
+            </div>
+            <div class="time-input-row">
+                <label for="endTime" class="frametime-label">
+                    Frametime <strong>FINISHES</strong> at
+                </label>
+                <input type="time" id="endTime" name="end_time" value="16:00" class="frametime-input">
+            </div>
+        </div>
+
+    </div>
+
+        <!-- Table with ID for visibility control -->
+        {% if table is not none %}
+        <div id="scheduleTable">
+            <form id="scheduleForm" class="schedule-form">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Day</th>
+                            <th>Timespan</th>
+                            <th>Activities</th>
+                            <th>Type</th>
+                            <th>Minutes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for _, row in table.iterrows() %}
+                            {% set is_unassigned = (row['day'] == 'Unassigned') %}
+                            <tr class="{% if row['day'] == 'Monday' %}day-monday
+                                    {% elif row['day'] == 'Tuesday' %}day-tuesday
+                                    {% elif row['day'] == 'Wednesday' %}day-wednesday
+                                    {% elif row['day'] == 'Thursday' %}day-thursday
+                                    {% elif row['day'] == 'Friday' %}day-friday
+                                    {% elif is_unassigned %}{% if loop.index is even %}bg-gray{% else %}bg-white{% endif %}{% endif %}">
+                                <td>
+                                    {% if is_unassigned %}
+                                        <input type="checkbox" class="activity-checkbox" value="{{ loop.index0 }}">
+                                    {% endif %}
+                                </td>
+                                {% for col, value in row.items() %}
+                                    <td class="{% if value == 'undefined' %}undefined-value{% endif %}">{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>            
+                </table>
+            </form>
+        </div>
+
+                <div class="button-container">
+                    <button type="button" class="btn btn-primary" id="saveBtn">Save & Continue</button>
+                </div>
+        {% else %}
+        <p>No data to display. Please upload a schedule first.</p>
+        {% endif %}
+        
 
 <script>
 document.getElementById('isOff').addEventListener('change', function () {
-    const isOff = this.value === 'Yes';
-    document.getElementById('startTime').disabled = isOff;
-    document.getElementById('endTime').disabled = isOff;
+    const timeFields = document.getElementById('timeInputs');
+    const scheduleTable = document.getElementById('scheduleTable');
+    
+    if (this.checked) {
+        timeFields.classList.add('hidden');
+        scheduleTable.classList.add('hidden');
+    } else {
+        timeFields.classList.remove('hidden');
+        scheduleTable.classList.remove('hidden');
+    }
 });
+
 
 document.getElementById('saveBtn').addEventListener('click', function () {
     const selectedActivities = Array.from(document.querySelectorAll('.activity-checkbox:checked')).map(cb => parseInt(cb.value));
-    const isOff = document.getElementById('isOff').value.trim();
+    const isOff = document.getElementById('isOff').checked;
     const startTimeInput = document.getElementById('startTime');
     const endTimeInput = document.getElementById('endTime');
 
     let startTime = startTimeInput.value.trim();
     let endTime = endTimeInput.value.trim();
 
-    if (isOff === 'Yes') {
+    if (isOff) {
         startTime = 'null';
         endTime = 'null';
     } else if (!startTime || !endTime || selectedActivities.length === 0) {
@@ -109,8 +134,8 @@ document.getElementById('saveBtn').addEventListener('click', function () {
 
     const payload = {
         frametime: { start_time: startTime, end_time: endTime },
-        selected_activities: isOff === 'Yes' ? [] : selectedActivities,
-        is_off: isOff === 'Yes'
+        selected_activities: isOff ? [] : selectedActivities,
+        is_off: isOff
     };
 
     fetch('/days', {
@@ -162,81 +187,220 @@ document.getElementById('saveBtn').addEventListener('click', function () {
     });
 });
 
+document.getElementById('saveBtn').addEventListener('click', function () {
+    const selectedActivities = Array.from(document.querySelectorAll('.activity-checkbox:checked')).map(cb => parseInt(cb.value));
+    const isOff = document.getElementById('isOff').checked;
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+
+    let startTime = startTimeInput.value.trim();
+    let endTime = endTimeInput.value.trim();
+
+    if (isOff) {
+        startTime = 'null';
+        endTime = 'null';
+    } else if (!startTime || !endTime || selectedActivities.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please complete all required fields.',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    const payload = {
+        frametime: { start_time: startTime, end_time: endTime },
+        selected_activities: isOff ? [] : selectedActivities,
+        is_off: isOff
+    };
+
+    fetch('/days', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Server error:', err);
+                throw new Error(err.error || 'Unexpected error occurred.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.complete) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'All days have been updated successfully!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/schedule_summary';
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error during fetch:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'An unexpected error occurred. Please try again.',
+            confirmButtonText: 'OK'
+        });
+    });
+});
 </script>
+
+
 <style>
-    .bg-gray {
-        background-color: #F0F0F0; /* Light gray */
-    }
-
-    .bg-white {
-        background-color: #FFFFFF; /* White */
-    }
-
-    .frametime-input-container {
+    .weekdays .day-list {
         display: flex;
-        gap: 40px;
-        justify-content: flex-start;
-        margin-bottom: 20px;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
     }
 
+    .weekdays .day {
+        margin: 0 15px;
+        text-align: center;
+    }
+
+
+    /* Center-align weekdays */
+    .day-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+    }
+    
+    .day {
+        color: rgba(128, 128, 128, 0.521);
+        font-size: 1em;
+        font-weight: 200;
+        text-align: center;
+    }
+    
+    .current-day {
+        font-size: 1.3em;
+        color: #007BFF;
+        font-weight: 600;
+    }
+    
+    /* Time input styling */
+    .frametime-input[type="time"] {
+        width: 140px;
+        font-size: 14px;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: .5em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    .frametime-input[type="time"]:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 1);
+    }
+    
+    /* Frametime group styling */
     .frametime-group {
+        margin: 20px 0;
+        padding: 15px;
+        border: 2px solid #007BFF;
+        border-radius: 10px;
+        background-color: #f0f7ff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        font-size: 1em;
+        text-align: left;
     }
-
+    
+    .frametime-group:hover {
+        border-color: #0056b3;
+        background-color: #e6f3ff;
+    }
+    
+    /* Checkbox container */
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: .5em;
+    }
+    
+    /* Frametime label */
     .frametime-label {
-        font-weight: bold;
-        margin-bottom: 5px;
+        font-size: 1em;
+        color: #333;
+        cursor: pointer;
+        text-align: left;
     }
-
-    .frametime-input {
-        width: 140px;
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-    }
-
-    .frametime-input:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    }
-
-    /* Dropdown menu styling */
-    select option[value="Yes"] {
-        background-color: red;
-        color: white;
+    
+    .frametime-label strong {
         font-weight: bold;
     }
-
-    /* Table row colors for each day */
+    
+    /* Day-specific row colors */
     .day-monday {
-        background-color: #FFF8DC; /* Light yellow */
+        background-color: #FFF8DC;
     }
+    
     .day-tuesday {
-        background-color: #E6F7FF; /* Light blue */
+        background-color: #E6F7FF;
     }
+    
     .day-wednesday {
-        background-color: #F5F5F5; /* Light gray */
+        background-color: #F5F5F5;
     }
+    
     .day-thursday {
-        background-color: #FFEBEE; /* Light pink */
+        background-color: #FFEBEE;
     }
+    
     .day-friday {
-        background-color: #E8F5E9; /* Light green */
+        background-color: #E8F5E9;
     }
-
-    /* Default unassigned row color */
+    
     .day-unassigned {
-        background-color: #FFFFFF; /* Default white */
+        background-color: #FFFFFF;
     }
-
-    /* Highlight "undefined" values */
+    
+    /* Undefined value highlight */
     .undefined-value {
         color: red;
         font-weight: bold;
+    }    
+    .schedule-form {
+        width: 100%;
+        margin-bottom: 1em;
     }
+
+    .hidden {
+        display: none !important;
+    }
+
 </style>
+    
 {% endblock %}

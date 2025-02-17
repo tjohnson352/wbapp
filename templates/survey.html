@@ -1,16 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Feedback Survey{% endblock %}
+{% block title %}Confirm officers access{% endblock %}
 
 {% block header %}
-<h1 class="page-header">The Schedulizer Web App</h1>
 {% endblock %}
 
 {% block content %}
-<div class="upload-container">
+<div class="dashboard-menu" style="margin-top: 20px">
+    <ul class="menu-list style = margin-top: 50px">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/">Upload Schedule</a></li>
+        <li><a href="/account">My Account</a></li>
+        <li><a href="/logout" class="logout">Logout</a></li>
+    </ul>
+</div>
+
+
+<div class="container-a" style="min-width: 700px;">
+    <h2>
+        The Schedulizer <span>Feedback Survey</span>
+    </h2>
+    <div class = "description2">
     {% if not submitted %}
-    <h2>Feedback Survey</h2>
-    <p class="description">
         Please provide your feedback before downloading your report. Your input helps us improve!
     </p>
 
@@ -18,28 +29,27 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <!-- Question 1 -->
-        <div class="form-group small-width">
-            <label for="review_q1" class="form-label"><strong>1. Did the web app accurately read and display your schedule?</strong></label>
-            <select id="review_q1" name="review_q1" class="form-input" required>
-                <option value="" disabled selected>Select an option</option>
+        <div class="form-group">
+            <label for="review_q1" class="form-label"><strong>Did the web app accurately read and display your schedule?</strong></label>
+            <select id="review_q1" name="review_q1" class="form-input form-input2" required>
+                <option value="" disabled selected>Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
             </select>
         </div>
 
         <!-- Question 2 -->
-        <div class="form-group small-width">
-            <label for="review_q2" class="form-label"><strong>2. Rate the app from 1 to 5:</strong></label>
+        <div class="form-group">
+            <label for="review_q2" class="form-label"><strong>Rate the app from 1 to 5:</strong></label>
             <input type="range" id="review_q2" name="review_q2" class="form-slider" min="1" max="5" step="1" value="3" oninput="updateSliderValue(this.value)" required>
             <div class="ruler">
                 <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
             </div>
-            <p class="slider-value">Your Rating: <span id="slider-value">3</span></p>
         </div>
 
         <!-- Question 3 -->
-        <div class="form-group large-width">
-            <label for="review_q3" class="form-label"><strong>3. Suggestions for improvement (optional):</strong></label>
+        <div class="form-group">
+            <label for="review_q3" class="form-label"><strong>Suggestions for improvement (optional):</strong></label>
             <textarea id="review_q3" name="review_q3" class="form-input" rows="4" placeholder="Your suggestions"></textarea>
         </div>
 
@@ -48,8 +58,7 @@
         </div>
     </form>
     {% else %}
-    <h2 class="thank-you-title">Thank You for Your Feedback!</h2>
-    <p>We greatly appreciate your input! Here's a summary of your responses:</p>
+    <p>Thank You for Your Feedback!</p>
 
     <div class="survey-responses">
         <div class="response-item">
@@ -75,7 +84,9 @@
 </div>
 
 <style>
-
+.description2 {
+    text-align: left;
+}
 
     /* Titles and Descriptions */
     .thank-you-title {
@@ -110,23 +121,7 @@
     .button-container {
         text-align: center;
         margin-top: 20px;
-    }
-
-    .btn-primary {
-        text-decoration: none;
-        padding: 12px 24px;
-        font-size: 1rem;
-        font-weight: bold;
-        background-color: #2980b9;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background-color: #1abc9c;
+    
     }
 
     /* Form Elements */
@@ -139,6 +134,8 @@
     .form-group {
         display: flex;
         flex-direction: column;
+        text-align: left;
+        margin-bottom: 20px;
     }
 
     .form-label {
@@ -153,18 +150,13 @@
         border-radius: 4px;
     }
 
-    .small-width {
-        max-width: 300px;
-    }
-
-    .large-width {
-        max-width: 500px;
-    }
-
+        .form-input2 {
+            width: 15%;
+        }
     /* Slider Styling */
     .slider-container {
         position: relative;
-        margin-top: 10px;
+        margin-top: 1px;
     }
 
     .form-slider {
@@ -185,7 +177,6 @@
     .slider-value {
         font-size: 1rem;
         color: #333;
-        margin-top: 10px;
     }
 </style>
 

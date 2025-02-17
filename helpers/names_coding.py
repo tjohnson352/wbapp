@@ -48,8 +48,10 @@ def get_names():
         # Create name_combo
         name_combo = f"{school_name} {full_name}"
 
-        # Second method to double-check school name
-        school_name2 = "Unknown"
+        # Second method to double-check school name 
+        # Find a school in the school_list.txt file that
+        # matches the school in the schedule
+        school_name2 = school_name
         try:
             with open('helpers/school_list.txt', 'r', encoding='utf-8') as f:
                 schools = [line.strip() for line in f.readlines()]
@@ -69,15 +71,17 @@ def get_names():
 
         print("School name (second method):", school_name2)
 
+        school_name = school_name2
+
         # Find school_id for school_name2 from the table schools
-        school_id2 = None
+        school_id = None
         try:
             conn = sqlite3.connect('user_data.db')
             cursor = conn.cursor()
-            cursor.execute("SELECT school_id FROM schools WHERE school_name = ?", (school_name2,))
+            cursor.execute("SELECT school_id FROM schools WHERE school_name = ?", (school_name,))
             result = cursor.fetchone()
             if result:
-                school_id2 = result[0]
+                school_id = result[0]
             conn.close()
         except Exception as e:
             print(f"Error retrieving school_id: {e}")
@@ -85,8 +89,7 @@ def get_names():
         # Store results in session
         session['full_name'] = full_name
         session['school_name'] = school_name
-        session['school_name2'] = school_name2
-        session['school_id2'] = school_id2
+        session['school_id'] = school_id
         session['name_combo'] = name_combo
     except Exception as e:
         print(f"Error in get_names: {e}")
@@ -134,7 +137,7 @@ def update_user_school_id():
             with sqlite3.connect('user_data.db') as conn:
                 cursor = conn.cursor()
                 user_id = session.get('user_id')
-                new_school_id = session.get('school_id2')
+                new_school_id = session.get('school_id')
 
                 if user_id is None or new_school_id is None:
                     print("Missing user_id or school_id2 in session")
@@ -164,4 +167,35 @@ def update_user_school_id():
             print(f"SQLite error while updating user school_id: {e}")
         except Exception as e:
             print(f"Unexpected error updating user school_id: {e}")
+
+
+def is_own_school():
+    try:
+        # Retrieve school_id from the session
+        user_id = session.get('user_id')
+        current_school_id = session.get('school_id')
+        if current_school_id is None:
+            print("No school_id found in session")
+            session['is_own_school'] = 0
+            return 0
+
+        # Connect to the database and check if the school_id exists in the users table
+        conn = sqlite3.connect('user_data.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT school_id FROM users WHERE user_id = ?", (user_id,))
+        result = cursor.fetchone()
+        conn.close()
+
+        stored_school_id = result[0]
+        if current_school_id == stored_school_id:
+            session['is_own_school'] = 1
+            return 1
+        else:
+            session['is_own_school'] = 0
+            return 0
+
+    except Exception as e:
+        print(f"Error in is_own_school: {e}")
+        session['is_own_school'] = 0
+        return 0
 

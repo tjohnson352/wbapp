@@ -194,11 +194,10 @@ def save_user_data():
 
         # Save meta1 data
         cursor.execute("""
-        INSERT OR REPLACE INTO meta1 (user_id, school_name, middle_manager, ft_days, off_days)
+        INSERT OR REPLACE INTO meta1 (user_id, middle_manager, ft_days, off_days)
         VALUES (?, ?, ?, ?);
         """, (
-            user_id,
-            session.get('school_name', 'Unknown'),
+            session.get('user_id'),  # Get user_id from session
             session.get('middle_manager', 'No'),
             session.get('ft_days', 'Unknown'),
             session.get('off_days', 'Unknown')

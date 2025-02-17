@@ -274,6 +274,7 @@ def updated_schedule():
         view_database()
         get_user_data()
         
+        
 
         # Save all dynamically created DataFrames into a consolidated 'dataframes' session key
         dataframes = {}

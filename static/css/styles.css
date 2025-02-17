@@ -37,6 +37,7 @@ table {
     border-collapse: collapse; /* Remove cell spacing */
     font-size: 14px; /* Standard font size */
     border: 1px solid #ddd; /* Border around the table */
+    text-align: left;
 }
 
 /* Header row styling in tables */
@@ -53,10 +54,17 @@ table th {
 
 /* Table cell styling */
 table td {
-    padding: 2px;
+    padding: 1px;
+    padding-left: 10px;
     border: 1px solid #ddd; /* Cell border */
-    text-align: center; /* Center-align content */
 }
+
+/* Column width adjustments specifically for schedule tables */
+.schedule-table th:nth-child(1), .schedule-table td:nth-child(1) { width: 15%; } /* Time Span */
+.schedule-table th:nth-child(2), .schedule-table td:nth-child(2) { width: 25%; } /* Activity */
+.schedule-table th:nth-child(3), .schedule-table td:nth-child(3) { width: 12%; } /* Type */
+.schedule-table th:nth-child(4), .schedule-table td:nth-child(4) { width: 13%; } /* Minutes */
+.schedule-table th:nth-child(5), .schedule-table td:nth-child(5) { width: 30%; } /* Issues */
 
 /* DROPDOWN MENU STYLES */
 
@@ -97,7 +105,7 @@ select:focus {
     text-align: left;
 }
 
-/* Bold text in description */
+/* Bold text cardn description */
 .description strong {
     color: #000; /* Black text */
 }
@@ -599,5 +607,11 @@ form label {
     background-color: #f2f2f2;
     }
 
+.report-items {
+    text-align: left;
+}
 
+.report-items-heading {
+    text-align: left;
+}
       

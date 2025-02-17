@@ -1,75 +1,36 @@
 {% extends "base.html" %}
 
+{% block title %}Confirm officers access{% endblock %}
+
 {% block header %}
-<h1 class="page-header">Your Schedulizer Report</h1>
 {% endblock %}
 
 {% block content %}
+<div class="dashboard-menu" style="margin-top: 20px">
+    <ul class="menu-list style = margin-top: 50px">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/">Upload Schedule</a></li>
+        <li><a href="/account">My Account</a></li>
+        <li><a href="/logout" class="logout">Logout</a></li>
+    </ul>
+</div>
 
-<style>
-    .table th:nth-child(1),
-    .table td:nth-child(1) {
-        width: 15%;
-        text-align: left;
-        padding-left: 10px;
-    }
-    .table th:nth-child(2),
-    .table td:nth-child(2) {
-        width: 25%;
-        text-align: left;
-        padding-left: 10px;
-    }
-    .table th:nth-child(3),
-    .table td:nth-child(3) {
-        width: 15%;
-        text-align: left;
-        padding-left: 10px;
-    }
-    .table th:nth-child(4),
-    .table td:nth-child(4) {
-        width: 10%;
-        text-align: left;
-        padding-left: 10px;
-    }
-    .table th:nth-child(5),
-    .table td:nth-child(5) {
-        width: 30%;
-        text-align: left;
-        padding-left: 10px;
-    }
-</style>
 
-<div class="upload-container">
-
-    <div class="card mb-4">
-        <div class="card-body">
+<div class="container-a" style="min-width: 700px;">
+    <h2>
+        The Schedulizer <span>Report Summary</span>
+    </h2>
+    <div>
+        <div class = "report-items">
             <p><strong>Teacher:</strong> {{ session.get('full_name', 'N/A') }}</p>
             <p><strong>School:</strong> {{ session.get('school_name', 'N/A') }}</p>
             <p><strong>Middle Manager:</strong> {{ session.get('middle_manager', 'No') }}</p>
         </div>
     </div>
 
-    <h2>Performance Metrics</h2>
-    <div>
-        <p><strong><i>Explanations for Performance Metrics:</i></strong></p>
-        <ul style="font-size: smaller; font-style: italic;">
-            <li><strong>Work Percentage (%):</strong> The percentage of full-time work assigned. 100% is full-time.</li>
-            <li><strong>Planning Time (hrs):</strong> Unassigned time (30 min or more) for lesson-related tasks. Not contractually required but included for reference.</li>
-            <li><strong>No. Frametime Issues:</strong> Number of issues with frametime scheduling.</li>
-            <li><strong>No. Lesson Gap Issues:</strong> Number of issues with lesson gaps where the 5-min minimum buffer is not met.</li>
-            <li><strong>Weekly Break Time (hrs):</strong> Total break time scheduled during the week.</li>
-            <li><strong>General Work Time (hrs):</strong> Time for non-teaching tasks like duties, meetings or mentoring.</li>
-            <li><strong>Contracted Teaching Time (hrs):</strong> Maximum teaching hours allowed by the agreement, based on your work percentage.</li>
-            <li><strong>Assigned Teaching Time (hrs):</strong> Actual teaching hours assigned; should not exceed the contract.</li>
-            <li><strong>Contracted Frametime (hrs):</strong> Maximum total working hours (teaching + other tasks) allowed by the agreement.</li>
-            <li><strong>Assigned Frametime (hrs):</strong> Actual scheduled hours; should not exceed the contracted frametime.</li>
-            <li><strong>Teaching Time Overage (hrs):</strong> Difference between assigned and contracted teaching hours. Negative means fewer hours than required.</li>
-            <li><strong>Frametime Overage (hrs):</strong> Difference between assigned and contracted total hours. Negative means fewer hours than required.</li>
-            <li><strong>Total Overtime (hrs):</strong> Combined difference for teaching and total hours. Negative means fewer hours worked than required.</li>
-        </ul>
-    </div>
+    <h2 class = "report-items-heading">Performance Metrics</h2>
     
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped table2">
         <thead class="thead-dark">
             <tr>
                 <th>Metric</th>
@@ -78,110 +39,200 @@
         </thead>
         <tbody>
             <tr>
-                <td>Work Percentage (%)</td>
+                <td class="tooltip" data-tooltip="The percentage of full-time work assigned. 100% is full-time.">
+                    Work Percentage (%)
+                </td>
                 <td>{{ session.get('work_percent', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Planning Time (hrs)</td>
+                <td class="tooltip" data-tooltip="Unassigned time (30 min or more) for lesson-related tasks.">
+                    Planning Time (hrs)
+                </td>
                 <td>{{ session.get('planning_time', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>No. Frametime Issues</td>
+                <td class="tooltip" data-tooltip="Number of issues with frametime scheduling.">
+                    No. Frametime Issues
+                </td>
                 <td>{{ session.get('frametime_issue_count', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>No. Lesson Gap Issues</td>
+                <td class="tooltip" data-tooltip="Number of issues with lesson gaps where the 5-min minimum buffer is not met.">
+                    No. Lesson Gap Issues
+                </td>
                 <td>{{ session.get('gap_issues_count', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Weekly Break Time (hrs)</td>
+                <td class="tooltip" data-tooltip="Total break time scheduled during the week.">
+                    Weekly Break Time (hrs)
+                </td>
                 <td>{{ session.get('breaks_time', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>General Work Time (hrs)</td>
+                <td class="tooltip" data-tooltip="Time for non-teaching tasks like duties, meetings, or mentoring.">
+                    General Work Time (hrs)
+                </td>
                 <td>{{ session.get('general_time', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Contracted Teaching Time (hrs)</td>
+                <td class="tooltip" data-tooltip="Maximum teaching hours allowed by the agreement based on your work percentage.">
+                    Contracted Teaching Time (hrs)
+                </td>
                 <td>{{ session.get('contract_teachtime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Assigned Teaching Time (hrs)</td>
+                <td class="tooltip" data-tooltip="Actual teaching hours assigned; should not exceed the contract.">
+                    Assigned Teaching Time (hrs)
+                </td>
                 <td>{{ session.get('assigned_teachtime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Contracted Frametime (hrs)</td>
+                <td class="tooltip" data-tooltip="Maximum total working hours (teaching + other tasks) allowed by the agreement.">
+                    Contracted Frametime (hrs)
+                </td>
                 <td>{{ session.get('contract_frametime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Assigned Frametime (hrs)</td>
+                <td class="tooltip" data-tooltip="Actual scheduled hours; should not exceed the contracted frametime.">
+                    Assigned Frametime (hrs)
+                </td>
                 <td>{{ session.get('assigned_frametime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Teaching Time Overage (hrs)</td>
+                <td class="tooltip" data-tooltip="Difference between assigned and contracted teaching hours. Negative means fewer hours than required.">
+                    Teaching Time Overage (hrs)
+                </td>
                 <td>{{ session.get('over_teachtime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Frametime Overage (hrs)</td>
+                <td class="tooltip" data-tooltip="Difference between assigned and contracted total hours. Negative means fewer hours than required.">
+                    Frametime Overage (hrs)
+                </td>
                 <td>{{ session.get('over_frametime', 'N/A') }}</td>
             </tr>
             <tr>
-                <td>Total Overtime (hrs)</td>
+                <td class="tooltip" data-tooltip="Combined difference for teaching and total hours. Negative means fewer hours worked than required.">
+                    Total Overtime (hrs)
+                </td>
                 <td>{{ session.get('total_overtime', 'N/A') }}</td>
             </tr>
         </tbody>
     </table>
+    
 
-    <h2>Uploaded Schedules</h2>
-    <div class="card-body mt-3">
-        <h3><strong>Schedule Report Description:</strong></h3>
-        <ul style="font-size: smaller; font-style: italic; margin-left: 20px;">
-            <li><strong>Activities Marked with *:</strong> Planning and Lesson Gaps (min. 5-min buffer) are not in the SchoolSoft schedule but included for reference.</li>
-            <li><strong>Activity Types:</strong> Teaching (lessons, subbing), Frametime, Planning, Lesson Gap, Break, General (mentoring, duties, meetings).</li>
-            <li><strong>Issues:</strong> Identifies scheduling problems like insufficient lesson gaps or frametime misalignment.</li>
-        </ul>
-        
-        <p style="font-size: smaller; font-style: italic; margin-top: 10px;">*Planning blocks and gaps are not part of the official schedule but included for reference. General includes non-teaching duties like mentoring and meetings. Unscheduled days are noted as "No schedule reported."</p>
-    </div>
-    {% for day, df_key in [('Monday', 'df3a'), ('Tuesday', 'df3b'), ('Wednesday', 'df3c'), ('Thursday', 'df3d'), ('Friday', 'df3e')] %}
-    <h3>{{ day }}</h3>
-        {% if df_key in dataframes and dataframes[df_key] %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Time Span</th>
-                        <th>Activity</th>
-                        <th>Type</th>
-                        <th>Minutes</th>
-                        <th>Issues</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in dataframes[df_key] %}
-                    <tr>
-                        <td>{{ row['timespan'] }}</td>
-                        <td>{{ row['activities'] }}</td>
-                        <td>{{ row['type'] }}</td>
-                        <td>{{ row['minutes'] }}</td>
-                        <td>{{ row['issues'] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No schedule reported for this day.</p>
-        {% endif %}
-    {% endfor %}
+<!-- Schedule Table -->
 
-    <!-- Existing content -->
-    <button id="download-report" class="btn btn-primary mt-4">Download PDF Report</button>
+{% for day, df_key in [('Monday', 'df3a'), ('Tuesday', 'df3b'), ('Wednesday', 'df3c'), ('Thursday', 'df3d'), ('Friday', 'df3e')] %}
+    <h2 class = "report-items-heading">{{ day }} schedule</h2>
+    {% if df_key in dataframes and dataframes[df_key] %}
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th title="Time range of the scheduled activity">Time Span</th>
+                    <th title="Description of the scheduled activity">Activity</th>
+                    <th title="Activity types include Teaching, Frametime, Planning, Lesson Gap, Break, General">Type</th>
+                    <th title="Duration of the activity in minutes">Minutes</th>
+                    <th title="Issues include insufficient lesson gaps or frametime misalignment">Issues</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in dataframes[df_key] %}
+                <tr>
+                    <td>{{ row['timespan'] }}</td>
+                    <td class="tooltip" 
+                        data-tooltip="
+                            {% if '*' in row['activities'] %}
+                                This activity is for reference only; it does not appear on SchoolSoft schedules.
+                            {% else %}
+                                Regular scheduled activity
+                            {% endif %}
+                        ">
+                        {{ row['activities'] }}
+                    </td>
+                    <td>{{ row['type'] }}</td>
+                    <td>{{ row['minutes'] }}</td>
+                    <td>{{ row['issues'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endfor %}
+<div class="btn">
+<!-- Download Button -->
+<button id="download-report" class="btn-primary">Download PDF Report</button>
+</div>
+
 </div>
 
 <script>
     document.getElementById("download-report").addEventListener("click", function () {
         window.location.href = "/survey";
     });
+
+
+
 </script>
 
+<style>
+
+.btn {
+    margin-top: 1em;
+}
+.table2 {
+    width: 50%;
+    text-align: left;
+}
+
+/* Unified Tooltip Styles */
+.tooltip {
+    position: relative;
+    cursor: help;
+    transition: color 0.3s ease;
+}
+
+/* Tooltip Text */
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1075af;
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    white-space: normal;
+    max-width: 250px;
+    text-align: left;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Show Tooltip on Hover */
+.tooltip:hover::after {
+    opacity: 0.95;
+}
+
+
+/* Tooltip Styles */
+.custom-tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    max-width: 250px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.95;
+}
+
+</style>
 {% endblock %}
 

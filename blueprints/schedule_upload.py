@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, session, redirect, flash,
 import os
 import pandas as pd
 from helpers.pdf_processing import extract_text_from_pdf, process_schedule_data
-from helpers.names_coding import validate_names, update_user_school_id
+from helpers.names_coding import validate_names, update_user_school_id, is_own_school
 from helpers.clean_raw_data import clean_data
 from helpers.auth_functions import get_db_connection
 from helpers.file_storage import validate_and_save_uploaded_file
@@ -102,19 +102,24 @@ def home():
             session['is_own_schedule'] = is_own_schedule  # Store result in session
 
             # Skip restriction only if the user is a central officer (4) or admin (5)
-            if is_admin not in [4, 5] and not is_own_schedule:
-                flash("Data Privacy Violation!<br>You can only process schedules that belong to you.<br>For GDPR compliance, the uploaded file was not processed.", 'danger')
+            if is_admin not in [3, 4, 5] and not is_own_schedule:
+                
+                flash("Data Privacy Violation!<br>The uploaded schedule is not yours.<br>Due to GDPR compliance, processing was stopped.", 'danger')
                 return redirect(url_for('schedule_upload_bp.home'))  
             
             update_user_school_id()
+            is_own_school()
+
+            if is_admin == 3 and session.get('is_school') == 0:
+                flash("Data Privacy Violation!<br>You can only process you own schedule or, as a lokal officer, schedules of teachers at your school.<br>Due to GDPR compliance, processing was stopped.", 'danger')
+                return redirect(url_for('schedule_upload_bp.home'))  
 
             flash('File uploaded and processed successfully!', 'success')
             return redirect(url_for('meta1.meta1'))
 
-        except ValueError as e:
-            flash(f"Validation error: {str(e)}", 'error')
         except Exception as e:
-            flash('An unexpected error occurred during file processing. Please contact support.', 'error')
-            current_app.logger.error(f"Error processing uploaded file: {e}")
+            print(f"Error in handle_schedule_upload: {e}")
+            flash("An error occurred during schedule processing.", 'danger')
+            return redirect(url_for('schedule_upload_bp.home'))
 
     return render_template('upload_schedule.html')
