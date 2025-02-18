@@ -53,6 +53,8 @@
 
 
     <form action="/confirm-elected-officers" method="POST" class="form-a">
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <table>
             <thead>
                 <tr>

@@ -545,8 +545,6 @@ def insert_debug_data():
             (19, 'Paul', 'Hall', 38, 1, current_time, current_time),
             (20, 'Quinn', 'Allen', 42, 1, current_time, current_time),
             (21, 'Rachel', 'Young', 48, 1, current_time, current_time),
-
-            # Additional 10 users with 0 in all officer roles
             (22, 'Steve', 'Adams', 6, 1, current_time, current_time),
             (23, 'Hannah', 'Baker', 11, 1, current_time, current_time),
             (24, 'Lucas', 'Carter', 16, 1, current_time, current_time),
@@ -587,14 +585,12 @@ def insert_debug_data():
             (19, 0, 0, 1, 1, 0, 0),
             (20, 1, 0, 0, 1, 1, 0),
             (21, 0, 1, 1, 0, 0, 0),
-
-            # Additional 10 users with 0 in all officer roles
             (22, 0, 0, 0, 0, 0, 0),
-            (23, 0, 0, 0, 0, 0, 0),
-            (24, 0, 0, 0, 0, 0, 0),
+            (23, 1, 1, 0, 0, 0, 0),
+            (24, 1, 0, 0, 1, 0, 0),
             (25, 0, 0, 0, 0, 0, 0),
             (26, 0, 0, 0, 0, 0, 0),
-            (27, 0, 0, 0, 0, 0, 0),
+            (27, 1, 1, 0, 0, 0, 3),
             (28, 0, 0, 0, 0, 0, 0),
             (29, 0, 0, 0, 0, 0, 0),
             (30, 0, 0, 0, 0, 0, 0),
@@ -605,6 +601,46 @@ def insert_debug_data():
             INSERT OR IGNORE INTO verify_officer (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, officer_data)
+
+        user_auth_data = []
+        for row in users_data:
+            u_id, first_name, last_name, *_ = row
+            login_email = f"{first_name.lower()}.{last_name.lower()}@email.se"
+            user_auth_data.append((
+                u_id,                 # user_id
+                login_email,          # login_id
+                "cooler1!",          # password_hash (demo only)
+                0,                    # is_admin (0 for normal user)
+                "Q1", "answer1",      # security_question_1, security_answer_1
+                "Q2", "answer2",      # security_question_2, security_answer_2
+                "Q3", "answer",       # security_question_3, security_answer_3
+                0,                    # question_index
+                0,                    # login_attempts
+                None,                 # temp_password
+                current_time,         # created_at
+                current_time,         # updated_at
+            ))
+
+        cursor.executemany("""
+            INSERT OR IGNORE INTO user_auth (
+                user_id,
+                login_id,
+                password_hash,
+                is_admin,
+                security_question_1,
+                security_answer_1,
+                security_question_2,
+                security_answer_2,
+                security_question_3,
+                security_answer_3,
+                question_index,
+                login_attempts,
+                temp_password,
+                created_at,
+                updated_at
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, user_auth_data)
 
         conn.commit()
         print("Debug data inserted successfully.")
