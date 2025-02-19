@@ -1,0 +1,30 @@
+
+# Ignore Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environments
+venv/
+.env/
+env/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore databases
+db.sqlite3
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore VS Code and IDE-specific files
+.vscode/
+.idea/
+*.sublime-workspace
