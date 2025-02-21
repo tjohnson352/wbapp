@@ -76,10 +76,11 @@
     <div class="row privacy-row">
         <label>Privacy consent:</label>
         <p>
-            <!-- Show "Yes" or "No" in a nicely formatted span -->
-            <span class="consent-status {{ user.consent|lower }}">{{ user.consent }}</span>
-            <!-- Add a separator or space, then the link -->
-            <a href="/privacy_policy" target="_blank" class="privacy-policy-link" style = "font-size: .8em">Click here for our Privacy Policy</a>
+            {% if user.consent == 1 %}
+                Your consent has been received. <a href="/privacy_policy" target="_blank" class="privacy-policy-link">Read our privacy policy here.</a>
+            {% else %}
+                Consent not provided. Please review our <a href="/privacy_policy" target="_blank" class="privacy-policy-link">privacy policy here.</a>
+            {% endif %}
         </p>
     </div>
 </div>
@@ -87,7 +88,7 @@
 <!-- Card 3: Membership/roles -->
 <div class="card">
     <h3>Sveriges Lärare Membership and Roles</h3>
-    <table class="table" style="width: 50%">
+    <table class="table tb2" style="width: 50%">
         <thead>
             <tr>
                 <th>Role</th>
@@ -97,27 +98,27 @@
         <tbody>
             <tr>
                 <td>Registered Member</td>
-                <td class="{{ 'status' if user.sl_member == 'Yes' else '' }}">{{ user.sl_member }}</td>
+                <td class="{{ 'green' if user.sl_member == 1 else 'red' }}">{{ 'YES' if user.sl_member == 1 else 'NO' }}</td>
             </tr>
             <tr>
                 <td>Lokalombud</td>
-                <td class="{{ 'status' if user.lokalombud == 'Yes' else '' }}">{{ user.lokalombud }}</td>
+                <td class="{{ 'green' if user.lokalombud == 1 else 'red' }}">{{ 'YES' if user.lokalombud == 1 else 'NO' }}</td>
             </tr>
             <tr>
                 <td>Skyddsombud</td>
-                <td class="{{ 'status' if user.skyddsombud == 'Yes' else '' }}">{{ user.skyddsombud }}</td>
+                <td class="{{ 'green' if user.skyddsombud == 1 else 'red' }}">{{ 'YES' if user.skyddsombud == 1 else 'NO' }}</td>
             </tr>
             <tr>
                 <td>Förhandlingsombud</td>
-                <td class="{{ 'status' if user.forhandlingsombud == 'Yes' else '' }}">{{ user.forhandlingsombud }}</td>
+                <td class="{{ 'green' if user.forhandlingsombud == 1 else 'red' }}">{{ 'YES' if user.forhandlingsombud == 1 else 'NO' }}</td>
             </tr>
             <tr>
                 <td>Huvudskyddsombud</td>
-                <td class="{{ 'status' if user.huvudskyddsombud == 'Yes' else '' }}">{{ user.huvudskyddsombud }}</td>
+                <td class="{{ 'green' if user.huvudskyddsombud == 1 else 'red' }}">{{ 'YES' if user.huvudskyddsombud == 1 else 'NO' }}</td>
             </tr>
             <tr>
                 <td>Styrelseledamot</td>
-                <td class="{{ 'status' if user.styrelseledamot == 'Yes' else '' }}">{{ user.styrelseledamot }}</td>
+                <td class="{{ 'green' if user.styrelseledamot == 1 else 'red' }}">{{ 'YES' if user.styrelseledamot == 1 else 'NO' }}</td>
             </tr>
         </tbody>
     </table>
@@ -446,7 +447,13 @@ function updateValidationUI(element, isValid, text) {
     font-weight: 600;
   }
 
+  .green {
+    color: green;
+  }
 
+  .red {
+    color: red;
+  }
  
 </style>
 {% endblock %}

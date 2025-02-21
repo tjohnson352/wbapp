@@ -5,61 +5,81 @@ from blueprints.authentication import get_random_security_questions
 
 account_bp = Blueprint('account_bp', __name__)
 
-# Function to get user details from the database
+import sqlite3
+
 def get_user(user_id):
     conn = sqlite3.connect("user_data.db")
     cursor = conn.cursor()
+    
+    # Query already retrieves the correct school_name without needing school_id
     cursor.execute("""
         SELECT 
-            u.user_id, u.first_name, u.last_name, 
-            auth.login_id,  -- Fetch login_id from user_auth instead of users
-            s.school_name, u.consent, u.created_at, u.updated_at, 
-            sl.sl_member, sl.lokalombud, sl.skyddsombud, sl.forhandlingsombud, 
-            sl.huvudskyddsombud, sl.styrelseledamot,
+            u.user_id, 
+            u.first_name, 
+            u.last_name, 
+            auth.login_id,
+            s.school_name,                -- Automatically determined by JOIN
+            u.consent, 
+            u.created_at, 
+            u.updated_at, 
+            sl.sl_member, 
+            sl.lokalombud, 
+            sl.skyddsombud, 
+            sl.forhandlingsombud, 
+            sl.huvudskyddsombud, 
+            sl.styrelseledamot,
             m.middle_manager, 
             m2.work_percent,
-            auth.security_question_1, auth.security_answer_1, 
-            auth.security_question_2, auth.security_answer_2, 
-            auth.security_question_3, auth.security_answer_3
+            auth.security_question_1, 
+            auth.security_answer_1, 
+            auth.security_question_2, 
+            auth.security_answer_2, 
+            auth.security_question_3, 
+            auth.security_answer_3
         FROM users u
-        LEFT JOIN user_auth auth ON u.user_id = auth.user_id  -- Corrected login_id source
+        LEFT JOIN user_auth auth ON u.user_id = auth.user_id
         LEFT JOIN schools s ON u.school_id = s.school_id
         LEFT JOIN sl_member_level sl ON u.user_id = sl.user_id
-        LEFT JOIN meta1 m ON u.user_id = m.user_id  -- Middle Manager data
-        LEFT JOIN meta2 m2 ON u.user_id = m2.user_id  -- Work Percentage data
+        LEFT JOIN meta1 m ON u.user_id = m.user_id
+        LEFT JOIN meta2 m2 ON u.user_id = m2.user_id
         WHERE u.user_id = ?
-
     """, (user_id,))
     
     user = cursor.fetchone()
     conn.close()
 
-    if user:
-        return {
-            "user_id": user[0],
-            "first_name": user[1],
-            "last_name": user[2],
-            "login_id": user[3],
-            "school_name": user[4],
-            "consent": "Yes" if user[5] else "No",
-            "created_at": user[6],
-            "updated_at": user[7],
-            "sl_member": "Yes" if user[8] else "No",
-            "lokalombud": "Yes" if user[9] else "No",
-            "skyddsombud": "Yes" if user[10] else "No",
-            "forhandlingsombud": "Yes" if user[11] else "No",
-            "huvudskyddsombud": "Yes" if user[12] else "No",
-            "styrelseledamot": "Yes" if user[13] else "No",
-            "middle_manager": user[14] if user[14] else "Updates automatically with schedule analysis",
-            "work_percent": f"{user[15]}%" if user[15] else "Updates automatically with schedule analysis",
-            "security_question_1": user[16] if user[16] else "",
-            "security_answer_1": user[17] if user[17] else "",
-            "security_question_2": user[18] if user[18] else "",
-            "security_answer_2": user[19] if user[19] else "",
-            "security_question_3": user[20] if user[20] else "",
-            "security_answer_3": user[21] if user[21] else "",
-        }
-    return None
+    # If no user found, return None
+    if not user:
+        return None
+
+    # Build user info with auto-determined school_name
+    user_data = {
+        "user_id":             user[0],
+        "first_name":          user[1],
+        "last_name":           user[2],
+        "login_id":            user[3],
+        "school_name":         user[4],   # Automatically fetched
+        "consent":             user[5],
+        "created_at":          user[6],
+        "updated_at":          user[7],
+        "sl_member":           user[8],
+        "lokalombud":          user[9],
+        "skyddsombud":         user[10],
+        "forhandlingsombud":   user[11],
+        "huvudskyddsombud":    user[12],
+        "styrelseledamot":     user[13],
+        "middle_manager":      user[14],
+        "work_percent":        user[15],
+        "security_question_1": user[16],
+        "security_answer_1":   user[17],
+        "security_question_2": user[18],
+        "security_answer_2":   user[19],
+        "security_question_3": user[20],
+        "security_answer_3":   user[21],
+    }
+    
+    return user_data
+
 
 
 

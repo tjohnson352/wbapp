@@ -333,8 +333,13 @@ def dashboard():
         flash("Please log in to access the dashboard.", "error")
         return redirect(url_for('auth_bp.login'))
 
+    # Check if user is eligible to see the "Confirm Officers" button
+    is_admin = session.get('is_admin', -1)  # Default to -1 if not set
+    show_confirm_officers = is_admin in [3, 4, 5]
+
     # Render the dashboard template for logged-in users
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', show_confirm_officers=show_confirm_officers)
+
 
 @auth_bp.route('/logout', methods=['GET'])
 def logout():
@@ -512,18 +517,33 @@ def confirm_elected_officers():
 
 
 import datetime
+import sqlite3
+
+# Import hashing utilities from Werkzeug
+from werkzeug.security import check_password_hash, generate_password_hash
+
+import datetime
+import sqlite3
 import random
+from werkzeug.security import generate_password_hash
 
 def insert_debug_data():
-    """Inserts test data into users and verify_officer tables for debugging purposes."""
+    """
+    Inserts test data into:
+      - users (IDs 2..31 + 32 for Theodore)
+      - verify_officer (ONLY for users with at least one role = 1)
+      - user_auth (hashed password & answers)
+      - sl_member_level (all users; replicates roles if they exist, else random)
+    """
     conn = sqlite3.connect("user_data.db")
     cursor = conn.cursor()
 
     try:
-        # Generate current timestamp
         current_time = datetime.datetime.now()
 
-        # Insert 20 test users with school_id ranging from 1 to 48
+        # -------------------------------------------
+        # 1. USERS TABLE
+        # -------------------------------------------
         users_data = [
             (2, 'John', 'Doe', 1, 1, current_time, current_time),
             (3, 'Jane', 'Smith', 5, 1, current_time, current_time),
@@ -555,16 +575,22 @@ def insert_debug_data():
             (29, 'Amelia', 'Henderson', 41, 1, current_time, current_time),
             (30, 'Ethan', 'Jackson', 46, 1, current_time, current_time),
             (31, 'Lily', 'King', 47, 1, current_time, current_time),
+            # New user #32: Theodore Johnson
+            (32, 'Theodore', 'Johnson', 4, 1, current_time, current_time),
         ]
 
         cursor.executemany("""
-            INSERT OR IGNORE INTO users (user_id, first_name, last_name, school_id, consent, created_at, updated_at) 
+            INSERT OR IGNORE INTO users (
+                user_id, first_name, last_name, 
+                school_id, consent, created_at, updated_at
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, users_data)
 
-
-        # Insert verification requests for officer roles (20 with officer roles, 10 with all zeros)
-        officer_data = [
+        # -------------------------------------------
+        # 2. VERIFY_OFFICER TABLE (ONLY if user has at least one role=1)
+        # -------------------------------------------
+        officer_data_all = [
             (2, 1, 0, 0, 0, 1, 0),
             (3, 0, 1, 1, 0, 0, 0),
             (4, 1, 1, 0, 0, 0, 0),
@@ -586,39 +612,67 @@ def insert_debug_data():
             (20, 1, 0, 0, 1, 1, 0),
             (21, 0, 1, 1, 0, 0, 0),
             (22, 0, 0, 0, 0, 0, 0),
-            (23, 1, 1, 0, 0, 0, 0),
-            (24, 1, 0, 0, 1, 0, 0),
+            (23, 0, 0, 0, 0, 0, 0),
+            (24, 0, 0, 0, 0, 0, 0),
             (25, 0, 0, 0, 0, 0, 0),
             (26, 0, 0, 0, 0, 0, 0),
-            (27, 1, 1, 0, 0, 0, 3),
+            (27, 0, 0, 0, 0, 0, 0),
             (28, 0, 0, 0, 0, 0, 0),
             (29, 0, 0, 0, 0, 0, 0),
             (30, 0, 0, 0, 0, 0, 0),
             (31, 0, 0, 0, 0, 0, 0),
+            # Theodore (#32) => forhandlingsombud=1, styrelseledamot=1
+            (32, 0, 0, 1, 0, 1, 0),
         ]
 
+        # Filter out users who have all roles = 0
+        officer_data_filtered = []
+        for row in officer_data_all:
+            # row format => (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified)
+            # check if any officer role is set to 1
+            user_id, lo, so, fo, hso, slm, vf = row
+            if lo or so or fo or hso or slm:
+                # At least one role is 1 => we keep it
+                officer_data_filtered.append(row)
+
         cursor.executemany("""
-            INSERT OR IGNORE INTO verify_officer (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified) 
+            INSERT OR IGNORE INTO verify_officer (
+                user_id, lokalombud, skyddsombud, 
+                forhandlingsombud, huvudskyddsombud, 
+                styrelseledamot, verified
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, officer_data)
+        """, officer_data_filtered)
+
+        # -------------------------------------------
+        # 3. USER_AUTH TABLE (hash the password + answers)
+        # -------------------------------------------
+        hashed_password = generate_password_hash("cooler1!")
+        ans1 = generate_password_hash("answer1")
+        ans2 = generate_password_hash("answer2")
+        ans3 = generate_password_hash("answer")
 
         user_auth_data = []
         for row in users_data:
             u_id, first_name, last_name, *_ = row
-            login_email = f"{first_name.lower()}.{last_name.lower()}@email.se"
+            if u_id == 32:
+                login_email = "tjohnson352@gmail.com"
+            else:
+                login_email = f"{first_name.lower()}.{last_name.lower()}@email.se"
+
             user_auth_data.append((
-                u_id,                 # user_id
-                login_email,          # login_id
-                "cooler1!",          # password_hash (demo only)
-                0,                    # is_admin (0 for normal user)
-                "Q1", "answer1",      # security_question_1, security_answer_1
-                "Q2", "answer2",      # security_question_2, security_answer_2
-                "Q3", "answer",       # security_question_3, security_answer_3
-                0,                    # question_index
-                0,                    # login_attempts
-                None,                 # temp_password
-                current_time,         # created_at
-                current_time,         # updated_at
+                u_id,             # user_id
+                login_email,      # login_id
+                hashed_password,  # hashed
+                0,                # is_admin
+                "Q1", ans1,
+                "Q2", ans2,
+                "Q3", ans3,
+                0,                # question_index
+                0,                # login_attempts
+                None,             # temp_password
+                current_time,
+                current_time,
             ))
 
         cursor.executemany("""
@@ -638,16 +692,68 @@ def insert_debug_data():
                 temp_password,
                 created_at,
                 updated_at
-            ) 
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, user_auth_data)
 
+        # -------------------------------------------
+        # 4. sl_member_level TABLE
+        #    - Insert all users (2..32)
+        #    - If they have any role in verify_officer => replicate those roles, set sl_member=1
+        #    - Otherwise => random roles; if any is 1 => sl_member=1 else 0
+        # -------------------------------------------
+        # We'll do a dict for easy lookups: user_id -> (lo, so, fo, hso, slm)
+        officer_dict = {}
+        for row in officer_data_filtered:
+            # row => (user_id, lokalombud, skyddsombud, forhandlingsombud, huvudskyddsombud, styrelseledamot, verified)
+            uid, lo, so, fo, hso, slm, ver = row
+            officer_dict[uid] = (lo, so, fo, hso, slm)
+
+        sl_member_data = []
+        for row in users_data:
+            uid = row[0]
+            
+            if uid in officer_dict:
+                # user has existing officer roles
+                lo, so, fo, hso, sty = officer_dict[uid]
+                # sl_member = 1 if any officer role is 1
+                sl_member = 1
+                sl_member_data.append((uid, sl_member, lo, so, fo, hso, sty))
+            else:
+                # user has no officer roles => random
+                lo  = random.randint(0,1)
+                so  = random.randint(0,1)
+                fo  = random.randint(0,1)
+                hso = random.randint(0,1)
+                sty = random.randint(0,1)
+                # Determine if sl_member=1 or 0
+                if (lo or so or fo or hso or sty):
+                    sl_member = 1
+                else:
+                    sl_member = 0
+                sl_member_data.append((uid, sl_member, lo, so, fo, hso, sty))
+
+        cursor.executemany("""
+            INSERT OR IGNORE INTO sl_member_level (
+                user_id,
+                sl_member,
+                lokalombud,
+                skyddsombud,
+                forhandlingsombud,
+                huvudskyddsombud,
+                styrelseledamot
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, sl_member_data)
+
+        # Finally, commit all
         conn.commit()
         print("Debug data inserted successfully.")
 
     except Exception as e:
         print(f"Error inserting debug data: {e}")
-
     finally:
         conn.close()
+
+
 
